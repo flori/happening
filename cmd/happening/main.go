@@ -17,6 +17,7 @@ var config h.Config
 func init() {
 	flag.StringVar(&config.Name, "name", "some event", "name of the event that happened")
 	flag.StringVar(&config.ReportURL, "report", "", "send events to this report URL")
+	flag.BoolVar(&config.EnableReport, "enable-report", true, "enable the report iff true")
 	flag.StringVar(&config.SuccessCode, "success", "0", "consider these exit codes (separated by ,) as success")
 	flag.StringVar(&config.PingURL, "ping", "", "ping URL after successful execution of command")
 	flag.StringVar(&config.FlagHostname, "hostname", "", "overwrite os hostname with this value")
@@ -51,10 +52,12 @@ func main() {
 	if event.Success && config.PingURL != "" {
 		h.Ping(&config)
 	}
-	if config.ReportURL != "" {
+	reported := "unreported"
+	if config.EnableReport && config.ReportURL != "" {
 		h.SendEvent(event, &config)
+		reported = "reported"
 	}
-	log.Printf("%s took %s: %v",
-		event.Name, event.Duration, string(h.EventToJSON(event)))
+	log.Printf("\"%s\" took %s and was %s: %v",
+		event.Name, event.Duration, reported, string(h.EventToJSON(event)))
 	os.Exit(event.ExitCode)
 }
