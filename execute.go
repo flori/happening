@@ -115,6 +115,7 @@ func Execute(config Config, cmdArgs []string, codes []int) *Event {
 			ExitCode: ec,
 			Hostname: hostname,
 			Pid:      pid,
+			Store:    config.StoreReport,
 		}
 	} else {
 		success := isSuccess(0, codes)
@@ -126,6 +127,7 @@ func Execute(config Config, cmdArgs []string, codes []int) *Event {
 			Success:  success,
 			Hostname: hostname,
 			Pid:      os.Getpid(),
+			Store:    config.StoreReport,
 		}
 	}
 }

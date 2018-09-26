@@ -10,7 +10,7 @@ all: happening happening-server
 happening: cmd/happening/main.go *.go
 	go build -o happening cmd/happening/main.go
 
-happening-server: *.go
+happening-server: cmd/happening-server/main.go *.go
 	go build -o happening-server cmd/happening-server/main.go
 
 local: happening-server

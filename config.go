@@ -13,4 +13,5 @@ type Config struct {
 	CollectOutput  bool
 	SuppressOutput bool
 	Chdir          string
+	StoreReport    bool
 }

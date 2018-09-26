@@ -12,9 +12,11 @@ func addToTimeline(api *API, data []byte) *Event {
 		log.Println("error:", err)
 		return nil
 	}
-	if err := api.DB.Insert(&event); err != nil {
-		log.Println("error:", err)
-		return nil
+	if event.Store {
+		if err := api.DB.Insert(&event); err != nil {
+			log.Println("error:", err)
+			return nil
+		}
 	}
 	return &event
 }
