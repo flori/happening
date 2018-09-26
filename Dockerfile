@@ -15,7 +15,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
 WORKDIR /build
 RUN git clone https://github.com/Yelp/dumb-init
 WORKDIR /build/dumb-init
-RUN git checkout e7ff7f5762b18d1accf802efe4ebdabe145bce4a # Pinned to Version v1.2.1
+RUN git checkout b1e978e486114797347deefcc03ab12629a13cc3 # Pinned to Version v1.2.2
 RUN make
 
 # Build happening
