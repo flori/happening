@@ -1,6 +1,6 @@
 DOCKER_IMAGE = happening:$(REVISION_SHORT)
 PROJECT_ID = betterplace-183212
-POSTGRES_URL ?= "postgresql://happening:happening@localhost:5432/postgres"
+POSTGRES_URL ?= "postgresql://flori@localhost:5432/postgres?sslmode=disable"
 REMOTE_TAG = eu.gcr.io/$(PROJECT_ID)/$(DOCKER_IMAGE)
 REVISION := $(shell git rev-parse HEAD)
 REVISION_SHORT := $(shell echo $(REVISION) | head -c 10)
@@ -8,10 +8,10 @@ REVISION_SHORT := $(shell echo $(REVISION) | head -c 10)
 all: happening happening-server
 
 happening: cmd/happening/main.go *.go
-	go build -o happening cmd/happening/main.go
+	go build -o $@ $<
 
 happening-server: cmd/happening-server/main.go *.go
-	go build -o happening-server cmd/happening-server/main.go
+	go build -o $@ $<
 
 local: happening-server
 	POSTGRES_URL=$(POSTGRES_URL) ./happening-server

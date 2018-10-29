@@ -15,5 +15,5 @@ type Event struct {
 	ExitCode int           `json:"exitCode" sql:"type:smallint,notnull"`
 	Hostname string        `json:"hostname"`
 	Pid      int           `json:"pid" sql:"type:bigint`
-	Store    bool          `json:"store"`
+	Store    bool          `json:"store" sql:"-"`
 }
