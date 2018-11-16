@@ -1,54 +1,39 @@
-FROM ubuntu:16.04 AS build
+FROM alpine:3.8 AS build
 
 # Update/Upgrade/Add packages for building
 
-ARG FORCE=$FORCE
-
-RUN apt-get update && apt-get upgrade -y && apt-get install -y \
-      git \
-      gcc-6-base autoconf build-essential \
-      curl \
-      golang
-
-# Build dumb-init
-
-WORKDIR /build
-RUN git clone https://github.com/Yelp/dumb-init
-WORKDIR /build/dumb-init
-RUN git checkout b1e978e486114797347deefcc03ab12629a13cc3 # Pinned to Version v1.2.2
-RUN make
+RUN apk add --no-cache bash git go build-base
 
 # Build happening
 
 WORKDIR /build/happening
 
-RUN curl https://storage.googleapis.com/golang/go1.10.linux-amd64.tar.gz | tar xz -C /usr/local
-
-ENV PATH /usr/local/go/bin:${PATH}
-
 ADD . .
 
 ENV GOPATH=/build/happening/gospace
 
-RUN make clean fetch all
+RUN make clobber
 
-FROM ubuntu:16.04
+RUN go get -u github.com/betterplace/go-init
+
+RUN make fetch all
+
+FROM alpine:3.8
 
 # Update/Upgrade/Add packages
 
-RUN apt-get update && apt-get upgrade -y && apt-get install -y \
-  bash ca-certificates
+RUN apk add --no-cache bash ca-certificates
 
 ARG APP_DIR=/app
 
-RUN useradd -d ${APP_DIR} -s /bin/bash appuser
+RUN adduser -h ${APP_DIR} -s /bin/bash -D appuser
 
 RUN mkdir -p /opt/bin
 
-COPY --from=0 --chown=appuser:appuser /build/dumb-init/dumb-init /build/happening/happening /build/happening/happening-server /opt/bin/
+COPY --from=0 --chown=appuser:appuser /build/happening/gospace/bin/go-init /build/happening/happening /build/happening/happening-server /opt/bin/
 
 ENV PATH /opt/bin:${PATH}
 
 EXPOSE 8080
 
-CMD [ "/opt/bin/dumb-init", "/opt/bin/happening-server" ]
+CMD [ "/opt/bin/go-init", "-pre", "/bin/sleep 3", "-main", "/opt/bin/happening-server" ]
