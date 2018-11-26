@@ -1,7 +1,9 @@
 DOCKER_IMAGE_LATEST = happening
 DOCKER_IMAGE = $(DOCKER_IMAGE_LATEST):$(REVISION_SHORT)
+DOCKER_PORT=8080
 PROJECT_ID = betterplace-183212
-POSTGRES_URL ?= "postgresql://flori@localhost:5432/postgres?sslmode=disable"
+DATABASE_NAME ?= "happening"
+POSTGRES_URL ?= "postgresql://flori@dbms:5432/%s?sslmode=disable"
 REMOTE_LATEST_TAG := eu.gcr.io/${PROJECT_ID}/$(DOCKER_IMAGE_LATEST)
 REMOTE_TAG = eu.gcr.io/$(PROJECT_ID)/$(DOCKER_IMAGE)
 REVISION := $(shell git rev-parse HEAD)
@@ -34,7 +36,7 @@ coverage-display: coverage
 	@go tool cover -html=coverage.out
 
 clean:
-	@rm -f happening happening-server tags
+	@rm -f happening happening-server coverage.out tags
 
 clobber: clean
 	@rm -rf gospace/src/*
@@ -54,7 +56,7 @@ debug:
 	docker run --rm -it $(DOCKER_IMAGE) bash
 
 server:
-	docker run -e POSTGRES_URL=$(POSTGRES_URL) --rm -it -p 8080:8080 $(DOCKER_IMAGE)
+	docker run -e POSTGRES_URL=$(POSTGRES_URL) --rm -it -p $(DOCKER_PORT):$(DOCKER_PORT) $(DOCKER_IMAGE)
 
 pull:
 	gcloud auth configure-docker
