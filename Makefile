@@ -8,6 +8,7 @@ REMOTE_LATEST_TAG := eu.gcr.io/${PROJECT_ID}/$(DOCKER_IMAGE_LATEST)
 REMOTE_TAG = eu.gcr.io/$(PROJECT_ID)/$(DOCKER_IMAGE)
 REVISION := $(shell git rev-parse HEAD)
 REVISION_SHORT := $(shell echo $(REVISION) | head -c 10)
+GOPATH ?= gospace
 
 all: happening happening-server
 
@@ -20,11 +21,16 @@ happening-server: cmd/happening-server/main.go *.go
 local: happening-server
 	POSTGRES_URL=$(POSTGRES_URL) ./happening-server
 
-fetch:
+fetch: fake-package
 	go get -u github.com/dgrijalva/jwt-go
 	go get -u github.com/labstack/echo
 	go get -u github.com/kelseyhightower/envconfig
 	go get -u github.com/go-pg/pg
+
+fake-package:
+	rm -rf $(GOPATH)/src/github.com/flori/happening
+	mkdir -p $(GOPATH)/src/github.com/flori
+	ln -s $(shell pwd) $(GOPATH)/src/github.com/flori/happening
 
 test:
 	@go test
