@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	h "../.."
+	h "github.com/flori/happening"
 )
 
 var config h.Config

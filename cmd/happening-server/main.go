@@ -9,7 +9,7 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 
-	h "../.."
+	h "github.com/flori/happening"
 )
 
 type Config struct {
