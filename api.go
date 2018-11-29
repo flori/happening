@@ -1,6 +1,7 @@
 package happening
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/url"
@@ -14,8 +15,9 @@ import (
 const MaxInt = int(^uint(0) >> 1)
 
 type API struct {
-	POSTGRES_URL string
-	DB           *pg.DB
+	POSTGRES_URL  string
+	DATABASE_NAME string
+	DB            *pg.DB
 }
 
 type response struct {
@@ -26,7 +28,8 @@ type response struct {
 }
 
 func (api *API) PrepareDatabase() {
-	dbOptions, err := pg.ParseURL(api.POSTGRES_URL)
+	postgresUrl := fmt.Sprintf(api.POSTGRES_URL, "postgres")
+	dbOptions, err := pg.ParseURL(postgresUrl)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -39,7 +42,7 @@ func (api *API) PrepareDatabase() {
 	}
 	if dbExists {
 		db.Close()
-		dbOptions.Database = "happening"
+		dbOptions.Database = api.DATABASE_NAME
 		api.DB = pg.Connect(dbOptions)
 	} else {
 		_, err = db.Exec(`CREATE DATABASE happening`)

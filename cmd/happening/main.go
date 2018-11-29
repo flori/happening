@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	h "../.."
+	h "github.com/flori/happening"
 )
 
 var config h.Config
@@ -17,7 +17,7 @@ var config h.Config
 func init() {
 	flag.StringVar(&config.Name, "name", "some event", "name of the event that happened")
 	flag.StringVar(&config.ReportURL, "report", "", "send events to this report URL")
-	flag.BoolVar(&config.EnableReport, "enable-report", true, "enable the report iff true")
+	flag.BoolVar(&config.StoreReport, "store-report", true, "store the report iff true")
 	flag.StringVar(&config.SuccessCode, "success", "0", "consider these exit codes (separated by ,) as success")
 	flag.StringVar(&config.PingURL, "ping", "", "ping URL after successful execution of command")
 	flag.StringVar(&config.FlagHostname, "hostname", "", "overwrite os hostname with this value")

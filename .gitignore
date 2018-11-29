@@ -1,3 +1,6 @@
+/happening
+/happening-server
+coverage.out
+tags
+!gospace/src/github.com/flori/happening
 gospace
-happening
-happening-server

@@ -9,13 +9,14 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 
-	h "../.."
+	h "github.com/flori/happening"
 )
 
 type Config struct {
-	PORT         string `default:"8080"`
-	POSTGRES_URL string `default:"postgresql://flori@localhost:5432/postgres?sslmode=disable"`
-	HTTP_AUTH    string
+	PORT          string `default:"8080"`
+	DATABASE_NAME string `default:"happening"`
+	POSTGRES_URL  string `default:"postgresql://flori@localhost:5432/%s?sslmode=disable"`
+	HTTP_AUTH     string
 }
 
 func basicAuthConfig(config Config) middleware.BasicAuthConfig {
@@ -47,7 +48,7 @@ func main() {
 		fmt.Println("info: Configuring HTTP Auth access control")
 		e.Use(middleware.BasicAuthWithConfig(basicAuthConfig(config)))
 	}
-	api := h.API{POSTGRES_URL: config.POSTGRES_URL}
+	api := h.API{DATABASE_NAME: config.DATABASE_NAME, POSTGRES_URL: config.POSTGRES_URL}
 	api.PrepareDatabase()
 	e.POST("/api/v1/event", api.PostEventHandler)
 	e.GET("/api/v1/events", api.GetEventsHandler)
