@@ -52,12 +52,10 @@ func main() {
 	if event.Success && config.PingURL != "" {
 		h.Ping(&config)
 	}
-	reported := "unreported"
-	if config.EnableReport && config.ReportURL != "" {
+	if config.ReportURL != "" {
 		h.SendEvent(event, &config)
-		reported = "reported"
 	}
-	log.Printf("\"%s\" took %s and was %s: %v",
-		event.Name, event.Duration, reported, string(h.EventToJSON(event)))
+	log.Printf("\"%s\" took %s: %v",
+		event.Name, event.Duration, string(h.EventToJSON(event)))
 	os.Exit(event.ExitCode)
 }

@@ -5,7 +5,6 @@ import "time"
 type Config struct {
 	Name           string
 	ReportURL      string
-	EnableReport   bool
 	SuccessCode    string
 	PingURL        string
 	FlagHostname   string
