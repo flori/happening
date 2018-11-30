@@ -8,7 +8,10 @@ REMOTE_LATEST_TAG := eu.gcr.io/${PROJECT_ID}/$(DOCKER_IMAGE_LATEST)
 REMOTE_TAG = eu.gcr.io/$(PROJECT_ID)/$(DOCKER_IMAGE)
 REVISION := $(shell git rev-parse HEAD)
 REVISION_SHORT := $(shell echo $(REVISION) | head -c 10)
-GOPATH ?= gospace
+GOPATH := $(shell pwd)/gospace
+GOBIN = $(GOPATH)/bin
+
+.EXPORT_ALL_VARIABLES:
 
 all: happening happening-server
 
@@ -45,7 +48,7 @@ clean:
 	@rm -f happening happening-server coverage.out tags
 
 clobber: clean
-	@rm -rf gospace/src/*
+	@rm -rf $(GOPATH)/*
 
 tags: clean
 	@gotags -tag-relative=false -silent=true -R=true -f $@ . $(GOPATH)
