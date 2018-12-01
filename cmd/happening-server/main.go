@@ -9,18 +9,10 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 
-	h "github.com/flori/happening"
+	happening "github.com/flori/happening"
 )
 
-type Config struct {
-	PORT          string `default:"8080"`
-	DATABASE_NAME string `default:"happening"`
-	POSTGRES_URL  string `default:"postgresql://flori@localhost:5432/%s?sslmode=disable"`
-	HTTP_REALM    string `default:"happening"`
-	HTTP_AUTH     string
-}
-
-func basicAuthConfig(config Config) middleware.BasicAuthConfig {
+func basicAuthConfig(config happening.ServerConfig) middleware.BasicAuthConfig {
 	return middleware.BasicAuthConfig{
 		Realm: config.HTTP_REALM,
 		Skipper: func(c echo.Context) bool {
@@ -37,7 +29,7 @@ func basicAuthConfig(config Config) middleware.BasicAuthConfig {
 }
 
 func main() {
-	var config Config
+	var config happening.ServerConfig
 	err := envconfig.Process("", &config)
 	if err != nil {
 		log.Fatal(err.Error())
@@ -49,9 +41,19 @@ func main() {
 		fmt.Println("info: Configuring HTTP Auth access control")
 		e.Use(middleware.BasicAuthWithConfig(basicAuthConfig(config)))
 	}
-	api := h.API{DATABASE_NAME: config.DATABASE_NAME, POSTGRES_URL: config.POSTGRES_URL}
+	api := happening.API{
+		DATABASE_NAME: config.DATABASE_NAME,
+		POSTGRES_URL:  config.POSTGRES_URL,
+		NOTIFIER:      happening.NewNotifier(config),
+	}
 	api.PrepareDatabase()
+	api.SetupCronJobs()
 	e.POST("/api/v1/event", api.PostEventHandler)
+	e.PUT("/api/v1/event", api.PostEventHandler)
 	e.GET("/api/v1/events", api.GetEventsHandler)
+	e.POST("/api/v1/check", api.PostCheckHandler)
+	e.PUT("/api/v1/check", api.PostCheckHandler)
+	e.GET("/api/v1/checks", api.GetChecksHandler)
+	e.DELETE("/api/v1/check/:id", api.DeleteCheckHandler)
 	e.Logger.Fatal(e.Start(":" + config.PORT))
 }

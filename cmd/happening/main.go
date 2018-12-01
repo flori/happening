@@ -9,10 +9,10 @@ import (
 	"strings"
 	"time"
 
-	h "github.com/flori/happening"
+	happening "github.com/flori/happening"
 )
 
-var config h.Config
+var config happening.Config
 
 func init() {
 	flag.StringVar(&config.Name, "name", "some event", "name of the event that happened")
@@ -33,7 +33,7 @@ func init() {
 	}
 }
 
-func getSuccessCodes(config *h.Config) []int {
+func getSuccessCodes(config *happening.Config) []int {
 	var codes []int
 	for _, code := range strings.Split(config.SuccessCode, ",") {
 		c, err := strconv.ParseInt(code, 10, 32)
@@ -48,14 +48,14 @@ func getSuccessCodes(config *h.Config) []int {
 func main() {
 	cmdArgs := flag.Args()
 	successCodes := getSuccessCodes(&config)
-	event := h.Execute(config, cmdArgs, successCodes)
+	event := happening.Execute(config, cmdArgs, successCodes)
 	if event.Success && config.PingURL != "" {
-		h.Ping(&config)
+		happening.Ping(&config)
 	}
 	if config.ReportURL != "" {
-		h.SendEvent(event, &config)
+		happening.SendEvent(event, &config)
 	}
 	log.Printf("\"%s\" took %s: %v",
-		event.Name, event.Duration, string(h.EventToJSON(event)))
+		event.Name, event.Duration, string(happening.EventToJSON(event)))
 	os.Exit(event.ExitCode)
 }

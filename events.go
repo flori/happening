@@ -5,32 +5,30 @@ import (
 	"log"
 )
 
-func addToTimeline(api *API, data []byte) *Event {
+func addToEvents(api *API, data []byte) *Event {
 	var event Event
 	err := json.Unmarshal(data, &event)
 	if err != nil {
-		log.Println("error:", err)
+		log.Printf("error: %v", err)
 		return nil
 	}
 	if event.Store {
-		if err := api.DB.Insert(&event); err != nil {
-			log.Println("error:", err)
+		if err := api.DB.Create(&event).Error; err != nil {
+			log.Printf("error: %v", err)
 			return nil
 		}
 	}
 	return &event
 }
 
-func fetchRangeFromTimeline(api *API, q string, filters map[string]string, start int, offset int, limit int) ([]Event, int, error) {
+func fetchRangeFromEvents(api *API, p parameters) ([]Event, int, error) {
 	var events []Event
-	var err error
 
 	var total int
-	_, err = api.DB.Query(&total, `SELECT COUNT(*) FROM events`)
-	if err != nil {
+	if err := api.DB.Model(&Event{}).Count(&total).Error; err != nil {
+		log.Println(err)
 		return events, 0, err
 	}
-
 	sql :=
 		`SELECT * FROM events WHERE
 			(? = 0 OR started > TO_TIMESTAMP(?)) AND
@@ -45,22 +43,21 @@ func fetchRangeFromTimeline(api *API, q string, filters map[string]string, start
 		ORDER BY started DESC
 		OFFSET ?
 		LIMIT ?`
-	_, err = api.DB.Query(
-		&events,
+	api.DB.Raw(
 		sql,
-		start, start,
-		q, "%"+q+"%", "%"+q+"%", "%"+q+"%", "%"+q+"%",
-		filters["id"], "%"+filters["id"]+"%",
-		filters["name"], "%"+filters["name"]+"%",
-		filters["output"], "%"+filters["output"]+"%",
-		filters["hostname"], "%"+filters["hostname"]+"%",
-		filters["command"], "%"+filters["command"]+"%",
-		filters["ec"], filters["ec"],
-		filters["success"], filters["success"],
-		offset,
-		limit,
-	)
-	if err != nil {
+		p.Start, p.Start,
+		p.Query, "%"+p.Query+"%", "%"+p.Query+"%", "%"+p.Query+"%", "%"+p.Query+"%",
+		p.Filters["id"], "%"+p.Filters["id"]+"%",
+		p.Filters["name"], "%"+p.Filters["name"]+"%",
+		p.Filters["output"], "%"+p.Filters["output"]+"%",
+		p.Filters["hostname"], "%"+p.Filters["hostname"]+"%",
+		p.Filters["command"], "%"+p.Filters["command"]+"%",
+		p.Filters["ec"], p.Filters["ec"],
+		p.Filters["success"], p.Filters["success"],
+		p.Offset,
+		p.Limit,
+	).Scan(&events)
+	if err := api.DB.Error; err != nil {
 		log.Println(err)
 		return events, 0, err
 	}

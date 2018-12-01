@@ -4,138 +4,147 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"net/url"
-	"strconv"
+	"net/http"
 
-	"github.com/go-pg/pg"
-	"github.com/go-pg/pg/orm"
+	"github.com/jasonlvhit/gocron"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/labstack/echo"
 )
+
+const DEBUG = false
 
 const MaxInt = int(^uint(0) >> 1)
 
 type API struct {
 	POSTGRES_URL  string
 	DATABASE_NAME string
-	DB            *pg.DB
+	DB            *gorm.DB
+	NOTIFIER      Notifier
+	SERVER_CONFIG ServerConfig
 }
 
-type response struct {
+func (api *API) PrepareDatabase() {
+	postgresURL := fmt.Sprintf(api.POSTGRES_URL, "postgres")
+	log.Printf("Opening connection to database server %s…", postgresURL)
+	db, err := gorm.Open("postgres", postgresURL)
+	if err != nil {
+		log.Panic(err)
+	}
+	defer db.Close()
+
+	if DEBUG {
+		if err := db.Exec(fmt.Sprintf(`DROP DATABASE %s`, api.DATABASE_NAME)).Error; err != nil {
+			log.Println(err)
+		}
+	}
+
+	dbExists := false
+	row := db.Table("pg_database").
+		Where("datname = ?", api.DATABASE_NAME).
+		Select("true").
+		Row()
+	row.Scan(&dbExists)
+
+	if dbExists {
+		log.Printf("Connecting to existent database %s.", api.DATABASE_NAME)
+	} else {
+		log.Printf("Creating nonexistent database %s.", api.DATABASE_NAME)
+		if err := db.Exec(fmt.Sprintf(`CREATE DATABASE %s`, api.DATABASE_NAME)).Error; err != nil {
+			log.Panic(err)
+		}
+	}
+	db.Close()
+
+	if db, err = gorm.Open("postgres", fmt.Sprintf(api.POSTGRES_URL, api.DATABASE_NAME)); err != nil {
+		log.Panic(err)
+	}
+	if err := db.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public`).Error; err != nil {
+		log.Panic(err)
+	}
+	db.AutoMigrate(&Event{}, &Check{})
+	api.DB = db
+}
+
+func (api *API) SetupCronJobs() {
+	gocron.Every(5).Seconds().Do(taskUpdateHealthStatus, api)
+	gocron.Start()
+}
+
+type eventsResponse struct {
 	Success bool    `json:"success"`
 	Count   int     `json:"count"`
 	Total   int     `json:"total"`
 	Data    []Event `json:"data,omitempty"`
 }
 
-func (api *API) PrepareDatabase() {
-	postgresUrl := fmt.Sprintf(api.POSTGRES_URL, "postgres")
-	dbOptions, err := pg.ParseURL(postgresUrl)
-	if err != nil {
-		log.Panic(err)
-	}
-	db := pg.Connect(dbOptions)
-	defer db.Close()
-	dbExists := false
-	sqlDatabaseExists := fmt.Sprintf(
-		`SELECT true FROM pg_database WHERE datname = '%s'`,
-		api.DATABASE_NAME,
-	)
-	_, err = db.Query(&dbExists, sqlDatabaseExists)
-	if err != nil {
-		log.Panic(err)
-	}
-	if dbExists {
-		db.Close()
-		dbOptions.Database = api.DATABASE_NAME
-		api.DB = pg.Connect(dbOptions)
-	} else {
-		sqlCreateDatabase := fmt.Sprintf(
-			`CREATE DATABASE %s`,
-			api.DATABASE_NAME,
-		)
-		_, err = db.Exec(sqlCreateDatabase)
-		if err != nil {
-			log.Panic(err)
-		}
-		db.Close()
-		dbOptions.Database = api.DATABASE_NAME
-		db = pg.Connect(dbOptions)
-		for _, model := range []interface{}{&Event{}} {
-			err := db.CreateTable(model, &orm.CreateTableOptions{})
-			if err != nil {
-				log.Panic(err)
-			}
-		}
-		_, err = db.Exec(`CREATE INDEX started_idx ON events (started DESC)`)
-		if err != nil {
-			log.Panic(err)
-		}
-		api.DB = db
-	}
-}
-
 // PostEventHandler handles the posting of new events
 func (api *API) PostEventHandler(c echo.Context) error {
 	data, err := ioutil.ReadAll(c.Request().Body)
 	if err != nil {
-		log.Println("error:", err)
+		log.Printf("error: %v", err)
 	} else {
-		if event := addToTimeline(api, data); event != nil {
+		if event := addToEvents(api, data); event != nil {
 			log.Printf("info: Received event \"%s\", started %v, lasted %v\n",
 				event.Name, event.Started, event.Duration)
-			return c.JSON(200, response{Success: true})
+			updateCheck(api, event)
+			return c.JSON(http.StatusOK, eventsResponse{Success: true})
 		}
 	}
-	return c.JSON(500, response{Success: false})
-}
-
-func parseFilters(url *url.URL) map[string]string {
-	filters := make(map[string]string)
-	for param, values := range url.Query() {
-		if len(param) > 2 && param[0:2] == "f:" {
-			filters[param[2:]] = values[len(values)-1]
-		}
-	}
-	return filters
-}
-
-func parseParameters(url *url.URL) (string, map[string]string, int, int, int) {
-	query := url.Query().Get("q")
-	filters := parseFilters(url)
-	var start int
-	var offset int
-	var limit int
-	var err error
-	if o := url.Query().Get("o"); o == "" {
-		offset = 0
-	} else {
-		if offset, err = strconv.Atoi(o); err != nil {
-			offset = 0
-		}
-	}
-	if l := url.Query().Get("l"); l == "" {
-		limit = 50
-	} else {
-		if l == "*" {
-			limit = MaxInt
-		} else if limit, err = strconv.Atoi(l); err != nil {
-			limit = 50
-		}
-	}
-	if s := url.Query().Get("s"); s != "" {
-		if start, err = strconv.Atoi(s); err != nil {
-			start = 0
-		}
-	}
-	return query, filters, start, offset, limit
+	return c.JSON(http.StatusInternalServerError, eventsResponse{Success: false})
 }
 
 // GetEventsHandler handles listing of events
 func (api *API) GetEventsHandler(c echo.Context) error {
-	query, filters, start, offset, limit := parseParameters(c.Request().URL)
-	events, total, err := fetchRangeFromTimeline(api, query, filters, start, offset, limit)
+	p := parseParameters(c)
+	events, total, err := fetchRangeFromEvents(api, p)
 	if err == nil {
-		return c.JSON(200, response{Success: true, Data: events, Count: len(events), Total: total})
+		return c.JSON(http.StatusOK, eventsResponse{Success: true, Data: events, Count: len(events), Total: total})
 	}
-	return c.JSON(500, response{Success: false})
+	return c.JSON(http.StatusInternalServerError, eventsResponse{Success: false})
+}
+
+type checksResponse struct {
+	Success bool    `json:"success"`
+	Id      string  `json:"id,omitempty"`
+	Message string  `json:"message,omitempty"`
+	Count   *int    `json:"count,omitempty"`
+	Total   *int    `json:"total,omitempty"`
+	Data    []Check `json:"data,omitempty"`
+}
+
+// GetChecksHandler handles listing of checks
+func (api *API) GetChecksHandler(c echo.Context) error {
+	p := parseParameters(c)
+	checks, total, err := fetchRangeFromChecks(api, p)
+	if err == nil {
+		lenChecks := len(checks)
+		return c.JSON(http.StatusOK, checksResponse{Success: true, Data: checks, Count: &lenChecks, Total: &total})
+	}
+	return c.JSON(http.StatusInternalServerError, checksResponse{Success: false})
+}
+
+func (api *API) DeleteCheckHandler(c echo.Context) error {
+	result, err := deleteCheck(api, c.Param("id"))
+	switch result {
+	case "ok":
+		return c.JSON(http.StatusOK, checksResponse{Success: true})
+	case "not_found":
+		return c.JSON(http.StatusNotFound, checksResponse{Success: false, Message: err.Error()})
+	default:
+		return c.JSON(http.StatusInternalServerError, checksResponse{Success: false, Message: err.Error()})
+	}
+}
+
+func (api *API) PostCheckHandler(c echo.Context) error {
+	data, err := ioutil.ReadAll(c.Request().Body)
+	if err != nil {
+		log.Printf("error: %v", err)
+	} else {
+		if check := addToChecks(api, data); check != nil {
+			log.Printf("info: Received new check \"%s\"", check.Name)
+			return c.JSON(http.StatusOK, checksResponse{Success: true, Id: check.Id})
+		}
+	}
+	return c.JSON(http.StatusInternalServerError, checksResponse{Success: false})
 }
