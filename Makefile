@@ -29,6 +29,7 @@ fetch: fake-package
 	go get -u github.com/labstack/echo
 	go get -u github.com/kelseyhightower/envconfig
 	go get -u github.com/go-pg/pg
+	go get -u github.com/stretchr/testify
 
 fake-package:
 	rm -rf $(GOPATH)/src/github.com/flori/happening
