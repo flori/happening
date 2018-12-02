@@ -36,7 +36,11 @@ func (api *API) PrepareDatabase() {
 	db := pg.Connect(dbOptions)
 	defer db.Close()
 	dbExists := false
-	_, err = db.Query(&dbExists, `SELECT true FROM pg_database WHERE datname = 'happening'`)
+	sqlDatabaseExists := fmt.Sprintf(
+		`SELECT true FROM pg_database WHERE datname = '%s'`,
+		api.DATABASE_NAME,
+	)
+	_, err = db.Query(&dbExists, sqlDatabaseExists)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -45,12 +49,16 @@ func (api *API) PrepareDatabase() {
 		dbOptions.Database = api.DATABASE_NAME
 		api.DB = pg.Connect(dbOptions)
 	} else {
-		_, err = db.Exec(`CREATE DATABASE happening`)
+		sqlCreateDatabase := fmt.Sprintf(
+			`CREATE DATABASE %s`,
+			api.DATABASE_NAME,
+		)
+		_, err = db.Exec(sqlCreateDatabase)
 		if err != nil {
 			log.Panic(err)
 		}
 		db.Close()
-		dbOptions.Database = "happening"
+		dbOptions.Database = api.DATABASE_NAME
 		db = pg.Connect(dbOptions)
 		for _, model := range []interface{}{&Event{}} {
 			err := db.CreateTable(model, &orm.CreateTableOptions{})

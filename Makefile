@@ -2,8 +2,8 @@ DOCKER_IMAGE_LATEST = happening
 DOCKER_IMAGE = $(DOCKER_IMAGE_LATEST):$(REVISION_SHORT)
 DOCKER_PORT=8080
 PROJECT_ID = betterplace-183212
-DATABASE_NAME ?= "happening"
-POSTGRES_URL ?= "postgresql://flori@dbms:5432/%s?sslmode=disable"
+DATABASE_NAME ?= happening
+POSTGRES_URL ?= postgresql://flori@dbms:5432/%s?sslmode=disable
 REMOTE_LATEST_TAG := eu.gcr.io/${PROJECT_ID}/$(DOCKER_IMAGE_LATEST)
 REMOTE_TAG = eu.gcr.io/$(PROJECT_ID)/$(DOCKER_IMAGE)
 REVISION := $(shell git rev-parse HEAD)

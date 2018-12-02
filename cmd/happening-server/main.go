@@ -16,12 +16,13 @@ type Config struct {
 	PORT          string `default:"8080"`
 	DATABASE_NAME string `default:"happening"`
 	POSTGRES_URL  string `default:"postgresql://flori@localhost:5432/%s?sslmode=disable"`
+	HTTP_REALM    string `default:"happening"`
 	HTTP_AUTH     string
 }
 
 func basicAuthConfig(config Config) middleware.BasicAuthConfig {
 	return middleware.BasicAuthConfig{
-		Realm: "happening",
+		Realm: config.HTTP_REALM,
 		Skipper: func(c echo.Context) bool {
 			return c.Request().Method != "GET"
 		},
