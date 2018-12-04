@@ -53,13 +53,17 @@ clobber: clean
 tags: clean
 	@gotags -tag-relative=false -silent=true -R=true -f $@ . $(GOPATH)
 
+.PHONY: build-info
+build-info:
+	@echo $(DOCKER_IMAGE)
+
 build:
 	time docker build -t $(DOCKER_IMAGE) .
-	@echo DOCKER_IMAGE="$(DOCKER_IMAGE)"
+	$(MAKE) build-info
 
 build-force:
 	time docker build -t $(DOCKER_IMAGE) --no-cache .
-	@echo DOCKER_IMAGE="$(DOCKER_IMAGE)"
+	$(MAKE) build-info
 
 debug:
 	docker run --rm -it $(DOCKER_IMAGE) bash
