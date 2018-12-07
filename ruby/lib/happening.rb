@@ -18,8 +18,13 @@ module Happening
 	# ExitCode int           `json:"exitCode"`
 	# Hostname string        `json:"hostname"`
 	# Pid      int           `json:"pid"`
+	# Store    bool          `json:"store" gorm:"-"`
+  Event = Struct.new(
+    'Event',
+    :id, :name, :command, :output, :started, :duration, :success, :exit_code,
+    :hostname, :pid, :store
+  ) do
 
-  Event = Struct.new('Event', :id, :name, :command, :output, :started, :duration, :success, :exit_code, :hostname, :pid) do
     def initialize(opts = {})
       opts[:id]        ||= SecureRandom.uuid
       opts[:name]      ||= 'some event'
@@ -37,6 +42,7 @@ module Happening
       opts[:exit_code] ||= 0
       opts[:hostname]  ||= (Socket.gethostname rescue nil)
       opts[:pid]       ||= $$
+      opts[:store]       = opts.key?(:store) ? opts[:store] : true
       super(*opts.values_at(*members))
     end
 
@@ -100,20 +106,28 @@ module Happening
     end
   end
 
-  def self.execute(url:, command:, **opts)
+  def self.send_event(url:, **opts)
     c = Happening::Client.new(url: url)
     e = Happening::Event.new(**opts)
-    e.command   = command
-    e.output    = IO.popen(Shellwords.join(command), &:read)
-    e.duration  = Time.now - e.started.to_time
-    if $?
-      e.pid       = $?.pid
-      e.success   = $?.success?
-      e.exit_code = $?.exitstatus
-    else
-      e.success = false
+    if block_given?
+      yield e
     end
   ensure
     c << e
+  end
+
+  def self.execute(url:, command:, **opts)
+    send_event(url: url, **opts) do |e|
+      e.command   = command
+      e.output    = IO.popen(Shellwords.join(command), &:read)
+      e.duration  = Time.now - e.started.to_time
+      if $?
+        e.pid       = $?.pid
+        e.success   = $?.success?
+        e.exit_code = $?.exitstatus
+      else
+        e.success = false
+      end
+    end
   end
 end
