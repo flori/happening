@@ -9,31 +9,33 @@ import (
 )
 
 type MailCommandNotifier struct {
-	ENVIRONMENT_VARIABLE string
-	MAIL_COMMAND         string
-	CONTACT_NAME         string
-	CONTACT_EMAIL        string
+	EnvironmentVariable string
+	DrilldownURL        string
+	MailCommand         string
+	ContactName         string
+	ContactEmail        string
 }
 
 func NewMailCommandNotifier(config ServerConfig) Notifier {
 	return &MailCommandNotifier{
-		ENVIRONMENT_VARIABLE: config.NOTIFIER_ENVIRONMENT_VARIABLE,
-		MAIL_COMMAND:         config.NOTIFIER_MAIL_COMMAND,
-		CONTACT_NAME:         config.NOTIFIER_CONTACT_NAME,
-		CONTACT_EMAIL:        config.NOTIFIER_CONTACT_EMAIL,
+		EnvironmentVariable: config.NOTIFIER_ENVIRONMENT_VARIABLE,
+		DrilldownURL:        config.NOTIFIER_DRILLDOWN_URL,
+		MailCommand:         config.NOTIFIER_MAIL_COMMAND,
+		ContactName:         config.NOTIFIER_CONTACT_NAME,
+		ContactEmail:        config.NOTIFIER_CONTACT_EMAIL,
 	}
 }
 
-func (notifier *MailCommandNotifier) sendMail(text string) {
-	to := fmt.Sprintf("%s <%s>", notifier.CONTACT_NAME, notifier.CONTACT_EMAIL)
-	path, err := exec.LookPath(notifier.MAIL_COMMAND)
+func (notifier *MailCommandNotifier) sendMail(notifierMail NotifierMail) {
+	to := fmt.Sprintf("%s <%s>", notifier.ContactName, notifier.ContactEmail)
+	path, err := exec.LookPath(notifier.MailCommand)
 	if err != nil {
 		log.Printf("error: %v", err)
 	}
 	cmd := exec.Command(
 		path,
 		"-s",
-		mailSubject(notifier.ENVIRONMENT_VARIABLE),
+		notifierMail.Subject(),
 		to,
 	)
 	cmd.Env = append(os.Environ(), fmt.Sprintf(`REPLYTO="%s"`, to))
@@ -43,7 +45,7 @@ func (notifier *MailCommandNotifier) sendMail(text string) {
 	}
 	go func() {
 		defer stdin.Close()
-		io.WriteString(stdin, text)
+		io.WriteString(stdin, notifierMail.Text())
 	}()
 	if err = cmd.Run(); err != nil {
 		log.Panic(err)
@@ -51,5 +53,11 @@ func (notifier *MailCommandNotifier) sendMail(text string) {
 }
 
 func (notifier *MailCommandNotifier) Alert(check Check) {
-	go notifier.sendMail(check.String())
+	go notifier.sendMail(
+		NotifierMail{
+			Check:               check,
+			EnvironmentVariable: notifier.EnvironmentVariable,
+			DrilldownURL:        notifier.DrilldownURL,
+		},
+	)
 }

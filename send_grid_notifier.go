@@ -8,48 +8,56 @@ import (
 )
 
 type SendGridNotifier struct {
-	ENVIRONMENT_VARIABLE string
-	SENDGRID_API_KEY     string
-	NO_REPLY_NAME        string
-	NO_REPLY_EMAIL       string
-	CONTACT_NAME         string
-	CONTACT_EMAIL        string
+	EnvironmentVariable string
+	DrilldownURL        string
+	SendgridApiKey      string
+	NoReplyName         string
+	NoReplyEmail        string
+	ContactName         string
+	ContactEmail        string
 }
 
 func NewSendgridNotifier(config ServerConfig) Notifier {
 	return &SendGridNotifier{
-		ENVIRONMENT_VARIABLE: config.NOTIFIER_ENVIRONMENT_VARIABLE,
-		SENDGRID_API_KEY:     config.NOTIFIER_SENDGRID_API_KEY,
-		NO_REPLY_NAME:        config.NOTIFIER_NO_REPLY_NAME,
-		NO_REPLY_EMAIL:       config.NOTIFIER_NO_REPLY_EMAIL,
-		CONTACT_NAME:         config.NOTIFIER_CONTACT_NAME,
-		CONTACT_EMAIL:        config.NOTIFIER_CONTACT_EMAIL,
+		EnvironmentVariable: config.NOTIFIER_ENVIRONMENT_VARIABLE,
+		DrilldownURL:        config.NOTIFIER_DRILLDOWN_URL,
+		SendgridApiKey:      config.NOTIFIER_SENDGRID_API_KEY,
+		NoReplyName:         config.NOTIFIER_NO_REPLY_NAME,
+		NoReplyEmail:        config.NOTIFIER_NO_REPLY_EMAIL,
+		ContactName:         config.NOTIFIER_CONTACT_NAME,
+		ContactEmail:        config.NOTIFIER_CONTACT_EMAIL,
 	}
 }
 
-func (notifier *SendGridNotifier) buildMail(text string) []byte {
-	from := mail.NewEmail(notifier.NO_REPLY_NAME, notifier.NO_REPLY_EMAIL)
-	to := mail.NewEmail(notifier.CONTACT_NAME, notifier.CONTACT_EMAIL)
-	replyTo := mail.NewEmail(notifier.CONTACT_NAME, notifier.CONTACT_EMAIL)
-	subject := mailSubject(notifier.ENVIRONMENT_VARIABLE)
-	content := mail.NewContent("text/plain", text)
+func (notifier *SendGridNotifier) buildSendgridMail(notifierMail NotifierMail) []byte {
+	from := mail.NewEmail(notifier.NoReplyName, notifier.NoReplyEmail)
+	to := mail.NewEmail(notifier.ContactName, notifier.ContactEmail)
+	replyTo := mail.NewEmail(notifier.ContactName, notifier.ContactEmail)
+	subject := notifierMail.Subject()
+	content := mail.NewContent("text/plain", notifierMail.Text())
 	m := mail.NewV3MailInit(from, subject, to, content)
 	m.SetReplyTo(replyTo)
 	return mail.GetRequestBody(m)
 }
 
-func (notifier *SendGridNotifier) sendMail(text string) {
-	if notifier.SENDGRID_API_KEY == "" {
+func (notifier *SendGridNotifier) sendMail(notifierMail NotifierMail) {
+	if notifier.SendgridApiKey == "" {
 		log.Panicln("Sendgrid API key required in environment configuration")
 	}
-	request := sendgrid.GetRequest(notifier.SENDGRID_API_KEY, "/v3/mail/send", "https://api.sendgrid.com")
+	request := sendgrid.GetRequest(notifier.SendgridApiKey, "/v3/mail/send", "https://api.sendgrid.com")
 	request.Method = "POST"
-	request.Body = notifier.buildMail(text)
+	request.Body = notifier.buildSendgridMail(notifierMail)
 	if _, err := sendgrid.API(request); err != nil {
 		log.Panic(err)
 	}
 }
 
 func (notifier *SendGridNotifier) Alert(check Check) {
-	go notifier.sendMail(check.String())
+	go notifier.sendMail(
+		NotifierMail{
+			Check:               check,
+			EnvironmentVariable: notifier.EnvironmentVariable,
+			DrilldownURL:        notifier.DrilldownURL,
+		},
+	)
 }

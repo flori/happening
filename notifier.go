@@ -1,9 +1,7 @@
 package happening
 
 import (
-	"fmt"
 	"log"
-	"os"
 	"strings"
 )
 
@@ -22,27 +20,4 @@ func NewNotifier(config ServerConfig) Notifier {
 		log.Panicf("unknown notifier of kind %s", config.NOTIFIER_KIND)
 	}
 	return nil
-}
-
-func mailSubject(environmentVariable string) string {
-	return fmt.Sprintf(
-		"Happening on %s has unhealthy checks",
-		env12Factor(environmentVariable),
-	)
-}
-
-func env12Factor(environmentVariable string) string {
-	railsEnv, ok := os.LookupEnv(environmentVariable)
-	if !ok {
-		railsEnv = "development"
-	}
-	staging, ok := os.LookupEnv("STAGING")
-	if !ok {
-		staging = "0"
-	}
-	if railsEnv == "production" && staging == "1" {
-		return "staging"
-	} else {
-		return railsEnv
-	}
 }

@@ -24,7 +24,10 @@ func SendEvent(event *Event, config *Config) {
 	jb := EventToJSON(event)
 	for i := uint(0); i < config.Retries; i++ {
 		log.Printf("Sending event \"%s\" to %s…", event.Name, url)
-		req := newHttpClientRequest(http.MethodPut, url, bytes.NewBuffer(jb))
+		req, err := newHttpClientRequest(http.MethodPut, url, bytes.NewBuffer(jb))
+		if err != nil {
+			break
+		}
 		req.Header.Set("Content-Type", "application/json")
 		resp, err := http.DefaultClient.Do(req)
 		if err != nil {

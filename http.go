@@ -2,19 +2,17 @@ package happening
 
 import (
 	"bytes"
-	"log"
 	"net/http"
 )
 
-func newHttpClientRequest(method, url string, buffer *bytes.Buffer) *http.Request {
+func newHttpClientRequest(method, url string, buffer *bytes.Buffer) (*http.Request, error) {
 	if buffer == nil {
 		buffer = &bytes.Buffer{}
 	}
 	req, err := http.NewRequest(method, url, buffer)
 	if err != nil {
-		log.Printf("failed, %v.\n", err)
-		return nil
+		return nil, err
 	}
 	req.Header.Set("User-Agent", "happening")
-	return req
+	return req, err
 }

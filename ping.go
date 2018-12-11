@@ -13,7 +13,10 @@ func Ping(config *Config) {
 	var err error
 	for i := uint(0); i < config.Retries; i++ {
 		log.Printf("Pinging %s…", url)
-		req := newHttpClientRequest(http.MethodGet, url, nil)
+		req, err := newHttpClientRequest(http.MethodGet, url, nil)
+		if err != nil {
+			break
+		}
 		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
 			time.Sleep(config.RetryDelay)

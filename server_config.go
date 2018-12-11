@@ -8,6 +8,7 @@ type ServerConfig struct {
 	HTTP_AUTH                     string
 	NOTIFIER_KIND                 string `default:"MailCommand"`
 	NOTIFIER_ENVIRONMENT_VARIABLE string `default:"RAILS_ENV"`
+	NOTIFIER_DRILLDOWN_URL        string `default:"http://localhost:3000"`
 	NOTIFIER_NO_REPLY_NAME        string `default:"Happening"`
 	NOTIFIER_NO_REPLY_EMAIL       string `default:"no-reply@localhost"`
 	NOTIFIER_CONTACT_NAME         string `default:"Root"`
