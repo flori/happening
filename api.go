@@ -82,7 +82,7 @@ type eventsResponse struct {
 func (api *API) PostEventHandler(c echo.Context) error {
 	data, err := ioutil.ReadAll(c.Request().Body)
 	if err != nil {
-		log.Printf("error: %v", err)
+		return err
 	} else {
 		if event := addToEvents(api, data); event != nil {
 			log.Printf("info: Received event \"%s\", started %v, lasted %v\n",
@@ -120,8 +120,9 @@ func (api *API) GetChecksHandler(c echo.Context) error {
 	if err == nil {
 		lenChecks := len(checks)
 		return c.JSON(http.StatusOK, checksResponse{Success: true, Data: checks, Count: &lenChecks, Total: &total})
+	} else {
+		return err
 	}
-	return c.JSON(http.StatusInternalServerError, checksResponse{Success: false})
 }
 
 func (api *API) DeleteCheckHandler(c echo.Context) error {
@@ -132,19 +133,22 @@ func (api *API) DeleteCheckHandler(c echo.Context) error {
 	case "not_found":
 		return c.JSON(http.StatusNotFound, checksResponse{Success: false, Message: err.Error()})
 	default:
-		return c.JSON(http.StatusInternalServerError, checksResponse{Success: false, Message: err.Error()})
+		return err
 	}
 }
 
 func (api *API) PostCheckHandler(c echo.Context) error {
 	data, err := ioutil.ReadAll(c.Request().Body)
 	if err != nil {
-		log.Printf("error: %v", err)
+		return err
 	} else {
-		if check := addToChecks(api, data); check != nil {
+		check, err := addToChecks(api, data)
+		if err != nil {
 			log.Printf("info: Received new check \"%s\"", check.Name)
 			return c.JSON(http.StatusOK, checksResponse{Success: true, Id: check.Id})
+		} else {
+			log.Printf("foo %v", err)
+			return err
 		}
 	}
-	return c.JSON(http.StatusInternalServerError, checksResponse{Success: false})
 }

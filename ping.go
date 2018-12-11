@@ -31,7 +31,12 @@ func Ping(config *Config) {
 	}
 	if err == nil {
 		err = errors.New(
-			fmt.Sprintf("giving up pinging %s after %d unsuccessful retries", url, config.Retries))
+			fmt.Sprintf(
+				"giving up pinging %s after %d unsuccessful retries",
+				url,
+				config.Retries,
+			),
+		)
 	}
 	log.Printf("failed, %v.\n", err)
 }

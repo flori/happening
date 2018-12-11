@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"strings"
 
 	"github.com/kelseyhightower/envconfig"
@@ -28,6 +29,23 @@ func basicAuthConfig(config happening.ServerConfig) middleware.BasicAuthConfig {
 	}
 }
 
+type errorsResponse struct {
+	Success bool   `json:"success"`
+	Message string `json:"message,omitempty"`
+}
+
+func errorHandler(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		if err := next(c); err != nil {
+			return c.JSON(http.StatusInternalServerError,
+				errorsResponse{Success: false, Message: err.Error()},
+			)
+		} else {
+			return err
+		}
+	}
+}
+
 func main() {
 	var config happening.ServerConfig
 	err := envconfig.Process("", &config)
@@ -37,6 +55,7 @@ func main() {
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Use(middleware.CORS())
+	e.Use(errorHandler)
 	if config.HTTP_AUTH != "" {
 		fmt.Println("info: Configuring HTTP Auth access control")
 		e.Use(middleware.BasicAuthWithConfig(basicAuthConfig(config)))

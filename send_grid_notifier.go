@@ -44,7 +44,11 @@ func (notifier *SendGridNotifier) sendMail(notifierMail NotifierMail) {
 	if notifier.SendgridApiKey == "" {
 		log.Panicln("Sendgrid API key required in environment configuration")
 	}
-	request := sendgrid.GetRequest(notifier.SendgridApiKey, "/v3/mail/send", "https://api.sendgrid.com")
+	request := sendgrid.GetRequest(
+		notifier.SendgridApiKey,
+		"/v3/mail/send",
+		"https://api.sendgrid.com",
+	)
 	request.Method = "POST"
 	request.Body = notifier.buildSendgridMail(notifierMail)
 	if _, err := sendgrid.API(request); err != nil {

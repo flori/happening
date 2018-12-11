@@ -6,19 +6,16 @@ import (
 	"time"
 )
 
-func addToChecks(api *API, data []byte) *Check {
+func addToChecks(api *API, data []byte) (*Check, error) {
 	var check Check
-	log.Println(string(data))
 	err := json.Unmarshal(data, &check)
 	if err != nil {
-		log.Printf("error: %v", err)
-		return nil
+		return &check, err
 	}
 	if err := api.DB.Create(&check).Error; err != nil {
-		log.Printf("error: %v", err)
-		return nil
+		return &check, err
 	}
-	return &check
+	return &check, nil
 }
 
 func computeHealthStatus(api *API, checks *[]Check) {
@@ -38,7 +35,7 @@ func computeHealthStatus(api *API, checks *[]Check) {
 func taskUpdateHealthStatus(api *API) {
 	var checks []Check
 	if err := api.DB.Find(&checks).Error; err != nil {
-		log.Printf("foo error: %v", err)
+		log.Printf("error: %v", err)
 		return
 	}
 	log.Printf("Updating health status of %d checks", len(checks))

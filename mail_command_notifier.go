@@ -32,12 +32,7 @@ func (notifier *MailCommandNotifier) sendMail(notifierMail NotifierMail) {
 	if err != nil {
 		log.Printf("error: %v", err)
 	}
-	cmd := exec.Command(
-		path,
-		"-s",
-		notifierMail.Subject(),
-		to,
-	)
+	cmd := exec.Command(path, "-s", notifierMail.Subject(), to)
 	cmd.Env = append(os.Environ(), fmt.Sprintf(`REPLYTO="%s"`, to))
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
