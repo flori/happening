@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/go-playground/validator"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
@@ -37,13 +38,29 @@ type errorsResponse struct {
 func errorHandler(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		if err := next(c); err != nil {
-			return c.JSON(http.StatusInternalServerError,
-				errorsResponse{Success: false, Message: err.Error()},
-			)
+			if httpErr, ok := err.(*echo.HTTPError); ok {
+				return c.JSON(
+					httpErr.Code,
+					errorsResponse{Success: false, Message: err.Error()},
+				)
+			} else {
+				return c.JSON(
+					http.StatusInternalServerError,
+					errorsResponse{Success: false, Message: err.Error()},
+				)
+			}
 		} else {
 			return err
 		}
 	}
+}
+
+type CustomValidator struct {
+	validator *validator.Validate
+}
+
+func (cv *CustomValidator) Validate(i interface{}) error {
+	return cv.validator.Struct(i)
 }
 
 func main() {
@@ -53,6 +70,7 @@ func main() {
 		log.Fatal(err.Error())
 	}
 	e := echo.New()
+	e.Validator = &CustomValidator{validator: validator.New()}
 	e.Use(middleware.Logger())
 	e.Use(middleware.CORS())
 	e.Use(errorHandler)

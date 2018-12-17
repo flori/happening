@@ -1,24 +1,11 @@
 package happening
 
 import (
-	"encoding/json"
 	"log"
 )
 
-func addToEvents(api *API, data []byte) *Event {
-	var event Event
-	err := json.Unmarshal(data, &event)
-	if err != nil {
-		log.Printf("error: %v", err)
-		return nil
-	}
-	if event.Store {
-		if err := api.DB.Create(&event).Error; err != nil {
-			log.Printf("error: %v", err)
-			return nil
-		}
-	}
-	return &event
+func addToEvents(api *API, event *Event) error {
+	return api.DB.Create(event).Error
 }
 
 func fetchRangeFromEvents(api *API, p parameters) ([]Event, int, error) {

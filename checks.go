@@ -1,21 +1,12 @@
 package happening
 
 import (
-	"encoding/json"
 	"log"
 	"time"
 )
 
-func addToChecks(api *API, data []byte) (*Check, error) {
-	var check Check
-	err := json.Unmarshal(data, &check)
-	if err != nil {
-		return &check, err
-	}
-	if err := api.DB.Create(&check).Error; err != nil {
-		return &check, err
-	}
-	return &check, nil
+func addToChecks(api *API, check *Check) error {
+	return api.DB.Create(check).Error
 }
 
 func computeHealthStatus(api *API, checks *[]Check) {

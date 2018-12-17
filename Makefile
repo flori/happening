@@ -35,6 +35,7 @@ fetch: fake-package
 	go get -u github.com/stretchr/testify
 	go get -u github.com/jasonlvhit/gocron
 	go get -u github.com/sendgrid/sendgrid-go
+	go get -u github.com/go-playground/validator
 
 fake-package:
 	rm -rf $(GOPATH)/src/github.com/flori/happening

@@ -2,7 +2,6 @@ package happening
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -80,18 +79,24 @@ type eventsResponse struct {
 
 // PostEventHandler handles the posting of new events
 func (api *API) PostEventHandler(c echo.Context) error {
-	data, err := ioutil.ReadAll(c.Request().Body)
-	if err != nil {
+	event := new(Event)
+	if err := c.Bind(event); err != nil {
 		return err
-	} else {
-		if event := addToEvents(api, data); event != nil {
-			log.Printf("info: Received event \"%s\", started %v, lasted %v\n",
-				event.Name, event.Started, event.Duration)
-			updateCheck(api, event)
-			return c.JSON(http.StatusOK, eventsResponse{Success: true})
-		}
 	}
-	return c.JSON(http.StatusInternalServerError, eventsResponse{Success: false})
+	if err := c.Validate(event); err != nil {
+		return err
+	}
+	if err := addToEvents(api, event); err != nil {
+		return err
+	}
+	log.Printf(
+		"info: Received event \"%s\", started %v, lasted %v\n",
+		event.Name,
+		event.Started,
+		event.Duration,
+	)
+	updateCheck(api, event)
+	return c.JSON(http.StatusOK, eventsResponse{Success: true})
 }
 
 // GetEventsHandler handles listing of events
@@ -138,17 +143,17 @@ func (api *API) DeleteCheckHandler(c echo.Context) error {
 }
 
 func (api *API) PostCheckHandler(c echo.Context) error {
-	data, err := ioutil.ReadAll(c.Request().Body)
-	if err != nil {
+	check := new(Check)
+	if err := c.Bind(check); err != nil {
 		return err
+	}
+	if err := c.Validate(check); err != nil {
+		return err
+	}
+	if err := addToChecks(api, check); err != nil {
+		log.Printf("info: Received new check \"%s\"", check.Name)
+		return c.JSON(http.StatusOK, checksResponse{Success: true, Id: check.Id})
 	} else {
-		check, err := addToChecks(api, data)
-		if err != nil {
-			log.Printf("info: Received new check \"%s\"", check.Name)
-			return c.JSON(http.StatusOK, checksResponse{Success: true, Id: check.Id})
-		} else {
-			log.Printf("foo %v", err)
-			return err
-		}
+		return err
 	}
 }

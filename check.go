@@ -7,7 +7,7 @@ import (
 
 type Check struct {
 	Id         string        `json:"id,omitempty" gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
-	Name       string        `json:"name" gorm:"type:text;unique;not null"`
+	Name       string        `json:"name" validate:"required" gorm:"type:text;unique;not null"`
 	Period     time.Duration `json:"period" gorm:"type:bigint;not null;default:3600000000000"`
 	LastPingAt time.Time     `json:"last_ping_at" gorm:"type:timestamptz;index;not null;default:now()::timestamptz"`
 	Healthy    bool          `json:"healthy" gorm:"type:boolean;not_null;default:true"`
