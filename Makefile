@@ -63,11 +63,14 @@ tags: clean
 build-info:
 	@echo $(DOCKER_IMAGE)
 
-build:
+pull-base:
+	docker pull alpine:3.8
+
+build: pull-base
 	time docker build -t $(DOCKER_IMAGE) .
 	$(MAKE) build-info
 
-build-force:
+build-force: pull-base
 	time docker build -t $(DOCKER_IMAGE) --no-cache .
 	$(MAKE) build-info
 
