@@ -24,8 +24,8 @@ type API struct {
 }
 
 func (api *API) PrepareDatabase() {
+	log.Println("Opening connection to database server…")
 	postgresURL := fmt.Sprintf(api.POSTGRES_URL, "postgres")
-	log.Printf("Opening connection to database server %s…", postgresURL)
 	db, err := gorm.Open("postgres", postgresURL)
 	if err != nil {
 		log.Panic(err)
