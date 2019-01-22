@@ -9,13 +9,21 @@ type NotifierMail struct {
 	Check               Check
 	EnvironmentVariable string
 	DrilldownURL        string
+	Resolved            bool
 }
 
 func (mail NotifierMail) Subject() string {
-	return fmt.Sprintf(
-		"Happening on %s has unhealthy checks",
-		mail.env12Factor(),
-	)
+	if mail.Resolved {
+		return fmt.Sprintf(
+			"Happening on %s has healthy checks, problem was resolved",
+			mail.env12Factor(),
+		)
+	} else {
+		return fmt.Sprintf(
+			"Happening on %s has unhealthy checks",
+			mail.env12Factor(),
+		)
+	}
 }
 
 func (mail NotifierMail) env12Factor() string {

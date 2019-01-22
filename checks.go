@@ -17,8 +17,12 @@ func computeHealthStatus(api *API, checks *[]Check) {
 		healthNow := time.After(now) && check.Success
 		(*checks)[i].Healthy = healthNow
 		if healthBefore && !healthNow {
-			log.Println((*checks)[i])
+			log.Printf("Alert: %s", (*checks)[i])
 			api.NOTIFIER.Alert((*checks)[i])
+		}
+		if !healthBefore && healthNow {
+			log.Printf("Resolve: %s", (*checks)[i])
+			api.NOTIFIER.Resolve((*checks)[i])
 		}
 	}
 }

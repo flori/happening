@@ -7,6 +7,7 @@ import (
 
 type Notifier interface {
 	Alert(check Check)
+	Resolve(check Check)
 }
 
 func NewNotifier(config ServerConfig) Notifier {

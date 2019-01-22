@@ -10,3 +10,7 @@ func NewNullNotifier() Notifier {
 func (notifier *NullNotifier) Alert(check Check) {
 	return
 }
+
+func (notifier *NullNotifier) Resolve(check Check) {
+	return
+}

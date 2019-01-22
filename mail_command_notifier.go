@@ -56,3 +56,14 @@ func (notifier *MailCommandNotifier) Alert(check Check) {
 		},
 	)
 }
+
+func (notifier *MailCommandNotifier) Resolve(check Check) {
+	go notifier.sendMail(
+		NotifierMail{
+			Check:               check,
+			EnvironmentVariable: notifier.EnvironmentVariable,
+			DrilldownURL:        notifier.DrilldownURL,
+			Resolved:            true,
+		},
+	)
+}

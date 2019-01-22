@@ -65,3 +65,14 @@ func (notifier *SendGridNotifier) Alert(check Check) {
 		},
 	)
 }
+
+func (notifier *SendGridNotifier) Resolve(check Check) {
+	go notifier.sendMail(
+		NotifierMail{
+			Check:               check,
+			EnvironmentVariable: notifier.EnvironmentVariable,
+			DrilldownURL:        notifier.DrilldownURL,
+			Resolved:            true,
+		},
+	)
+}

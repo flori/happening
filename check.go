@@ -15,19 +15,20 @@ type Check struct {
 }
 
 func (check Check) String() string {
+	healtyhString := "unhealthy"
 	if check.Healthy {
-		return fmt.Sprintf(`Check "%v" (%v) is healthy, was last pinged at %v less than %v ago.`,
-			check.Name,
-			check.Id,
-			check.LastPingAt,
-			check.Period,
-		)
-	} else {
-		return fmt.Sprintf(`Check "%v" (%v) is unhealthy, was last pinged at %v longer than %v ago.`,
-			check.Name,
-			check.Id,
-			check.LastPingAt,
-			check.Period,
-		)
+		healtyhString = "healthy"
 	}
+	successString := "failure"
+	if check.Success {
+		successString = "success"
+	}
+	return fmt.Sprintf(`Check "%v" (%v) is %s, was last pinged at %v (period=%s) and was a "%s".`,
+		check.Name,
+		check.Id,
+		healtyhString,
+		check.LastPingAt,
+		check.Period,
+		successString,
+	)
 }
