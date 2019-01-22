@@ -14,7 +14,7 @@ func computeHealthStatus(api *API, checks *[]Check) {
 	for i, check := range *checks {
 		healthBefore := check.Healthy
 		time := check.LastPingAt.Add(check.Period)
-		healthNow := time.After(now)
+		healthNow := time.After(now) && check.Success
 		(*checks)[i].Healthy = healthNow
 		if healthBefore && !healthNow {
 			log.Println((*checks)[i])
@@ -65,18 +65,13 @@ func deleteCheck(api *API, id string) (string, error) {
 }
 
 func updateCheck(api *API, event *Event) {
-	if !event.Success {
-		return
-	}
 	var check Check
 	if err := api.DB.Where("name = ?", event.Name).First(&check).Error; err != nil {
 		log.Printf("error: %v", err)
 		return
 	}
 	check.LastPingAt = event.Started
-	var checks []Check
-	checks = append(checks, check)
-	computeHealthStatus(api, &checks)
+	check.Success = event.Success
 	if err := api.DB.Save(&check).Error; err != nil {
 		log.Printf("error: %v", err)
 	}
