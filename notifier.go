@@ -12,6 +12,8 @@ type Notifier interface {
 func NewNotifier(config ServerConfig) Notifier {
 	kind := strings.ToLower(config.NOTIFIER_KIND)
 	switch kind {
+	case "":
+		return NewNullNotifier()
 	case "mailcommand":
 		return NewMailCommandNotifier(config)
 	case "sendgrid":

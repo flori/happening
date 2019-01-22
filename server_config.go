@@ -6,7 +6,7 @@ type ServerConfig struct {
 	POSTGRES_URL                  string `default:"postgresql://flori@localhost:5432/%s?sslmode=disable"`
 	HTTP_REALM                    string `default:"happening"`
 	HTTP_AUTH                     string
-	NOTIFIER_KIND                 string `default:"MailCommand"`
+	NOTIFIER_KIND                 string
 	NOTIFIER_ENVIRONMENT_VARIABLE string `default:"RAILS_ENV"`
 	NOTIFIER_DRILLDOWN_URL        string `default:"http://localhost:3000"`
 	NOTIFIER_NO_REPLY_NAME        string `default:"Happening"`
