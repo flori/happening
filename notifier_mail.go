@@ -15,13 +15,15 @@ type NotifierMail struct {
 func (mail NotifierMail) Subject() string {
 	if mail.Resolved {
 		return fmt.Sprintf(
-			"Happening on %s has healthy checks, problem was resolved",
+			`Happening on %s has healthy check "%s", problem was resolved`,
 			mail.env12Factor(),
+			mail.Check.Name,
 		)
 	} else {
 		return fmt.Sprintf(
-			"Happening on %s has unhealthy checks",
+			`Happening on %s has unhealthy check "%s"`,
 			mail.env12Factor(),
+			mail.Check.Name,
 		)
 	}
 }
