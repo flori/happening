@@ -13,7 +13,7 @@ func fetchRangeFromEvents(api *API, p parameters) ([]Event, int, error) {
 
 	var total int
 	if err := api.DB.Model(&Event{}).Count(&total).Error; err != nil {
-		log.Println(err)
+		log.Panic(err)
 		return events, 0, err
 	}
 	sql :=

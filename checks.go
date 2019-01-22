@@ -3,6 +3,8 @@ package happening
 import (
 	"log"
 	"time"
+
+	"github.com/jinzhu/gorm"
 )
 
 func addToChecks(api *API, check *Check) error {
@@ -30,7 +32,7 @@ func computeHealthStatus(api *API, checks *[]Check) {
 func taskUpdateHealthStatus(api *API) {
 	var checks []Check
 	if err := api.DB.Find(&checks).Error; err != nil {
-		log.Printf("error: %v", err)
+		log.Panic(err)
 		return
 	}
 	log.Printf("Updating health status of %d checks", len(checks))
@@ -71,7 +73,9 @@ func deleteCheck(api *API, id string) (string, error) {
 func updateCheck(api *API, event *Event) {
 	var check Check
 	if err := api.DB.Where("name = ?", event.Name).First(&check).Error; err != nil {
-		log.Printf("error: %v", err)
+		if err != gorm.ErrRecordNotFound {
+			log.Printf("error: %v", err)
+		}
 		return
 	}
 	check.LastPingAt = event.Started
