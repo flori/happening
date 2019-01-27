@@ -18,7 +18,8 @@ func basicAuthConfig(config happening.ServerConfig) middleware.BasicAuthConfig {
 	return middleware.BasicAuthConfig{
 		Realm: config.HTTP_REALM,
 		Skipper: func(c echo.Context) bool {
-			return c.Request().Method != "GET"
+			m := c.Request().Method
+			return c.Path() == "/api/v1/event" && (m == "POST" || m == "PUT")
 		},
 		Validator: func(username, password string, c echo.Context) (bool, error) {
 			httpAuth := strings.Split(config.HTTP_AUTH, ":")
@@ -90,6 +91,7 @@ func main() {
 	e.GET("/api/v1/events", api.GetEventsHandler)
 	e.POST("/api/v1/check", api.PostCheckHandler)
 	e.PUT("/api/v1/check", api.PostCheckHandler)
+	e.PATCH("/api/v1/check/:id", api.PatchCheckHandler)
 	e.GET("/api/v1/checks", api.GetChecksHandler)
 	e.DELETE("/api/v1/check/:id", api.DeleteCheckHandler)
 	e.Logger.Fatal(e.Start(":" + config.PORT))

@@ -10,8 +10,9 @@ type Check struct {
 	Name       string        `json:"name" validate:"required" gorm:"type:text;unique;not null"`
 	Period     time.Duration `json:"period" gorm:"type:bigint;not null;default:3600000000000"`
 	LastPingAt time.Time     `json:"last_ping_at" gorm:"type:timestamptz;index;not null;default:now()::timestamptz"`
-	Healthy    bool          `json:"healthy" gorm:"type:boolean;not_null;default:true"`
 	Success    bool          `json:"success" gorm:"type:boolean;not_null;default:true"`
+	Healthy    bool          `json:"healthy" gorm:"type:boolean;not_null;default:true"`
+	Disabled   bool          `json:"disabled" gorm:"type:boolean;not_null;default:false"`
 }
 
 func (check Check) String() string {

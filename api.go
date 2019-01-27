@@ -95,7 +95,7 @@ func (api *API) PostEventHandler(c echo.Context) error {
 		event.Started,
 		event.Duration,
 	)
-	updateCheck(api, event)
+	updateCheckOnEvent(api, event)
 	return c.JSON(http.StatusOK, eventsResponse{Success: true})
 }
 
@@ -154,6 +154,27 @@ func (api *API) PostCheckHandler(c echo.Context) error {
 		log.Printf("info: Received new check \"%s\"", check.Name)
 		return c.JSON(http.StatusOK, checksResponse{Success: true, Id: check.Id})
 	} else {
+		return err
+	}
+}
+
+func (api *API) PatchCheckHandler(c echo.Context) error {
+	id := c.Param("id")
+	check := new(Check)
+	if err := c.Bind(check); err != nil {
+		return err
+	}
+	//if err := c.Validate(check); err != nil {
+	//	return err
+	//}
+	result, err := updateCheck(api, id, check)
+	switch result {
+	case "ok":
+		log.Printf("info: Received updated check id=\"%s\"", id)
+		return c.JSON(http.StatusOK, checksResponse{Success: true, Id: id})
+	case "not_found":
+		return c.JSON(http.StatusNotFound, checksResponse{Success: false, Message: err.Error()})
+	default:
 		return err
 	}
 }

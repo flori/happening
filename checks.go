@@ -11,6 +11,31 @@ func addToChecks(api *API, check *Check) error {
 	return api.DB.Create(check).Error
 }
 
+func updateCheck(api *API, id string, check *Check) (string, error) {
+	err := api.DB.Model(&Check{Id: id}).Update(
+		"disabled",
+		check.Disabled,
+	).Update(
+		"period",
+		check.Period,
+	).Error
+	if err != nil {
+		return "not_found", err
+	}
+	return "ok", nil
+}
+
+func deleteCheck(api *API, id string) (string, error) {
+	var check Check
+	if err := api.DB.Where("id = ?", id).First(&check).Error; err != nil {
+		return "not_found", err
+	}
+	if err := api.DB.Delete(&check).Error; err != nil {
+		return "error", err
+	}
+	return "ok", nil
+}
+
 func computeHealthStatus(api *API, checks *[]Check) {
 	now := time.Now()
 	for i, check := range *checks {
@@ -18,6 +43,9 @@ func computeHealthStatus(api *API, checks *[]Check) {
 		time := check.LastPingAt.Add(check.Period)
 		healthNow := time.After(now) && check.Success
 		(*checks)[i].Healthy = healthNow
+		if check.Disabled {
+			continue
+		}
 		if healthBefore && !healthNow {
 			log.Printf("Alert: %s", (*checks)[i])
 			api.NOTIFIER.Alert((*checks)[i])
@@ -59,18 +87,7 @@ func fetchRangeFromChecks(api *API, p parameters) ([]Check, int, error) {
 	return checks, total, nil
 }
 
-func deleteCheck(api *API, id string) (string, error) {
-	var check Check
-	if err := api.DB.Where("id = ?", id).First(&check).Error; err != nil {
-		return "not_found", err
-	}
-	if err := api.DB.Delete(&check).Error; err != nil {
-		return "error", err
-	}
-	return "ok", nil
-}
-
-func updateCheck(api *API, event *Event) {
+func updateCheckOnEvent(api *API, event *Event) {
 	var check Check
 	if err := api.DB.Where("name = ?", event.Name).First(&check).Error; err != nil {
 		if err != gorm.ErrRecordNotFound {
