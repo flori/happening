@@ -147,12 +147,13 @@ func (api *API) PostCheckHandler(c echo.Context) error {
 	if err := c.Bind(check); err != nil {
 		return err
 	}
+	log.Printf(`Post %s`, *check)
 	if err := c.Validate(check); err != nil {
 		return err
 	}
 	if err := addToChecks(api, check); err != nil {
 		log.Printf("info: Received new check \"%s\"", check.Name)
-		return c.JSON(http.StatusOK, checksResponse{Success: true, Id: check.Id})
+		return c.JSON(http.StatusOK, checksResponse{Success: true, Id: *check.Id})
 	} else {
 		return err
 	}
@@ -164,9 +165,13 @@ func (api *API) PatchCheckHandler(c echo.Context) error {
 	if err := c.Bind(check); err != nil {
 		return err
 	}
-	//if err := c.Validate(check); err != nil {
-	//	return err
-	//}
+	log.Printf(`Patch %s`, *check)
+	if err := c.Validate(check); err != nil {
+		return err
+	}
+	if err := c.Validate(check); err != nil {
+		return err
+	}
 	result, err := updateCheck(api, id, check)
 	switch result {
 	case "ok":

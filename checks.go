@@ -12,7 +12,7 @@ func addToChecks(api *API, check *Check) error {
 }
 
 func updateCheck(api *API, id string, check *Check) (string, error) {
-	err := api.DB.Model(&Check{Id: id}).Update(
+	err := api.DB.Model(&Check{Id: &id}).Update(
 		"disabled",
 		check.Disabled,
 	).Update(
@@ -96,6 +96,7 @@ func updateCheckOnEvent(api *API, event *Event) {
 		return
 	}
 	check.LastPingAt = event.Started
+	check.LastEventId = &event.Id
 	check.Success = event.Success
 	if err := api.DB.Save(&check).Error; err != nil {
 		log.Printf("error: %v", err)

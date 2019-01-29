@@ -15,15 +15,17 @@ type NotifierMail struct {
 func (mail NotifierMail) Subject() string {
 	if mail.Resolved {
 		return fmt.Sprintf(
-			`Happening on %s has healthy check "%s", problem was resolved`,
+			`Resolved: Happening on %s check "%s": %s`,
 			mail.env12Factor(),
 			mail.Check.Name,
+			mail.Check.State(),
 		)
 	} else {
 		return fmt.Sprintf(
-			`Happening on %s has unhealthy check "%s"`,
+			`Problem: Happening on %s check "%s": %s`,
 			mail.env12Factor(),
 			mail.Check.Name,
+			mail.Check.State(),
 		)
 	}
 }
@@ -46,11 +48,11 @@ func (mail NotifierMail) env12Factor() string {
 
 func (mail NotifierMail) Text() string {
 	text := mail.Check.String()
-	if mail.DrilldownURL != "" {
+	if mail.DrilldownURL != "" && mail.Check.LastEventId != nil {
 		text += fmt.Sprintf(
-			"\n\nDrill down via this URL: %s/search/name:%s",
+			"\n\nDrill down via this URL: %s/search/id:%s",
 			mail.DrilldownURL,
-			mail.Check.Name,
+			*mail.Check.LastEventId,
 		)
 	}
 	return text

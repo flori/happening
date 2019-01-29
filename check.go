@@ -6,30 +6,43 @@ import (
 )
 
 type Check struct {
-	Id         string        `json:"id,omitempty" gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
-	Name       string        `json:"name" validate:"required" gorm:"type:text;unique;not null"`
-	Period     time.Duration `json:"period" gorm:"type:bigint;not null;default:3600000000000"`
-	LastPingAt time.Time     `json:"last_ping_at" gorm:"type:timestamptz;index;not null;default:now()::timestamptz"`
-	Success    bool          `json:"success" gorm:"type:boolean;not_null;default:true"`
-	Healthy    bool          `json:"healthy" gorm:"type:boolean;not_null;default:true"`
-	Disabled   bool          `json:"disabled" gorm:"type:boolean;not_null;default:false"`
+	Id          *string       `json:"id,omitempty" gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
+	Name        string        `json:"name" validate:"required" gorm:"type:text;unique;not null"`
+	Period      time.Duration `json:"period" gorm:"type:bigint;not null;default:3600000000000"`
+	LastPingAt  time.Time     `json:"last_ping_at" gorm:"type:timestamptz;index;not null;default:now()::timestamptz"`
+	LastEventId *string       `json:"last_event_id,omitempty" gorm:"type:uuid;default:null"`
+	Success     bool          `json:"success" gorm:"type:boolean;not_null;default:true"`
+	Healthy     bool          `json:"healthy" gorm:"type:boolean;not_null;default:true"`
+	Disabled    bool          `json:"disabled" gorm:"type:boolean;not_null;default:false"`
 }
 
 func (check Check) String() string {
-	healtyhString := "unhealthy"
-	if check.Healthy {
-		healtyhString = "healthy"
-	}
-	successString := "failure"
-	if check.Success {
-		successString = "success"
-	}
-	return fmt.Sprintf(`Check "%v" (%v) is %s, was last pinged at %v (period=%s) and was a "%s".`,
+	return fmt.Sprintf(
+		`Check:
+ - Name: %s
+ - Id: %s
+ - State: %s
+ - LastEventId: %s
+ - LastPingAt: %s
+ - Period: %s
+`,
 		check.Name,
-		check.Id,
-		healtyhString,
+		derefString(check.Id),
+		check.State(),
+		derefString(check.LastEventId),
 		check.LastPingAt,
 		check.Period,
-		successString,
 	)
+}
+
+func (check Check) State() string {
+	result := "healthy"
+	if !check.Healthy {
+		if check.Success {
+			result = "timeout"
+		} else {
+			result = "failed"
+		}
+	}
+	return result
 }
