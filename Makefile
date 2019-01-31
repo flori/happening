@@ -1,5 +1,6 @@
 DOCKER_IMAGE_LATEST = happening
 DOCKER_IMAGE = $(DOCKER_IMAGE_LATEST):$(REVISION_SHORT)
+BASE_IMAGE = alpine:3.9
 DOCKER_PORT=8080
 PROJECT_ID = betterplace-183212
 DATABASE_NAME ?= happening
@@ -64,14 +65,14 @@ build-info:
 	@echo $(DOCKER_IMAGE)
 
 pull-base:
-	docker pull alpine:3.8
+	docker pull $(BASE_IMAGE)
 
 build: pull-base
-	time docker build -t $(DOCKER_IMAGE) .
+	time docker build -t $(DOCKER_IMAGE) --build-arg=BASE_IMAGE=$(BASE_IMAGE) .
 	$(MAKE) build-info
 
 build-force: pull-base
-	time docker build -t $(DOCKER_IMAGE) --no-cache .
+	time docker build -t $(DOCKER_IMAGE) --build-arg=BASE_IMAGE=$(BASE_IMAGE) --no-cache .
 	$(MAKE) build-info
 
 debug:

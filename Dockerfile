@@ -1,4 +1,6 @@
-FROM alpine:3.8 AS build
+ARG BASE_IMAGE
+
+FROM ${BASE_IMAGE} AS build
 
 # Update/Upgrade/Add packages for building
 
@@ -18,7 +20,7 @@ RUN go get -u github.com/betterplace/go-init
 
 RUN make fetch all
 
-FROM alpine:3.8
+FROM ${BASE_IMAGE}
 
 # Update/Upgrade/Add packages
 
