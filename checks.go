@@ -2,13 +2,33 @@ package happening
 
 import (
 	"log"
+	"reflect"
 	"time"
 
 	"github.com/jinzhu/gorm"
+	"github.com/lib/pq"
 )
 
-func addToChecks(api *API, check *Check) error {
-	return api.DB.Create(check).Error
+func wasUniqueViolation(err error) bool {
+	if err != nil {
+		switch reflect.ValueOf(err).Interface().(type) {
+		case *pq.Error:
+			pqError := err.(*pq.Error)
+			return pqError.Code.Name() == "unique_violation"
+		}
+	}
+	return false
+}
+
+func addToChecks(api *API, check *Check) (string, error) {
+	err := api.DB.Create(check).Error
+	if err == nil {
+		return "ok", err
+	}
+	if wasUniqueViolation(err) {
+		return "conflict", err
+	}
+	return "error", err
 }
 
 func updateCheck(api *API, id string, check *Check) (string, error) {

@@ -151,10 +151,14 @@ func (api *API) PostCheckHandler(c echo.Context) error {
 	if err := c.Validate(check); err != nil {
 		return err
 	}
-	if err := addToChecks(api, check); err != nil {
+	result, err := addToChecks(api, check)
+	switch result {
+	case "ok":
 		log.Printf("info: Received new check \"%s\"", check.Name)
-		return c.JSON(http.StatusOK, checksResponse{Success: true, Id: *check.Id})
-	} else {
+		return c.JSON(http.StatusOK, checksResponse{Success: true})
+	case "conflict":
+		return c.JSON(http.StatusConflict, checksResponse{Success: false, Message: err.Error()})
+	default:
 		return err
 	}
 }
