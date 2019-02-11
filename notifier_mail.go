@@ -49,11 +49,24 @@ func (mail NotifierMail) env12Factor() string {
 func (mail NotifierMail) Text() string {
 	text := mail.Check.String()
 	if mail.DrilldownURL != "" && mail.Check.LastEventId != nil {
-		text += fmt.Sprintf(
-			"\n\nDrill down via this URL: %s/search/id:%s",
-			mail.DrilldownURL,
-			*mail.Check.LastEventId,
-		)
+		switch mail.Check.State() {
+		case "timeout":
+			text += fmt.Sprintf(
+				"\n\nDrill down via this URL: %s/search/name:%s&s=2419200",
+				mail.DrilldownURL,
+				mail.Check.Name,
+			)
+			break
+		case "healthy":
+			fallthrough
+		case "failed":
+			text += fmt.Sprintf(
+				"\n\nDrill down via this URL: %s/search/id:%s&s=2419200",
+				mail.DrilldownURL,
+				*mail.Check.LastEventId,
+			)
+			break
+		}
 	}
 	return text
 }
