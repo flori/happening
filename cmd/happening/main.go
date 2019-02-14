@@ -5,8 +5,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"strconv"
-	"strings"
 	"time"
 
 	happening "github.com/flori/happening"
@@ -33,22 +31,9 @@ func init() {
 	}
 }
 
-func getSuccessCodes(config *happening.Config) []int {
-	var codes []int
-	for _, code := range strings.Split(config.SuccessCode, ",") {
-		c, err := strconv.ParseInt(code, 10, 32)
-		if err != nil {
-			log.Fatalf("invalid exit code, %v", err)
-		}
-		codes = append(codes, int(c))
-	}
-	return codes
-}
-
 func main() {
 	cmdArgs := flag.Args()
-	successCodes := getSuccessCodes(&config)
-	event := happening.Execute(config, cmdArgs, successCodes)
+	event := happening.ExecuteCmd(config, cmdArgs)
 	if event.Success && config.PingURL != "" {
 		happening.Ping(&config)
 	}

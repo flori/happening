@@ -8,6 +8,8 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strconv"
+	"strings"
 	"syscall"
 	"time"
 )
@@ -23,7 +25,23 @@ func exitCode(err error) int {
 	return 0
 }
 
-func isSuccess(exitCode int, codes []int) bool {
+func getSuccessCodes(config *Config) []int {
+	var codes []int
+	if config.SuccessCode == "" {
+		return codes
+	}
+	for _, code := range strings.Split(config.SuccessCode, ",") {
+		c, err := strconv.ParseInt(code, 10, 32)
+		if err != nil {
+			log.Fatalf("invalid exit code, %v", err)
+		}
+		codes = append(codes, int(c))
+	}
+	return codes
+}
+
+func isSuccess(exitCode int, config *Config) bool {
+	codes := getSuccessCodes(config)
 	for _, code := range codes {
 		if code == exitCode {
 			return true
@@ -43,7 +61,28 @@ func determineHostname(flagHostname string) string {
 	return flagHostname
 }
 
-func Execute(config Config, cmdArgs []string, codes []int) *Event {
+func Execute(config Config, block func() bool) *Event {
+	hostname := determineHostname(config.FlagHostname)
+	started := time.Now()
+	success := true
+	duration := time.Duration(0)
+	if block != nil {
+		success = block()
+		duration = time.Now().Sub(started)
+	}
+	return &Event{
+		Id:       GenerateUUIDv4(),
+		Name:     config.Name,
+		Started:  started,
+		Duration: duration,
+		Success:  success,
+		Hostname: hostname,
+		Pid:      os.Getpid(),
+		Store:    config.StoreReport,
+	}
+}
+
+func ExecuteCmd(config Config, cmdArgs []string) *Event {
 	hostname := determineHostname(config.FlagHostname)
 	if len(cmdArgs) > 0 {
 		cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
@@ -91,7 +130,7 @@ func Execute(config Config, cmdArgs []string, codes []int) *Event {
 		if err == nil {
 			err = cmd.Wait()
 			ec = exitCode(err)
-			success = isSuccess(ec, codes)
+			success = isSuccess(ec, &config)
 			output = outputBuffer.String()
 			pid = cmd.ProcessState.Pid()
 		} else {
@@ -118,16 +157,6 @@ func Execute(config Config, cmdArgs []string, codes []int) *Event {
 			Store:    config.StoreReport,
 		}
 	} else {
-		success := isSuccess(0, codes)
-		return &Event{
-			Id:       GenerateUUIDv4(),
-			Name:     config.Name,
-			Started:  time.Now(),
-			Duration: 0,
-			Success:  success,
-			Hostname: hostname,
-			Pid:      os.Getpid(),
-			Store:    config.StoreReport,
-		}
+		return Execute(config, nil)
 	}
 }
