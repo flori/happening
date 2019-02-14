@@ -61,18 +61,27 @@ func determineHostname(flagHostname string) string {
 	return flagHostname
 }
 
-func Execute(config Config, block func() bool) *Event {
+func Execute(config Config, block func(output io.Writer) bool) *Event {
 	hostname := determineHostname(config.FlagHostname)
 	started := time.Now()
 	success := true
 	duration := time.Duration(0)
+	outputString := ""
 	if block != nil {
-		success = block()
-		duration = time.Now().Sub(started)
+		if config.CollectOutput {
+			output := new(bytes.Buffer)
+			success = block(output)
+			duration = time.Now().Sub(started)
+			outputString = output.String()
+		} else {
+			success = block(NullWriter)
+			duration = time.Now().Sub(started)
+		}
 	}
 	return &Event{
 		Id:       GenerateUUIDv4(),
 		Name:     config.Name,
+		Output:   outputString,
 		Started:  started,
 		Duration: duration,
 		Success:  success,

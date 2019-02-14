@@ -1,6 +1,8 @@
 package happening
 
 import (
+	"fmt"
+	"io"
 	"testing"
 	"time"
 
@@ -16,8 +18,12 @@ func TestExecuteNil(t *testing.T) {
 }
 
 func TestExecuteBlock(t *testing.T) {
-	result := Execute(Config{Name: "test"}, func() bool {
+	result := Execute(Config{
+		Name:          "test",
+		CollectOutput: true,
+	}, func(output io.Writer) bool {
 		time.Sleep(time.Second)
+		fmt.Fprintln(output, "hello world")
 		return false
 	})
 	assert.Equal(t, "test", result.Name, "correct name")
@@ -28,6 +34,19 @@ func TestExecuteBlock(t *testing.T) {
 		">= 1s duration",
 	)
 	assert.Equal(t, 0, result.ExitCode, "exit code not set")
+	assert.Equal(t, "hello world\n", result.Output, "collected output")
+}
+
+func TestExecuteBlockSuppressOutput(t *testing.T) {
+	result := Execute(Config{Name: "test"}, func(output io.Writer) bool {
+		time.Sleep(time.Second)
+		fmt.Fprintln(output, "hello world")
+		return false
+	})
+	assert.Equal(t, "test", result.Name, "correct name")
+	assert.False(t, result.Success, "not successful if block returns false")
+	assert.Equal(t, 0, result.ExitCode, "exit code not set")
+	assert.Empty(t, result.Output, "collected output")
 }
 
 func TestExecuteCmdFail(t *testing.T) {
