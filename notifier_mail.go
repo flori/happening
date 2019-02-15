@@ -52,7 +52,7 @@ func (mail NotifierMail) Text() string {
 		switch mail.Check.State() {
 		case "timeout":
 			text += fmt.Sprintf(
-				"\n\nDrill down via this URL: %s/search/name:%s&s=2419200",
+				"\n\nDrill down via this URL: %s/search/name:%s?s=2419200",
 				mail.DrilldownURL,
 				mail.Check.Name,
 			)
@@ -61,7 +61,7 @@ func (mail NotifierMail) Text() string {
 			fallthrough
 		case "failed":
 			text += fmt.Sprintf(
-				"\n\nDrill down via this URL: %s/search/id:%s&s=2419200",
+				"\n\nDrill down via this URL: %s/search/id:%s?s=2419200",
 				mail.DrilldownURL,
 				*mail.Check.LastEventId,
 			)
