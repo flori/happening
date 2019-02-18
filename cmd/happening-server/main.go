@@ -85,7 +85,11 @@ func main() {
 		POSTGRES_URL:  config.POSTGRES_URL,
 		NOTIFIER:      happening.NewNotifier(config),
 	}
-	log.Printf("Using notifier for %s", config.NOTIFIER_KIND)
+	if config.NOTIFIER_KIND != "" {
+		log.Printf("Using notifier for %s", config.NOTIFIER_KIND)
+	} else {
+		log.Printf("Notifier disabled.")
+	}
 	api.PrepareDatabase()
 	api.SetupCronJobs()
 	// Events

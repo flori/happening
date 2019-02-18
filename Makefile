@@ -76,7 +76,7 @@ debug:
 	docker run --rm -it $(DOCKER_IMAGE) bash
 
 server:
-	docker run -e POSTGRES_URL=$(POSTGRES_URL) --rm -it -p $(DOCKER_PORT):$(DOCKER_PORT) $(DOCKER_IMAGE)
+	docker run -e POSTGRES_URL=$(POSTGRES_URL) --detach -p $(DOCKER_PORT):$(DOCKER_PORT) $(DOCKER_IMAGE)
 
 pull:
 	docker pull $(REMOTE_TAG)

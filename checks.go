@@ -38,6 +38,9 @@ func updateCheck(api *API, id string, check *Check) (string, error) {
 	).Update(
 		"period",
 		check.Period,
+	).Update(
+		"allowed_failures",
+		check.AllowedFailures,
 	).Error
 	if err != nil {
 		return "not_found", err
@@ -61,6 +64,7 @@ func getCheck(api *API, id string) (string, *Check, error) {
 	if err := api.DB.Where("id = ?", id).First(&check).Error; err != nil {
 		return "not_found", nil, err
 	}
+	check.Init()
 	return "ok", &check, nil
 }
 
@@ -69,6 +73,7 @@ func getCheckByName(api *API, name string) (string, *Check, error) {
 	if err := api.DB.Where("name = ?", name).First(&check).Error; err != nil {
 		return "not_found", nil, err
 	}
+	check.Init()
 	return "ok", &check, nil
 }
 
@@ -77,7 +82,7 @@ func computeHealthStatus(api *API, checks *[]Check) {
 	for i, check := range *checks {
 		healthBefore := check.Healthy
 		time := check.LastPingAt.Add(check.Period)
-		healthNow := time.After(now) && check.Success
+		healthNow := time.After(now) && check.Failures <= check.AllowedFailures
 		(*checks)[i].Healthy = healthNow
 		if check.Disabled {
 			continue
@@ -140,7 +145,11 @@ func updateCheckOnEvent(api *API, event *Event) {
 	} else {
 		check.LastEventId = nil
 	}
-	check.Success = event.Success
+	if event.Success {
+		check.Failures = 0
+	} else {
+		check.Failures++
+	}
 	if err := api.DB.Save(&check).Error; err != nil {
 		log.Printf("error: %v", err)
 	}

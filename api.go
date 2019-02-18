@@ -143,6 +143,9 @@ func (api *API) GetChecksHandler(c echo.Context) error {
 	checks, total, err := fetchRangeFromChecks(api, p)
 	if err == nil {
 		lenChecks := len(checks)
+		for i := 0; i < lenChecks; i++ {
+			checks[i].Init()
+		}
 		log.Printf(`Get %d check`, lenChecks)
 		return c.JSON(http.StatusOK, checksResponse{Success: true, Data: checks, Count: &lenChecks, Total: &total})
 	} else {

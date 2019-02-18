@@ -15,7 +15,7 @@ func TestComputeHealthNoSuccess(t *testing.T) {
 	checks := []Check{
 		Check{
 			Healthy:    true,
-			Success:    false,
+			Failures:   1,
 			LastPingAt: time.Now(),
 			Period:     time.Second,
 		},
@@ -29,7 +29,7 @@ func TestComputeHealthSuccess(t *testing.T) {
 	checks := []Check{
 		Check{
 			Healthy:    false,
-			Success:    true,
+			Failures:   0,
 			LastPingAt: time.Now(),
 			Period:     time.Second,
 		},
@@ -44,7 +44,7 @@ func TestComputeHealthTimeout(t *testing.T) {
 	checks := []Check{
 		Check{
 			Healthy:    true,
-			Success:    true,
+			Failures:   0,
 			LastPingAt: oldTime,
 			Period:     time.Second,
 		},
@@ -58,7 +58,7 @@ func TestComputeHealthTimeoutResolved(t *testing.T) {
 	checks := []Check{
 		Check{
 			Healthy:    false,
-			Success:    true,
+			Failures:   0,
 			LastPingAt: time.Now(),
 			Period:     2 * time.Second,
 		},
@@ -66,4 +66,34 @@ func TestComputeHealthTimeoutResolved(t *testing.T) {
 	assert.False(t, checks[0].Healthy)
 	computeHealthStatus(testAPI, &checks)
 	assert.True(t, checks[0].Healthy)
+}
+
+func TestComputeHealthSuccessAfterFailure(t *testing.T) {
+	checks := []Check{
+		Check{
+			Healthy:         true,
+			Failures:        1,
+			LastPingAt:      time.Now(),
+			Period:          time.Second,
+			AllowedFailures: 1,
+		},
+	}
+	assert.True(t, checks[0].Healthy)
+	computeHealthStatus(testAPI, &checks)
+	assert.True(t, checks[0].Healthy)
+}
+
+func TestComputeHealthNoSuccessAfterFailure(t *testing.T) {
+	checks := []Check{
+		Check{
+			Healthy:         true,
+			Failures:        2,
+			LastPingAt:      time.Now(),
+			Period:          time.Second,
+			AllowedFailures: 1,
+		},
+	}
+	assert.True(t, checks[0].Healthy)
+	computeHealthStatus(testAPI, &checks)
+	assert.False(t, checks[0].Healthy)
 }
