@@ -1,0 +1,1 @@
+docker build -t $IMAGE_NAME --build-arg=BASE_IMAGE=$BASE_IMAGE .
