@@ -116,7 +116,11 @@ func updateCheckOnEvent(api *API, event *Event) {
 		return
 	}
 	check.LastPingAt = event.Started
-	check.LastEventId = &event.Id
+	if event.Store {
+		check.LastEventId = &event.Id
+	} else {
+		check.LastEventId = nil
+	}
 	check.Success = event.Success
 	if err := api.DB.Save(&check).Error; err != nil {
 		log.Printf("error: %v", err)

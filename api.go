@@ -86,16 +86,18 @@ func (api *API) PostEventHandler(c echo.Context) error {
 	if err := c.Validate(event); err != nil {
 		return err
 	}
-	if err := addToEvents(api, event); err != nil {
-		return err
+	if event.Store {
+		if err := addToEvents(api, event); err != nil {
+			return err
+		}
 	}
+	updateCheckOnEvent(api, event)
 	log.Printf(
 		"info: Received event \"%s\", started %v, lasted %v\n",
 		event.Name,
 		event.Started,
 		event.Duration,
 	)
-	updateCheckOnEvent(api, event)
 	return c.JSON(http.StatusOK, eventsResponse{Success: true})
 }
 
