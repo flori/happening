@@ -68,7 +68,7 @@ func main() {
 	var config happening.ServerConfig
 	err := envconfig.Process("", &config)
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Fatal(err)
 	}
 	e := echo.New()
 	e.Validator = &CustomValidator{validator: validator.New()}
