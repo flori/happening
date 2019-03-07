@@ -93,7 +93,7 @@ func (api *API) PostEventHandler(c echo.Context) error {
 	}
 	updateCheckOnEvent(api, event)
 	log.Printf(
-		"info: Received event \"%s\", started %v, lasted %v\n",
+		"Received event \"%s\", started %v, lasted %v\n",
 		event.Name,
 		event.Started,
 		event.Duration,
@@ -156,7 +156,7 @@ func (api *API) PostCheckHandler(c echo.Context) error {
 	result, err := addToChecks(api, check)
 	switch result {
 	case "ok":
-		log.Printf("info: Received new check \"%s\"", check.Name)
+		log.Printf("Received new check \"%s\"", check.Name)
 		return c.JSON(http.StatusOK, checksResponse{Success: true})
 	case "conflict":
 		return c.JSON(http.StatusConflict, checksResponse{Success: false, Message: err.Error()})
@@ -181,7 +181,7 @@ func (api *API) PatchCheckHandler(c echo.Context) error {
 	result, err := updateCheck(api, id, check)
 	switch result {
 	case "ok":
-		log.Printf("info: Received updated check id=\"%s\"", id)
+		log.Printf("Received updated check id=\"%s\"", id)
 		return c.JSON(http.StatusOK, checksResponse{Success: true, Id: id})
 	case "not_found":
 		return c.JSON(http.StatusNotFound, checksResponse{Success: false, Message: err.Error()})
