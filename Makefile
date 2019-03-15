@@ -1,20 +1,17 @@
 DOCKER_IMAGE_LATEST = happening
 DOCKER_IMAGE = $(DOCKER_IMAGE_LATEST):$(REVISION_SHORT)
-BASE_IMAGE = alpine:3.9
+BASE_IMAGE = $(shell awk '/^FROM .+ AS runner/ { print $$2 }' Dockerfile)
 DOCKER_PORT=8080
-PROJECT_ID = betterplace-183212
 DATABASE_NAME ?= happening
 POSTGRES_URL ?= postgresql://flori@dbms:5432/%s?sslmode=disable
-REMOTE_LATEST_TAG := eu.gcr.io/$(PROJECT_ID)/$(DOCKER_IMAGE_LATEST)
-REMOTE_TAG = eu.gcr.io/$(PROJECT_ID)/$(DOCKER_IMAGE)
+REMOTE_LATEST_TAG := flori303/$(DOCKER_IMAGE_LATEST)
+REMOTE_TAG = flori303/$(DOCKER_IMAGE)
 REVISION := $(shell git rev-parse HEAD)
-REVISION_SHORT := $(shell echo $(REVISION) | head -c 10)
+REVISION_SHORT := $(shell echo $(REVISION) | head -c 7)
 GOPATH := $(shell pwd)/gospace
 GOBIN = $(GOPATH)/bin
 
 .EXPORT_ALL_VARIABLES:
-
-.PHONY: build build-info
 
 all: happening happening-server
 
@@ -68,11 +65,11 @@ pull-base:
 	docker pull $(BASE_IMAGE)
 
 build: pull-base
-	time docker build -t $(DOCKER_IMAGE) --build-arg=BASE_IMAGE=$(BASE_IMAGE) .
+	docker build -t $(DOCKER_IMAGE) .
 	$(MAKE) build-info
 
 build-force: pull-base
-	time docker build -t $(DOCKER_IMAGE) --build-arg=BASE_IMAGE=$(BASE_IMAGE) --no-cache .
+	docker build -t $(DOCKER_IMAGE) --no-cache .
 	$(MAKE) build-info
 
 debug:
@@ -82,11 +79,10 @@ server:
 	docker run -e POSTGRES_URL=$(POSTGRES_URL) --rm -it -p $(DOCKER_PORT):$(DOCKER_PORT) $(DOCKER_IMAGE)
 
 pull:
-	gcloud auth configure-docker
 	docker pull $(REMOTE_TAG)
+	docker tag $(REMOTE_TAG) $(DOCKER_IMAGE) 
 
 push: build
-	gcloud auth configure-docker
 	docker tag $(DOCKER_IMAGE) $(REMOTE_TAG)
 	docker push $(REMOTE_TAG)
 

@@ -1,6 +1,4 @@
-ARG BASE_IMAGE
-
-FROM ${BASE_IMAGE} AS build
+FROM alpine:3.9 AS builder
 
 # Update/Upgrade/Add packages for building
 
@@ -20,7 +18,7 @@ RUN go get -u github.com/betterplace/go-init
 
 RUN make fetch all
 
-FROM ${BASE_IMAGE}
+FROM alpine:3.9 AS runner
 
 # Update/Upgrade/Add packages
 
@@ -32,7 +30,7 @@ RUN adduser -h ${APP_DIR} -s /bin/bash -D appuser
 
 RUN mkdir -p /opt/bin
 
-COPY --from=0 --chown=appuser:appuser /build/happening/gospace/bin/go-init /build/happening/happening /build/happening/happening-server /opt/bin/
+COPY --from=builder --chown=appuser:appuser /build/happening/gospace/bin/go-init /build/happening/happening /build/happening/happening-server /opt/bin/
 
 ENV PATH /opt/bin:${PATH}
 
