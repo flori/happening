@@ -89,3 +89,7 @@ push: build
 push-latest: push
 	docker tag ${DOCKER_IMAGE} ${REMOTE_LATEST_TAG}
 	docker push ${REMOTE_LATEST_TAG}
+
+git-tag:
+	git tag tag-$(REVISION_SHORT) $(REVISION)
+	git push github tag-$(REVISION_SHORT)
