@@ -80,7 +80,7 @@ server:
 
 pull:
 	docker pull $(REMOTE_TAG)
-	docker tag $(REMOTE_TAG) $(DOCKER_IMAGE) 
+	docker tag $(REMOTE_TAG) $(DOCKER_IMAGE)
 
 push: build
 	docker tag $(DOCKER_IMAGE) $(REMOTE_TAG)

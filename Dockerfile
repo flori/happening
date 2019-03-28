@@ -16,7 +16,7 @@ RUN make clobber
 
 RUN go get -u github.com/betterplace/go-init
 
-RUN make fetch all
+RUN make fetch test all
 
 FROM alpine:3.9 AS runner
 
