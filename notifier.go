@@ -17,6 +17,8 @@ func NewNotifier(config ServerConfig) Notifier {
 		return NewNullNotifier()
 	case "mailcommand":
 		return NewMailCommandNotifier(config)
+	case "smtp":
+		return NewSMTPNotifier(config)
 	case "sendgrid":
 		return NewSendgridNotifier(config)
 	default:

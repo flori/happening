@@ -84,6 +84,7 @@ func main() {
 		POSTGRES_URL:  config.POSTGRES_URL,
 		NOTIFIER:      happening.NewNotifier(config),
 	}
+	log.Printf("Using notifier for %s", config.NOTIFIER_KIND)
 	api.PrepareDatabase()
 	api.SetupCronJobs()
 	e.POST("/api/v1/event", api.PostEventHandler)

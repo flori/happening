@@ -6,7 +6,7 @@ type ServerConfig struct {
 	POSTGRES_URL                  string `default:"postgresql://flori@localhost:5432/%s?sslmode=disable"`
 	HTTP_REALM                    string `default:"happening"`
 	HTTP_AUTH                     string
-	NOTIFIER_KIND                 string
+	NOTIFIER_KIND                 string `default:"NullNotifier"`
 	NOTIFIER_ENVIRONMENT_VARIABLE string `default:"RAILS_ENV"`
 	NOTIFIER_DRILLDOWN_URL        string `default:"http://localhost:3000"`
 	NOTIFIER_NO_REPLY_NAME        string `default:"Happening"`
@@ -15,4 +15,5 @@ type ServerConfig struct {
 	NOTIFIER_CONTACT_EMAIL        string `default:"root@localhost"`
 	NOTIFIER_SENDGRID_API_KEY     string
 	NOTIFIER_MAIL_COMMAND         string `default:"mail"`
+	NOTIFIER_SMTP_SERVER_URL      string `default:"smtp://username:password@localhost:25?sslVerify=disable"`
 }
