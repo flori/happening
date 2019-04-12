@@ -56,6 +56,22 @@ func deleteCheck(api *API, id string) (string, error) {
 	return "ok", nil
 }
 
+func getCheck(api *API, id string) (string, *Check, error) {
+	var check Check
+	if err := api.DB.Where("id = ?", id).First(&check).Error; err != nil {
+		return "not_found", nil, err
+	}
+	return "ok", &check, nil
+}
+
+func getCheckByName(api *API, name string) (string, *Check, error) {
+	var check Check
+	if err := api.DB.Where("name = ?", name).First(&check).Error; err != nil {
+		return "not_found", nil, err
+	}
+	return "ok", &check, nil
+}
+
 func computeHealthStatus(api *API, checks *[]Check) {
 	now := time.Now()
 	for i, check := range *checks {

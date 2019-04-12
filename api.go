@@ -175,14 +175,44 @@ func (api *API) PatchCheckHandler(c echo.Context) error {
 	if err := c.Validate(check); err != nil {
 		return err
 	}
-	if err := c.Validate(check); err != nil {
-		return err
-	}
 	result, err := updateCheck(api, id, check)
 	switch result {
 	case "ok":
 		log.Printf("Received updated check id=\"%s\"", id)
 		return c.JSON(http.StatusOK, checksResponse{Success: true, Id: id})
+	case "not_found":
+		return c.JSON(http.StatusNotFound, checksResponse{Success: false, Message: err.Error()})
+	default:
+		return err
+	}
+}
+
+func (api *API) GetCheckHandler(c echo.Context) error {
+	result, check, err := getCheck(api, c.Param("id"))
+	switch result {
+	case "ok":
+		return c.JSON(
+			http.StatusOK,
+			checksResponse{
+				Success: true,
+				Data:    []Check{*check},
+			})
+	case "not_found":
+		return c.JSON(http.StatusNotFound, checksResponse{Success: false, Message: err.Error()})
+	default:
+		return err
+	}
+}
+
+func (api *API) GetCheckByNameHandler(c echo.Context) error {
+	name := c.Param("name")
+	log.Printf(`Get check by name %s`, name)
+	result, check, err := getCheckByName(api, name)
+	switch result {
+	case "ok":
+		redirectURL := c.Request().URL
+		redirectURL.Path = fmt.Sprintf("/api/v1/check/%s", *check.Id)
+		return c.Redirect(http.StatusFound, redirectURL.String())
 	case "not_found":
 		return c.JSON(http.StatusNotFound, checksResponse{Success: false, Message: err.Error()})
 	default:

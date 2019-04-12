@@ -87,13 +87,18 @@ func main() {
 	log.Printf("Using notifier for %s", config.NOTIFIER_KIND)
 	api.PrepareDatabase()
 	api.SetupCronJobs()
+	// Events
 	e.POST("/api/v1/event", api.PostEventHandler)
 	e.PUT("/api/v1/event", api.PostEventHandler)
 	e.GET("/api/v1/events", api.GetEventsHandler)
+	// Checks
 	e.POST("/api/v1/check", api.PostCheckHandler)
 	e.PUT("/api/v1/check", api.PostCheckHandler)
 	e.PATCH("/api/v1/check/:id", api.PatchCheckHandler)
 	e.GET("/api/v1/checks", api.GetChecksHandler)
 	e.DELETE("/api/v1/check/:id", api.DeleteCheckHandler)
+	e.GET("/api/v1/check/:id", api.GetCheckHandler)
+	e.GET("/api/v1/check/by-name/:name", api.GetCheckByNameHandler)
+	//
 	e.Logger.Fatal(e.Start(":" + config.PORT))
 }
