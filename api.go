@@ -126,6 +126,7 @@ func (api *API) GetChecksHandler(c echo.Context) error {
 	checks, total, err := fetchRangeFromChecks(api, p)
 	if err == nil {
 		lenChecks := len(checks)
+		log.Printf(`Get %d check`, lenChecks)
 		return c.JSON(http.StatusOK, checksResponse{Success: true, Data: checks, Count: &lenChecks, Total: &total})
 	} else {
 		return err
@@ -133,9 +134,11 @@ func (api *API) GetChecksHandler(c echo.Context) error {
 }
 
 func (api *API) DeleteCheckHandler(c echo.Context) error {
-	result, err := deleteCheck(api, c.Param("id"))
+	id := c.Param("id")
+	result, err := deleteCheck(api, id)
 	switch result {
 	case "ok":
+		log.Printf(`Delete check id=%s`, id)
 		return c.JSON(http.StatusOK, checksResponse{Success: true})
 	case "not_found":
 		return c.JSON(http.StatusNotFound, checksResponse{Success: false, Message: err.Error()})
@@ -191,6 +194,7 @@ func (api *API) GetCheckHandler(c echo.Context) error {
 	result, check, err := getCheck(api, c.Param("id"))
 	switch result {
 	case "ok":
+		log.Printf(`Get check id=%s`, *check.Id)
 		return c.JSON(
 			http.StatusOK,
 			checksResponse{
