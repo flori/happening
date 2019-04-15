@@ -73,6 +73,7 @@ func main() {
 	e := echo.New()
 	e.Validator = &CustomValidator{validator: validator.New()}
 	//e.Use(middleware.Logger())
+	e.Use(middleware.Gzip())
 	e.Use(middleware.CORS())
 	e.Use(errorHandler)
 	if config.HTTP_AUTH != "" {
