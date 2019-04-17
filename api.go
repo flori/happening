@@ -72,6 +72,7 @@ func (api *API) SetupCronJobs() {
 
 type eventsResponse struct {
 	Success bool    `json:"success"`
+	Message string  `json:"message,omitempty"`
 	Count   int     `json:"count"`
 	Total   int     `json:"total"`
 	Data    []Event `json:"data,omitempty"`
@@ -109,6 +110,24 @@ func (api *API) GetEventsHandler(c echo.Context) error {
 		return c.JSON(http.StatusOK, eventsResponse{Success: true, Data: events, Count: len(events), Total: total})
 	}
 	return c.JSON(http.StatusInternalServerError, eventsResponse{Success: false})
+}
+
+func (api *API) GetEventHandler(c echo.Context) error {
+	result, event, err := getEvent(api, c.Param("id"))
+	switch result {
+	case "ok":
+		log.Printf(`Get event id=%s`, event.Id)
+		return c.JSON(
+			http.StatusOK,
+			eventsResponse{
+				Success: true,
+				Data:    []Event{*event},
+			})
+	case "not_found":
+		return c.JSON(http.StatusNotFound, eventsResponse{Success: false, Message: err.Error()})
+	default:
+		return err
+	}
 }
 
 type checksResponse struct {

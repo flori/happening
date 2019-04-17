@@ -92,6 +92,7 @@ func main() {
 	e.POST("/api/v1/event", api.PostEventHandler)
 	e.PUT("/api/v1/event", api.PostEventHandler)
 	e.GET("/api/v1/events", api.GetEventsHandler)
+	e.GET("/api/v1/event/:id", api.GetEventHandler)
 	// Checks
 	e.POST("/api/v1/check", api.PostCheckHandler)
 	e.PUT("/api/v1/check", api.PostCheckHandler)

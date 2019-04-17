@@ -1,7 +1,9 @@
 package happening
 
 import (
+	"fmt"
 	"log"
+	"strings"
 )
 
 func addToEvents(api *API, event *Event) error {
@@ -16,8 +18,9 @@ func fetchRangeFromEvents(api *API, p parameters) ([]Event, int, error) {
 		log.Panic(err)
 		return events, 0, err
 	}
-	sql :=
-		`SELECT * FROM events WHERE
+	sql := `
+		SELECT *
+		FROM events WHERE
 			(? = 0 OR started > TO_TIMESTAMP(?)) AND
 			(? = '' OR (name LIKE ?) OR (output LIKE ?) OR (hostname LIKE ?) OR (CAST(command AS text) LIKE ?)) AND
 			(? = '' OR CAST(id AS TEXT) LIKE ?) AND
@@ -29,7 +32,8 @@ func fetchRangeFromEvents(api *API, p parameters) ([]Event, int, error) {
 			(? = '' OR success = (? = 'true'))
 		ORDER BY started DESC
 		OFFSET ?
-		LIMIT ?`
+		LIMIT ?
+	`
 	api.DB.Raw(
 		sql,
 		p.Start, p.Start,
@@ -46,7 +50,26 @@ func fetchRangeFromEvents(api *API, p parameters) ([]Event, int, error) {
 	).Scan(&events)
 	if err := api.DB.Error; err != nil {
 		log.Println(err)
-		return events, 0, err
+		return []Event{}, 0, err
+	}
+	for i := 0; i < len(events); i++ {
+		event := &events[i]
+		if event.Output == "" {
+			continue
+		}
+		lenOutput := strings.Count(event.Output, "\n")
+		if lenOutput == 0 {
+			lenOutput = 1
+		}
+		event.Output = fmt.Sprintf("%d lines", lenOutput)
 	}
 	return events, total, nil
+}
+
+func getEvent(api *API, id string) (string, *Event, error) {
+	var event Event
+	if err := api.DB.Where("id = ?", id).First(&event).Error; err != nil {
+		return "not_found", nil, err
+	}
+	return "ok", &event, nil
 }
