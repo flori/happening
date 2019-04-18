@@ -14,6 +14,8 @@ type parameters struct {
 	Filters map[string]string
 }
 
+const maxInt = int(^uint(0) >> 1)
+
 func parseFilters(c echo.Context) map[string]string {
 	filters := make(map[string]string)
 	for param, values := range c.QueryParams() {
@@ -41,7 +43,7 @@ func parseParameters(c echo.Context) parameters {
 		p.Limit = 50
 	} else {
 		if l == "*" {
-			p.Limit = MaxInt
+			p.Limit = maxInt
 		} else if p.Limit, err = strconv.Atoi(l); err != nil {
 			p.Limit = 50
 		}

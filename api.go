@@ -13,8 +13,6 @@ import (
 
 const DEBUG = false
 
-const MaxInt = int(^uint(0) >> 1)
-
 type API struct {
 	POSTGRES_URL  string
 	DATABASE_NAME string

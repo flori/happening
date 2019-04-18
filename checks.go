@@ -94,15 +94,18 @@ func computeHealthStatus(api *API, checks *[]Check) {
 }
 
 func taskUpdateHealthStatus(api *API) {
+	tx := api.DB.Begin()
+	tx.Exec("LOCK TABLE checks")
 	var checks []Check
-	if err := api.DB.Find(&checks).Error; err != nil {
+	if err := tx.Find(&checks).Error; err != nil {
 		log.Panic(err)
 		return
 	}
 	log.Printf("Updating health status of %d checks", len(checks))
+	defer tx.Commit()
 	computeHealthStatus(api, &checks)
 	for _, check := range checks {
-		if err := api.DB.Save(&check).Error; err != nil {
+		if err := tx.Save(&check).Error; err != nil {
 			log.Printf("error: %v", err)
 		}
 	}
