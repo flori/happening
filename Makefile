@@ -92,4 +92,5 @@ push-latest: push
 
 git-tag:
 	git tag tag-$(REVISION_SHORT) $(REVISION)
+	git push github
 	git push github tag-$(REVISION_SHORT)
