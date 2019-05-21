@@ -227,13 +227,16 @@ func (api *API) GetCheckHandler(c echo.Context) error {
 
 func (api *API) GetCheckByNameHandler(c echo.Context) error {
 	name := c.Param("name")
-	log.Printf(`Get check by name %s`, name)
 	result, check, err := getCheckByName(api, name)
 	switch result {
 	case "ok":
-		redirectURL := c.Request().URL
-		redirectURL.Path = fmt.Sprintf("/api/v1/check/%s", *check.Id)
-		return c.Redirect(http.StatusFound, redirectURL.String())
+		log.Printf(`Get check by name "%s", resolved as check id=%s`, name, *check.Id)
+		return c.JSON(
+			http.StatusOK,
+			checksResponse{
+				Success: true,
+				Data:    []Check{*check},
+			})
 	case "not_found":
 		return c.JSON(http.StatusNotFound, checksResponse{Success: false, Message: err.Error()})
 	default:
