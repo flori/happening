@@ -25,15 +25,7 @@ local: happening-server
 	POSTGRES_URL=$(POSTGRES_URL) ./happening-server
 
 fetch: fake-package
-	go get -u github.com/dgrijalva/jwt-go
-	go get -u github.com/labstack/echo
-	go get -u github.com/kelseyhightower/envconfig
-	go get -u github.com/lib/pq
-	go get -u github.com/jinzhu/gorm
-	go get -u github.com/stretchr/testify
-	go get -u github.com/jasonlvhit/gocron
-	go get -u github.com/sendgrid/sendgrid-go
-	go get -u github.com/go-playground/validator
+	go mod download
 
 fake-package:
 	rm -rf $(GOPATH)/src/github.com/flori/happening
