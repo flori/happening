@@ -10,20 +10,8 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
-	"syscall"
 	"time"
 )
-
-func exitCode(err error) int {
-	if err != nil {
-		if exitErr, ok := err.(*exec.ExitError); ok {
-			if status, ok := exitErr.Sys().(syscall.WaitStatus); ok {
-				return status.ExitStatus()
-			}
-		}
-	}
-	return 0
-}
 
 func getSuccessCodes(config *Config) []int {
 	var codes []int
@@ -123,7 +111,7 @@ func ExecuteCmd(config Config, cmdArgs []string) *Event {
 		}
 		var oldDir string
 		var success bool
-		var ec int
+		var exitCode int
 		var output string
 		pid := 0
 		if config.Chdir != "" {
@@ -138,15 +126,15 @@ func ExecuteCmd(config Config, cmdArgs []string) *Event {
 		}
 		if err == nil {
 			err = cmd.Wait()
-			ec = exitCode(err)
-			success = isSuccess(ec, &config)
+			exitCode = cmd.ProcessState.ExitCode()
+			success = isSuccess(exitCode, &config)
 			output = outputBuffer.String()
 			pid = cmd.ProcessState.Pid()
 		} else {
 			output = fmt.Sprintf(
 				"happening: Starting \"%s\" failed with error \"%v\"", cmdArgs[0], err)
 			log.Println(output)
-			ec = 1
+			exitCode = 1
 			success = false
 		}
 		if config.Chdir != "" {
@@ -160,7 +148,7 @@ func ExecuteCmd(config Config, cmdArgs []string) *Event {
 			Started:  started,
 			Duration: time.Now().Sub(started),
 			Success:  success,
-			ExitCode: ec,
+			ExitCode: exitCode,
 			Hostname: hostname,
 			Pid:      pid,
 			Store:    config.StoreReport,
