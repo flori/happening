@@ -15,6 +15,7 @@ type Event struct {
 	Duration time.Duration  `json:"duration" gorm:"type:bigint"`
 	Success  bool           `json:"success" gorm:"type:bool";"notnull"`
 	ExitCode int            `json:"exitCode" gorm:"type:smallint";"notnull"`
+	Signal   string         `json:"signal,omitempty" gorm:"text"`
 	Hostname string         `json:"hostname" gorm:"type:text"`
 	Pid      int            `json:"pid" gorm:"type:int"`
 	Store    bool           `json:"store" gorm:"-"`

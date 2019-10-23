@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
+	"syscall"
 	"time"
 )
 
@@ -112,6 +113,7 @@ func ExecuteCmd(config Config, cmdArgs []string) *Event {
 		var oldDir string
 		var success bool
 		var exitCode int
+		var signal string
 		var output string
 		pid := 0
 		if config.Chdir != "" {
@@ -126,7 +128,12 @@ func ExecuteCmd(config Config, cmdArgs []string) *Event {
 		}
 		if err == nil {
 			err = cmd.Wait()
-			exitCode = cmd.ProcessState.ExitCode()
+			processState := cmd.ProcessState
+			exitCode = processState.ExitCode()
+			status := processState.Sys().(syscall.WaitStatus)
+			if status.Signaled() {
+				signal = status.Signal().String()
+			}
 			success = isSuccess(exitCode, &config)
 			output = outputBuffer.String()
 			pid = cmd.ProcessState.Pid()
@@ -149,6 +156,7 @@ func ExecuteCmd(config Config, cmdArgs []string) *Event {
 			Duration: time.Now().Sub(started),
 			Success:  success,
 			ExitCode: exitCode,
+			Signal:   signal,
 			Hostname: hostname,
 			Pid:      pid,
 			Store:    config.StoreReport,
