@@ -52,7 +52,7 @@ func (mail NotifierMail) Text() string {
 		switch mail.Check.State() {
 		case "timeout":
 			text += fmt.Sprintf(
-				"\n\nDrill down via this URL: %s/search/name:%s?s=2419200",
+				"\n\nDrill down via this URL: %s/check/%s",
 				mail.DrilldownURL,
 				mail.Check.Name,
 			)
