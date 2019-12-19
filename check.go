@@ -19,6 +19,7 @@ type Check struct {
 }
 
 func (check Check) String() string {
+	check.Init()
 	return fmt.Sprintf(
 		`Check:
  - Name: %s
@@ -38,6 +39,7 @@ func (check Check) String() string {
 }
 
 func (check Check) State() string {
+	check.Init()
 	result := "healthy"
 	if !check.Healthy {
 		if check.Success {
