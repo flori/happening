@@ -82,7 +82,8 @@ func computeHealthStatus(api *API, checks *[]Check) {
 	for i, check := range *checks {
 		healthBefore := check.Healthy
 		time := check.LastPingAt.Add(check.Period)
-		healthNow := time.After(now) && check.Failures <= check.AllowedFailures
+		check.Init()
+		healthNow := time.After(now) && check.Success
 		(*checks)[i].Healthy = healthNow
 		if check.Disabled {
 			continue
