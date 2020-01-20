@@ -1,4 +1,4 @@
-FROM alpine:3.11.2 AS builder
+FROM alpine:3.11.3 AS builder
 
 # Update/Upgrade/Add packages for building
 
