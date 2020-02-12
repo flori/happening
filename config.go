@@ -15,3 +15,13 @@ type Config struct {
 	Chdir          string
 	StoreReport    bool
 }
+
+func NewConfig() *Config {
+	return &Config{
+		Name:        "some event",
+		StoreReport: true,
+		SuccessCode: "0",
+		Retries:     3,
+		RetryDelay:  time.Second,
+	}
+}
