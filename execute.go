@@ -50,8 +50,24 @@ func determineHostname(flagHostname string) string {
 	return flagHostname
 }
 
+func setEventFields(config Config, event *Event) {
+	if config.Started != "" {
+		started, err := time.Parse(time.RFC3339, config.Started)
+		if err != nil {
+			log.Fatalf("invalid time format (should be RFC3339), %v", err)
+		}
+		event.Started = started
+	}
+	if config.Duration != time.Duration(0) {
+		event.Duration = config.Duration
+	}
+	if config.Output != "" {
+		event.Output = config.Output
+	}
+}
+
 func Execute(config Config, block func(output io.Writer) bool) *Event {
-	hostname := determineHostname(config.FlagHostname)
+	hostname := determineHostname(config.Hostname)
 	started := time.Now()
 	success := true
 	duration := time.Duration(0)
@@ -67,7 +83,8 @@ func Execute(config Config, block func(output io.Writer) bool) *Event {
 			duration = time.Now().Sub(started)
 		}
 	}
-	return &Event{
+
+	event := Event{
 		Id:       GenerateUUIDv4(),
 		Name:     config.Name,
 		Output:   outputString,
@@ -78,10 +95,14 @@ func Execute(config Config, block func(output io.Writer) bool) *Event {
 		Pid:      os.Getpid(),
 		Store:    config.StoreReport,
 	}
+
+	setEventFields(config, &event)
+
+	return &event
 }
 
 func ExecuteCmd(config Config, cmdArgs []string) *Event {
-	hostname := determineHostname(config.FlagHostname)
+	hostname := determineHostname(config.Hostname)
 	if len(cmdArgs) > 0 {
 		cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
 		var outputBuffer bytes.Buffer
@@ -147,7 +168,7 @@ func ExecuteCmd(config Config, cmdArgs []string) *Event {
 		if config.Chdir != "" {
 			os.Chdir(oldDir)
 		}
-		return &Event{
+		event := Event{
 			Id:       GenerateUUIDv4(),
 			Name:     config.Name,
 			Command:  cmdArgs,
@@ -161,6 +182,8 @@ func ExecuteCmd(config Config, cmdArgs []string) *Event {
 			Pid:      pid,
 			Store:    config.StoreReport,
 		}
+		setEventFields(config, &event)
+		return &event
 	} else {
 		return Execute(config, nil)
 	}

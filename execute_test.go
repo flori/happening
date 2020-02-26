@@ -104,3 +104,61 @@ func TestExecuteCmdSuccessSuppressOutput2(t *testing.T) {
 	assert.True(t, result.Success, "not successful if cmd returns != 0")
 	assert.Empty(t, result.Output, "no collected output")
 }
+
+func TestSetEventFieldsStarted(t *testing.T) {
+	event := Event{}
+	setEventFields(
+		Config{},
+		&event,
+	)
+	assert.Equal(t, time.Time{}, event.Started, "is zero time unless Started was set")
+	timeString := "2020-02-26T15:27:10+01:00"
+	setEventFields(
+		Config{
+			Started: timeString,
+		},
+		&event,
+	)
+	time, err := time.Parse(time.RFC3339, timeString)
+	if err != nil {
+		t.Error(err)
+	}
+	assert.Equal(t, time, event.Started, "is configured time value")
+}
+
+func TestSetEventFieldsDuration(t *testing.T) {
+	event := Event{}
+	setEventFields(
+		Config{},
+		&event,
+	)
+	assert.Equal(t, time.Duration(0), event.Duration, "is zero duration unless Duration was set")
+	duration, err := time.ParseDuration("6m66s")
+	if err != nil {
+		t.Error(err)
+	}
+	setEventFields(
+		Config{
+			Duration: duration,
+		},
+		&event,
+	)
+	assert.Equal(t, duration, event.Duration, "is configured duration value")
+}
+
+func TestSetEventFieldsOutput(t *testing.T) {
+	event := Event{}
+	setEventFields(
+		Config{},
+		&event,
+	)
+	assert.Equal(t, "", event.Output, "is zero duration unless Output was set")
+	output := "hello world"
+	setEventFields(
+		Config{
+			Output: output,
+		},
+		&event,
+	)
+	assert.Equal(t, output, event.Output, "is configured output value")
+}
