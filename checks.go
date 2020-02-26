@@ -107,7 +107,6 @@ func taskUpdateHealthStatus(api *API) {
 		log.Panic(err)
 		return
 	}
-	log.Printf("Updating health status of %d checks", len(checks))
 	defer tx.Commit()
 	computeHealthStatus(api, &checks)
 	for _, check := range checks {
