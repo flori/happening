@@ -20,7 +20,7 @@ type SendGridNotifier struct {
 func NewSendgridNotifier(config ServerConfig) Notifier {
 	return &SendGridNotifier{
 		EnvironmentVariable: config.NOTIFIER_ENVIRONMENT_VARIABLE,
-		DrilldownURL:        config.NOTIFIER_DRILLDOWN_URL,
+		DrilldownURL:        config.HAPPENING_SERVER_URL,
 		SendgridApiKey:      config.NOTIFIER_SENDGRID_API_KEY,
 		NoReplyName:         config.NOTIFIER_NO_REPLY_NAME,
 		NoReplyEmail:        config.NOTIFIER_NO_REPLY_EMAIL,

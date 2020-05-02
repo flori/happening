@@ -10,10 +10,12 @@ REVISION := $(shell git rev-parse HEAD)
 REVISION_SHORT := $(shell echo $(REVISION) | head -c 7)
 GOPATH := $(shell pwd)/gospace
 GOBIN = $(GOPATH)/bin
+WEBUI_DIR := $(shell pwd)/webui
+HAPPENING_SERVER_URL ?= http://localhost:8080
 
 .EXPORT_ALL_VARIABLES:
 
-all: happening happening-server
+all: webui-build happening happening-server
 
 happening: cmd/happening/main.go *.go
 	go build -o $@ $<
@@ -22,10 +24,18 @@ happening-server: cmd/happening-server/main.go *.go
 	go build -o $@ $<
 
 local: happening-server
-	POSTGRES_URL=$(POSTGRES_URL) ./happening-server
+	POSTGRES_URL=$(POSTGRES_URL) WEBUI_DIR=$(WEBUI_DIR) HAPPENING_SERVER_URL=$(HAPPENING_SERVER_URL) ./happening-server
 
-fetch: fake-package
+webui-build:
+	cd webui && yarn --network-timeout 1000000 --network-concurrency 4 && yarn build
+
+webui-start:
+	cd webui && yarn start
+
+fetch:
 	go mod download
+
+setup: fake-package fetch
 
 fake-package:
 	rm -rf $(GOPATH)/src/github.com/flori/happening
@@ -68,7 +78,7 @@ debug:
 	docker run --rm -it $(DOCKER_IMAGE) bash
 
 server:
-	docker run -e POSTGRES_URL=$(POSTGRES_URL) --detach -p $(DOCKER_PORT):$(DOCKER_PORT) $(DOCKER_IMAGE)
+	docker run --network=host -e POSTGRES_URL=$(POSTGRES_URL) -e HAPPENING_SERVER_URL=$(HAPPENING_SERVER_URL) -it -p $(DOCKER_PORT):$(DOCKER_PORT) $(DOCKER_IMAGE)
 
 pull:
 	docker pull $(REMOTE_TAG)

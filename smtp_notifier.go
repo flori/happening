@@ -24,7 +24,7 @@ type SMTPNotifier struct {
 func NewSMTPNotifier(config ServerConfig) Notifier {
 	return &SMTPNotifier{
 		EnvironmentVariable: config.NOTIFIER_ENVIRONMENT_VARIABLE,
-		DrilldownURL:        config.NOTIFIER_DRILLDOWN_URL,
+		DrilldownURL:        config.HAPPENING_SERVER_URL,
 		SMTPServerURL:       config.NOTIFIER_SMTP_SERVER_URL,
 		NoReplyName:         config.NOTIFIER_NO_REPLY_NAME,
 		NoReplyEmail:        config.NOTIFIER_NO_REPLY_EMAIL,

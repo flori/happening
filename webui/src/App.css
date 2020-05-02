@@ -1,0 +1,19 @@
+.active ::selection {
+  background: #bf8f00; /* WebKit/Blink Browsers */
+}
+
+.active ::-moz-selection {
+  background: #bf8f00; /* Gecko Browsers */
+}
+
+.active ::-o-selection {
+    background-color: #352e7e; /* other */
+}
+
+.active ::-ms-selection {
+    background-color: #352e7e; /* ms */
+}
+
+.active ::-webkit-selection {
+    background-color: #352e7e; /* webkit */
+}

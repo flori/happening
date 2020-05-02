@@ -2,21 +2,19 @@ FROM alpine:3.11.6 AS builder
 
 # Update/Upgrade/Add packages for building
 
-RUN apk add --no-cache bash git go build-base
+RUN apk add --no-cache bash git go build-base yarn
 
 # Build happening
 
-WORKDIR /build/happening
+WORKDIR /build
 
 ADD . .
 
-ENV GOPATH=/build/happening/gospace
+ENV GOPATH=/build/gospace
 
 RUN make clobber
 
-RUN go get -u github.com/betterplace/go-init
-
-RUN make fetch test all
+RUN make setup test all
 
 FROM alpine:3.11.6 AS runner
 
@@ -30,10 +28,14 @@ RUN adduser -h ${APP_DIR} -s /bin/bash -D appuser
 
 RUN mkdir -p /opt/bin
 
-COPY --from=builder --chown=appuser:appuser /build/happening/gospace/bin/go-init /build/happening/happening /build/happening/happening-server /opt/bin/
+COPY --from=builder --chown=appuser:appuser /build/happening /build/happening-server /opt/bin/
+
+COPY --from=builder --chown=appuser:appuser /build/webui/build /webui/build
+
+WORKDIR /
 
 ENV PATH /opt/bin:${PATH}
 
 EXPOSE 8080
 
-CMD [ "/opt/bin/go-init", "-pre", "/bin/sleep 3", "-main", "/opt/bin/happening-server" ]
+CMD [ "/opt/bin/happening-server" ]

@@ -19,7 +19,7 @@ type MailCommandNotifier struct {
 func NewMailCommandNotifier(config ServerConfig) Notifier {
 	return &MailCommandNotifier{
 		EnvironmentVariable: config.NOTIFIER_ENVIRONMENT_VARIABLE,
-		DrilldownURL:        config.NOTIFIER_DRILLDOWN_URL,
+		DrilldownURL:        config.HAPPENING_SERVER_URL,
 		MailCommand:         config.NOTIFIER_MAIL_COMMAND,
 		ContactName:         config.NOTIFIER_CONTACT_NAME,
 		ContactEmail:        config.NOTIFIER_CONTACT_EMAIL,

@@ -72,7 +72,7 @@ func main() {
 	}
 	e := echo.New()
 	e.Validator = &CustomValidator{validator: validator.New()}
-	//e.Use(middleware.Logger())
+	e.Use(middleware.Logger())
 	e.Use(middleware.Gzip())
 	e.Use(middleware.CORS())
 	e.Use(errorHandler)
@@ -92,6 +92,7 @@ func main() {
 	}
 	api.PrepareDatabase()
 	api.SetupCronJobs()
+
 	// Events
 	e.POST("/api/v1/event", api.PostEventHandler)
 	e.PUT("/api/v1/event", api.PostEventHandler)
@@ -105,6 +106,8 @@ func main() {
 	e.DELETE("/api/v1/check/:id", api.DeleteCheckHandler)
 	e.GET("/api/v1/check/:id", api.GetCheckHandler)
 	e.GET("/api/v1/check/by-name/:name", api.GetCheckByNameHandler)
+	//
+	e.GET("/*", happening.PackrHandler(config))
 	//
 	e.Logger.Fatal(e.Start(":" + config.PORT))
 }
