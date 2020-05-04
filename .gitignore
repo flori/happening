@@ -6,4 +6,5 @@ tags
 gospace
 TODO.md
 cscope.out
-/webui/build/Env.js
+/webui/build/*
+/webui/node_modules
