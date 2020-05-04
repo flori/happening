@@ -1,3 +1,3 @@
 window.Env = {
-  "HAPPENING_SERVER_URL": "http://storage.gate.ping.de:8080"
+  "HAPPENING_SERVER_URL": "http://localhost:3000"
 };

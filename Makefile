@@ -12,6 +12,7 @@ GOPATH := $(shell pwd)/gospace
 GOBIN = $(GOPATH)/bin
 WEBUI_DIR := $(shell pwd)/webui
 HAPPENING_SERVER_URL ?= http://localhost:8080
+REACT_APP_HAPPENING_SERVER_URL = $(HAPPENING_SERVER_URL)
 
 .EXPORT_ALL_VARIABLES:
 
@@ -24,7 +25,7 @@ happening-server: cmd/happening-server/main.go *.go
 	go build -o $@ $<
 
 local: happening-server
-	POSTGRES_URL=$(POSTGRES_URL) WEBUI_DIR=$(WEBUI_DIR) HAPPENING_SERVER_URL=$(HAPPENING_SERVER_URL) ./happening-server
+	./happening-server
 
 webui-build:
 	cd webui && yarn --network-timeout 1000000 --network-concurrency 4 && yarn build

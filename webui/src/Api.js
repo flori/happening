@@ -1,5 +1,6 @@
 import axios from 'axios'
 import Cookies from 'universal-cookie'
+import getEnv from './getEnv'
 
 function handleUnauthorized(error) {
   if (!error.response) {
@@ -43,14 +44,6 @@ export function setAuth(username, password) {
     path: '/',
     expires:  new Date(new Date().getTime() + 14 * 86400 * 1000),
   })
-}
-
-export function getEnv(name, defaultName) {
-  if (typeof(window.Env) !== 'undefined' && window.Env[name]) {
-    return window.Env[name]
-  } else {
-    return defaultName
-  }
 }
 
 export function apiURLPrefix() {
