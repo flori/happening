@@ -1,8 +1,9 @@
 export default function getEnv(name, defaultName) {
-  if (name !== null) {
+  if (name !== undefined) {
     const reactAppName = `REACT_APP_${name}`
-    if (process.env[reactAppName] !== null) {
-      return process.env[reactAppName]
+    const reactAppValue = process.env[reactAppName]
+    if (reactAppValue !== undefined) {
+      return reactAppValue
     }
   }
   if (typeof(window.Env) !== 'undefined' && window.Env[name]) {

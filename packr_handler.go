@@ -32,6 +32,7 @@ func createEnv(config ServerConfig) {
 		log.Panic(err)
 	}
 
+	log.Printf("Env = %s", bytes)
 	_, err = fmt.Fprintf(file, "window.Env = %s;", bytes)
 	if err != nil {
 		log.Panic(err)

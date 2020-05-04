@@ -12,7 +12,6 @@ GOPATH := $(shell pwd)/gospace
 GOBIN = $(GOPATH)/bin
 WEBUI_DIR := $(shell pwd)/webui
 HAPPENING_SERVER_URL ?= http://localhost:8080
-REACT_APP_HAPPENING_SERVER_URL = $(HAPPENING_SERVER_URL)
 
 .EXPORT_ALL_VARIABLES:
 
@@ -31,7 +30,7 @@ webui-build:
 	cd webui && yarn --network-timeout 1000000 --network-concurrency 4 && yarn build
 
 webui-start:
-	cd webui && yarn start
+	REACT_APP_HAPPENING_SERVER_URL=$(HAPPENING_SERVER_URL) cd webui && yarn start
 
 fetch:
 	go mod download
@@ -68,11 +67,11 @@ pull-base:
 	docker pull $(BASE_IMAGE)
 
 build: pull-base
-	docker build -t $(DOCKER_IMAGE) .
+	docker build -t $(DOCKER_IMAGE) -t $(DOCKER_IMAGE_LATEST) .
 	$(MAKE) build-info
 
 build-force: pull-base
-	docker build -t $(DOCKER_IMAGE) --no-cache .
+	docker build -t $(DOCKER_IMAGE) -t $(DOCKER_IMAGE_LATEST) --no-cache .
 	$(MAKE) build-info
 
 debug:
