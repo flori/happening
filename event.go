@@ -18,5 +18,6 @@ type Event struct {
 	Signal   string         `json:"signal,omitempty" gorm:"text"`
 	Hostname string         `json:"hostname" gorm:"type:text"`
 	Pid      int            `json:"pid" gorm:"type:int"`
+	Load     float32        `json:"load" gorm:"type:real"`
 	Store    bool           `json:"store" gorm:"-"`
 }

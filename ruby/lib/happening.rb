@@ -18,11 +18,12 @@ module Happening
 	# ExitCode int           `json:"exitCode"`
 	# Hostname string        `json:"hostname"`
 	# Pid      int           `json:"pid"`
-	# Store    bool          `json:"store" gorm:"-"`
+	# Load     float32       `json:"load"
+	# Store    bool          `json:"store"
   Event = Struct.new(
     'Event',
     :id, :name, :command, :output, :started, :duration, :success, :exit_code,
-    :hostname, :pid, :store
+    :hostname, :pid, :load, :store
   ) do
 
     def initialize(opts = {})
@@ -42,6 +43,7 @@ module Happening
       opts[:exit_code] ||= 0
       opts[:hostname]  ||= (Socket.gethostname rescue nil)
       opts[:pid]       ||= $$
+      opts[:load]        = 0.0 # TODO
       opts[:store]       = opts.key?(:store) ? opts[:store] : true
       super(*opts.values_at(*members))
     end

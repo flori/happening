@@ -93,6 +93,7 @@ func Execute(config Config, block func(output io.Writer) bool) *Event {
 		Success:  success,
 		Hostname: hostname,
 		Pid:      os.Getpid(),
+		Load:     load(),
 		Store:    config.StoreReport,
 	}
 
@@ -180,6 +181,7 @@ func ExecuteCmd(config Config, cmdArgs []string) *Event {
 			Signal:   signal,
 			Hostname: hostname,
 			Pid:      pid,
+			Load:     load(),
 			Store:    config.StoreReport,
 		}
 		setEventFields(config, &event)
