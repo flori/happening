@@ -78,7 +78,8 @@ func main() {
 	e.Use(errorHandler)
 	if config.HTTP_AUTH != "" {
 		fmt.Println("info: Configuring HTTP Auth access control")
-		e.Use(middleware.BasicAuthWithConfig(basicAuthConfig(config)))
+		g := e.Group("/api/v1")
+		g.Use(middleware.BasicAuthWithConfig(basicAuthConfig(config)))
 	}
 	api := happening.API{
 		DATABASE_NAME: config.DATABASE_NAME,

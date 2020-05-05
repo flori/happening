@@ -12,6 +12,7 @@ GOPATH := $(shell pwd)/gospace
 GOBIN = $(GOPATH)/bin
 WEBUI_DIR := $(shell pwd)/webui
 HAPPENING_SERVER_URL ?= http://localhost:8080
+HTTP_AUTH ?= ""
 
 .EXPORT_ALL_VARIABLES:
 
