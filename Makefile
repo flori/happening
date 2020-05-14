@@ -31,7 +31,7 @@ webui-build:
 	cd webui && yarn --network-timeout 1000000 --network-concurrency 4 && yarn build
 
 webui-start:
-	REACT_APP_HAPPENING_SERVER_URL=$(HAPPENING_SERVER_URL) cd webui && yarn start
+	cd webui && REACT_APP_HAPPENING_SERVER_URL=$(HAPPENING_SERVER_URL) yarn start
 
 fetch:
 	go mod download
