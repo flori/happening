@@ -1,5 +1,6 @@
 import WebFont from 'webfontloader'
 import React from 'react'
+import qs from 'qs'
 
 import {
   Router,
@@ -65,13 +66,14 @@ class Content extends React.Component {
       <Route path="/checks"
         render={(props) => <ChecksList refresh={this.refresh} update={this.state.update} {...props}/>}
       />
-      <Route exact path="/" render={() => (
-        getAuth() ? <Redirect to="/search"/> : <Login/>)}
+      <Route exact path="/" render={( { location: { search } }) => {
+        let p = qs.parse(search, { ignoreQueryPrefix: true }).p || '/search'
+        return getAuth() ? <Redirect to={p}/> : <Login to={p}/>
+      }}
       />
     </>
   }
 }
-
 
 const App = () => (
   <MuiThemeProvider theme={createMuiTheme({ typography: { useNextVariants: true }})}>

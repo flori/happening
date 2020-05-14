@@ -50,7 +50,11 @@ func PackrHandler(config ServerConfig) echo.HandlerFunc {
 				h.ServeHTTP(c.Response(), c.Request())
 				return nil
 			} else {
-				return c.Redirect(http.StatusTemporaryRedirect, "/")
+				passedPath := path
+				if passedPath == "" {
+					passedPath = "/search"
+				}
+				return c.Redirect(http.StatusTemporaryRedirect, "/?p="+passedPath)
 			}
 		}
 	}

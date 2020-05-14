@@ -9,6 +9,7 @@
     "json-align": "^0.1.0",
     "moment": "^2.24.0",
     "prop-types": "^15.6.2",
+    "qs": "^6.9.4",
     "react": "^16.2.0",
     "react-copy-to-clipboard": "^5.0.1",
     "react-dom": "^16.2.0",

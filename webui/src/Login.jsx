@@ -41,12 +41,20 @@ class Login extends React.Component {
 
   handleSubmit = () => {
     setAuth(this.state.username, this.state.password)
-    window.location.href = '/'
+    if (this.props.to) {
+      window.location.href = '/?=' + this.props.to
+    } else {
+      window.location.href = '/'
+    }
   }
 
   render() {
     if (getAuth()) {
-      window.location.href = '/'
+      if (this.props.to) {
+        window.location.href = '/?=' + this.props.to
+      } else {
+        window.location.href = '/'
+      }
       return
     }
     const { classes } = this.props
