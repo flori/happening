@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDom from 'react-dom'
 import {
+  Chip,
   TableCell,
   TableRow,
   IconButton,
@@ -109,6 +110,17 @@ const ShareButton = ({ id }) => (
   </IconButton>
 )
 
+
+const Bar = "▁▂▃▄▅▆▇█"
+
+const Load = ({ load }) => {
+  return (
+    <IconButton title={`${(100 * load).toFixed(2)}% Load`} aria-label={"Load"}>
+      {Bar[Math.floor((Bar.length - 1) * load)]}
+    </IconButton>
+  )
+}
+
 export default class Event extends React.Component {
   state = {
     active: false,
@@ -135,7 +147,7 @@ export default class Event extends React.Component {
     }
     const cmd = commandString(command)
     if (this.commandIsLong()) {
-      let sliced = cmd.slice(0, 40)
+      let sliced = cmd.slice(0, 20)
       sliced += '…'
       return <tt title={cmd}>{sliced}</tt>
     } else {
@@ -175,19 +187,19 @@ export default class Event extends React.Component {
 
   render() {
 		const {
-      output, success, id, name, started, selected, refresh
+      output, success, id, name, started, load, selected, refresh
     } = this.props
 
     return (
       <>
         <TableRow className={success ? 'success' : 'failure' } style={this.displayStyle(selected)} ref="row">
           <TableCell>
-            <SearchButton eventName={name}/>
-            <ManageCheckButton eventName={name} refresh={refresh}/>
-            <ShareButton id={id}/>
-            {name}
+              <SearchButton eventName={name}/>
+              <ManageCheckButton eventName={name} refresh={refresh}/>
+              <ShareButton id={id}/>
+              <Load load={load}/>
+              <Chip label={name} color="primary"/>
           </TableCell>
-          <TableCell>{this.displayCommand()}</TableCell>
           <TableCell>{renderDate(started)}</TableCell>
           <TableCell>{this.displayDuration()}</TableCell>
           <TableCell>
