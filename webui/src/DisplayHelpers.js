@@ -63,7 +63,7 @@ export function renderCommandResult({ success, exitCode, signal }) {
 }
 
 export function formatTooltip(event) {
-    const { id, name, started, duration, hostname } = event
+    const { id, name, started, duration, load, hostname } = event
     let { command } = event
     if (command) {
       command = commandString(command)
@@ -82,6 +82,7 @@ export function formatTooltip(event) {
         <li>Started: ${renderDate(startTime)}</li>
         <li>Ended: ${renderDate(endTime)}</li>
         <li>Duration: ${renderDuration(duration)}</li>
+        <li>Load: ${(100 * load).toFixed(2)}%</li>
         <li>Command: <tt>${command}</tt></li>
         <li>Success: ${renderCommandResult(event)}</li>
         <li>Hostname: ${hostname}</li>
