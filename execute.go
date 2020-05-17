@@ -14,6 +14,8 @@ import (
 	"time"
 )
 
+var load = LoadTicker{}
+
 func getSuccessCodes(config *Config) []int {
 	var codes []int
 	if config.SuccessCode == "" {
@@ -69,6 +71,7 @@ func setEventFields(config Config, event *Event) {
 func Execute(config Config, block func(output io.Writer) bool) *Event {
 	hostname := determineHostname(config.Hostname)
 	started := time.Now()
+	load.Start()
 	success := true
 	duration := time.Duration(0)
 	outputString := ""
@@ -93,7 +96,7 @@ func Execute(config Config, block func(output io.Writer) bool) *Event {
 		Success:  success,
 		Hostname: hostname,
 		Pid:      os.Getpid(),
-		Load:     load(),
+		Load:     load.Compute(),
 		Store:    config.StoreReport,
 	}
 
@@ -145,6 +148,7 @@ func ExecuteCmd(config Config, cmdArgs []string) *Event {
 			}
 		}
 		started := time.Now()
+		load.Start()
 		if err == nil {
 			err = cmd.Start()
 		}
@@ -181,7 +185,7 @@ func ExecuteCmd(config Config, cmdArgs []string) *Event {
 			Signal:   signal,
 			Hostname: hostname,
 			Pid:      pid,
-			Load:     load(),
+			Load:     load.Compute(),
 			Store:    config.StoreReport,
 		}
 		setEventFields(config, &event)

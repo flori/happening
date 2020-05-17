@@ -5,6 +5,7 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func processorCount() float64 {
@@ -45,6 +46,36 @@ func loadAvg() float64 {
 	return loadAvg
 }
 
-func load() float32 {
-	return float32(loadAvg() / processorCount())
+func currentLoadAverage() float64 {
+	return loadAvg() / processorCount()
+}
+
+type LoadTicker struct {
+	ticker *time.Ticker
+	total  float64
+	count  int
+	done   chan bool
+}
+
+func (lt *LoadTicker) Start() {
+	lt.ticker = time.NewTicker(1 * time.Minute)
+	lt.done = make(chan bool)
+	go func() {
+		for {
+			select {
+			case <-lt.done:
+				return
+			case <-lt.ticker.C:
+				lt.total += currentLoadAverage()
+				lt.count++
+			}
+		}
+	}()
+}
+
+func (lt *LoadTicker) Compute() float32 {
+	lt.done <- true
+	lt.total += currentLoadAverage()
+	lt.count++
+	return float32(lt.total / float64(lt.count))
 }
