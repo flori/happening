@@ -73,9 +73,16 @@ func (lt *LoadTicker) Start() {
 	}()
 }
 
+func normalize(value float64) float32 {
+	if value > 1.0 {
+		value = 1.0
+	}
+	return float32(value)
+}
+
 func (lt *LoadTicker) Compute() float32 {
 	lt.done <- true
 	lt.total += currentLoadAverage()
 	lt.count++
-	return float32(lt.total / float64(lt.count))
+	return normalize(lt.total / float64(lt.count))
 }
