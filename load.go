@@ -3,24 +3,14 @@ package happening
 import (
 	"os"
 	"os/exec"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
 )
 
 func processorCount() float64 {
-	processorCount := 0
-	out, err := exec.Command("getconf", "_NPROCESSORS_ONLN").Output()
-	if err != nil {
-		return 0.0
-
-	}
-	i, err := strconv.ParseInt(strings.TrimSpace(string(out)), 10, 32)
-	if err != nil {
-		return 0.0
-	}
-	processorCount = int(i)
-	return float64(processorCount)
+	return float64(runtime.NumCPU())
 }
 
 func loadAvg() float64 {
