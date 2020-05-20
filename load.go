@@ -13,31 +13,33 @@ func processorCount() float64 {
 	return float64(runtime.NumCPU())
 }
 
-func loadAvg() float64 {
-	loadAvg := 0.0
-	cmd := exec.Command("uptime")
+func cpuLoad() float64 {
+	cpuLoad := 0.0
+	cmd := exec.Command("ps", "-A", "-o", "%cpu=0.0")
 	cmd.Env = append(os.Environ(), "LANG=C")
 	out, err := cmd.Output()
 	if err != nil {
-		return 0.0
+		return cpuLoad
 	}
-	result := strings.Split(string(out), " ")
-	l := len(result)
-	if l > 3 {
-		loadValue := strings.Trim(result[l-3], ",")
-		f, err := strconv.ParseFloat(loadValue, 64)
-		if err != nil {
-			return 0.0
+	result := strings.Split(string(out), "\n")
+	sum := 0.0
+	for _, load := range result {
+		load := strings.Trim(load, " ")
+		if load == "" {
+			continue
 		}
-		loadAvg = f
-	} else {
-		return 0.0
+		f, err := strconv.ParseFloat(load, 64)
+		if err != nil {
+			continue
+		}
+		sum += f
 	}
-	return loadAvg
+	cpuLoad = sum / 100
+	return cpuLoad
 }
 
-func currentLoadAverage() float64 {
-	return loadAvg() / processorCount()
+func cpuLoadTotal() float64 {
+	return cpuLoad() / processorCount()
 }
 
 type LoadTicker struct {
@@ -48,7 +50,7 @@ type LoadTicker struct {
 }
 
 func (lt *LoadTicker) Start() {
-	lt.ticker = time.NewTicker(1 * time.Minute)
+	lt.ticker = time.NewTicker(1 * time.Second)
 	lt.done = make(chan bool)
 	go func() {
 		for {
@@ -56,7 +58,7 @@ func (lt *LoadTicker) Start() {
 			case <-lt.done:
 				return
 			case <-lt.ticker.C:
-				lt.total += currentLoadAverage()
+				lt.total += cpuLoadTotal()
 				lt.count++
 			}
 		}
@@ -72,7 +74,7 @@ func normalize(value float64) float32 {
 
 func (lt *LoadTicker) Compute() float32 {
 	lt.done <- true
-	lt.total += currentLoadAverage()
+	lt.total += cpuLoadTotal()
 	lt.count++
 	return normalize(lt.total / float64(lt.count))
 }
