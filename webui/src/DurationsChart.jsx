@@ -11,8 +11,8 @@ export default class DurationsChart extends React.Component {
         format: 'M-d H:mm'
       },
       vAxes: {
-        0: { title: 'Duration [m]', viewWindow: { min: 0, } },
-        1: { title: 'Load [0-100%]', viewWindow: { min: 0, } },
+        0: { title: 'Duration [m]', viewWindow: { min: 0 } },
+        1: { viewWindow: { min: 0, max: 100 }, textPosition: 'none' },
       },
       tooltip: {
         isHtml: true
@@ -94,7 +94,7 @@ export default class DurationsChart extends React.Component {
       columns={this.state.columns}
       options={this.state.options}
       graph_id="Durations"
-      width="100%"
+      width="103%"
       chartEvents={chartEvents}
     />
   }
