@@ -8,3 +8,4 @@ TODO.md
 cscope.out
 /webui/build/*
 /webui/node_modules
+/data
