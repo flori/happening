@@ -8,6 +8,7 @@
     "axios": "^0.18.0",
     "json-align": "^0.1.0",
     "moment": "^2.24.0",
+    "node-fetch": "2.6.1",
     "prop-types": "^15.6.2",
     "qs": "^6.9.4",
     "react": "^16.2.0",
