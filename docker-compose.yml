@@ -4,8 +4,8 @@ services:
     image: postgres:9.6-alpine
     restart: on-failure
     ports:
-    - "6666:5432"
+      - "6666:5432"
     volumes:
-    - "./data/postgresql:/var/lib/postgresql:rw"
+      - "./data/postgresql:/var/lib/postgresql:rw"
     environment:
       - "POSTGRES_PASSWORD=secret"
