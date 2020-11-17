@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 
@@ -39,13 +40,24 @@ func createEnv(config ServerConfig) {
 	}
 }
 
+func redirectURL(path string, oldURL *url.URL) string {
+	query := oldURL.Query()
+	path = path + "?" + query.Encode()
+	oldURL.Path = "/"
+	newQuery := url.Values{}
+	newQuery.Set("p", path)
+	oldURL.RawQuery = newQuery.Encode()
+	return oldURL.String()
+}
+
 func PackrHandler(config ServerConfig) echo.HandlerFunc {
 	createEnv(config)
 	box := packr.NewBox(filepath.Join(config.WEBUI_DIR, "build"))
 	fileServer := http.FileServer(box)
 	wrapHandler := func(h http.Handler) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			path := c.Request().URL.Path
+			oldURL := c.Request().URL
+			path := oldURL.Path
 			if path != "" && box.Has(path) {
 				h.ServeHTTP(c.Response(), c.Request())
 				return nil
@@ -53,7 +65,7 @@ func PackrHandler(config ServerConfig) echo.HandlerFunc {
 				if path == "" {
 					path = "/search"
 				}
-				return c.Redirect(http.StatusTemporaryRedirect, "/?p="+path)
+				return c.Redirect(http.StatusTemporaryRedirect, redirectURL(path, oldURL))
 			}
 		}
 	}

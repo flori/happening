@@ -67,7 +67,8 @@ class Content extends React.Component {
         render={(props) => <ChecksList refresh={this.refresh} update={this.state.update} {...props}/>}
       />
       <Route exact path="/" render={( { location: { search } }) => {
-        const p = qs.parse(search, { ignoreQueryPrefix: true }).p || '/search'
+        const params = qs.parse(search, { ignoreQueryPrefix: true })
+        const p = params.p || '/search'
         return getAuth() ? <Redirect to={p}/> : <Login to={p}/>
       }}
       />
