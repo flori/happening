@@ -1,4 +1,4 @@
-FROM alpine:3.12.1 AS builder
+FROM alpine:3.12.3 AS builder
 
 # Update/Upgrade/Add packages for building
 
@@ -16,7 +16,7 @@ RUN make clobber
 
 RUN make setup test all
 
-FROM alpine:3.12.1 AS runner
+FROM alpine:3.12.3 AS runner
 
 # Update/Upgrade/Add packages
 
