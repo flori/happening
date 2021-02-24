@@ -33,6 +33,9 @@ webui-build:
 webui-start:
 	cd webui && REACT_APP_HAPPENING_SERVER_URL=$(HAPPENING_SERVER_URL) yarn start
 
+webui-browserslist-update:
+	cd webui && npx browserslist@latest --update-db
+
 fetch:
 	go mod download
 
