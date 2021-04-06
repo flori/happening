@@ -71,11 +71,11 @@ pull-base:
 	docker pull $(BASE_IMAGE)
 
 build: pull-base
-	docker build -t $(DOCKER_IMAGE) -t $(DOCKER_IMAGE_LATEST) .
+	docker build --pull -t $(DOCKER_IMAGE) -t $(DOCKER_IMAGE_LATEST) .
 	$(MAKE) build-info
 
 build-force: pull-base
-	docker build -t $(DOCKER_IMAGE) -t $(DOCKER_IMAGE_LATEST) --no-cache .
+	docker build --pull -t $(DOCKER_IMAGE) -t $(DOCKER_IMAGE_LATEST) --no-cache .
 	$(MAKE) build-info
 
 debug:
