@@ -4,15 +4,19 @@ import { Watch } from '@material-ui/icons'
 import { renderDuration, nano } from './DisplayHelpers'
 import { Subscribe } from 'unstated'
 
-const TimeChoice = ({ menu, ec, chosenSeconds, text }) => {
-  const seconds = ec.seconds
-  return (
-    <MenuItem
-      selected={seconds === chosenSeconds}
+class  TimeChoice extends React.Component {
+  render() {
+    const { menu, ec, chosenSeconds, text } = this.props
+
+    return (
+      <MenuItem
+      selected={ec.seconds === chosenSeconds}
       onClick={menu.handleChoice(ec, chosenSeconds)}
-    >{text}
-    </MenuItem>
-  )
+      >
+        {text}
+      </MenuItem>
+    )
+  }
 }
 
 export default class TimeMenu extends React.Component {
