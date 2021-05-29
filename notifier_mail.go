@@ -61,7 +61,7 @@ func (mail NotifierMail) Text() string {
 			fallthrough
 		case "failed":
 			text += fmt.Sprintf(
-				"\n\nDrill down via this URL: %s/search/id:%s?s=2419200",
+				"\n\nDrill down via this URL: %s/search/id:%s",
 				mail.DrilldownURL,
 				*mail.Check.LastEventId,
 			)

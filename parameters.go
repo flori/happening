@@ -48,7 +48,7 @@ func parseParameters(c echo.Context) parameters {
 			p.Limit = 50
 		}
 	}
-	if s := c.QueryParam("s"); s != "" {
+	if s := c.QueryParam("s"); s != "" && p.Filters["id"] == "" {
 		if p.Start, err = strconv.Atoi(s); err != nil {
 			p.Start = 0
 		}
