@@ -104,7 +104,7 @@ class FoldButton extends React.Component {
 
 const ShareButton = ({ id }) => (
   <IconButton title='Copy link clipboard' aria-label='Copy link to clipboard'>
-    <CopyToClipboard text={`${window.location.origin}/search/id:${id}?s=2419200`}>
+    <CopyToClipboard text={`${window.location.origin}/search/id:${id}`}>
       <Share/>
     </CopyToClipboard>
   </IconButton>
