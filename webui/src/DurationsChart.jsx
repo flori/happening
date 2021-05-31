@@ -12,18 +12,18 @@ export default class DurationsChart extends React.Component {
       },
       vAxes: {
         0: { title: 'Duration [m]', viewWindow: { min: 0 } },
-        1: { viewWindow: { min: 0, max: 100 }, textPosition: 'none' },
+        1: { textPosition: 'none' },
       },
       tooltip: {
         isHtml: true
       },
       trendlines: {
         0: { tooltip: false },
-        1: null,
+        1: { tooltip: false },
       },
       series: {
         0: { title: 'Duration', targetAxisIndex: 0, lineWidth: 0, pointSize: 5 },
-        1: { title: 'Load', targetAxisIndex: 1, lineWidth: 1, pointSize: 0, curveType: 'function', tooltip: false },
+        1: { title: 'Memory', targetAxisIndex: 1, lineWidth: 1, pointSize: 2, curveType: 'function', tooltip: false },
       },
     },
     columns: [
@@ -46,21 +46,22 @@ export default class DurationsChart extends React.Component {
       },
       {
         type: 'number',
-        id: 'Load',
+        id: 'Memory',
       },
     ]
   }
 
   prepareRows(data) {
     return data.map( (e) => {
-      const { started, duration, load } = e
+      console.log(e)
+      const { started, duration, memoryUsage } = e
       const startTime = Date.parse(started)
       return [
         new Date(startTime),
         duration / nano / 60,
         formatTooltip(e),
         e.success ? '#00d700' : '#f71000',
-        100 * load,
+        memoryUsage,
       ]
     })
 

@@ -1,6 +1,8 @@
 import { commandString } from './Event'
 import moment from 'moment/moment'
 
+const prettyBytes = require('pretty-bytes')
+
 export const milli = 1000
 export const micro = 1000000
 export const nano = 1000000000
@@ -63,7 +65,7 @@ export function renderCommandResult({ success, exitCode, signal }) {
 }
 
 export function formatTooltip(event) {
-    const { id, name, started, duration, load, hostname } = event
+    const { id, name, started, duration, load, hostname, cpuUsage, memoryUsage } = event
     let { command } = event
     if (command) {
       command = commandString(command)
@@ -83,6 +85,8 @@ export function formatTooltip(event) {
         <li>Ended: ${renderDate(endTime)}</li>
         <li>Duration: ${renderDuration(duration)}</li>
         <li>Load: ${(100 * load).toFixed(2)}%</li>
+        <li>CPU Usage: ${cpuUsage}</li>
+        <li>Memory Usage: ${prettyBytes(memoryUsage)}</li>
         <li>Command: <tt>${command}</tt></li>
         <li>Success: ${renderCommandResult(event)}</li>
         <li>Hostname: ${hostname}</li>

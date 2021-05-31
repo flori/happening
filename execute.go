@@ -3,6 +3,7 @@ package happening
 import (
 	"bytes"
 	"fmt"
+	"github.com/struCoder/pidusage"
 	"io"
 	"io/ioutil"
 	"log"
@@ -68,6 +69,14 @@ func setEventFields(config Config, event *Event) {
 	}
 }
 
+func fetchPidUsage(pid int) *pidusage.SysInfo {
+	sysInfo, err := pidusage.GetStat(pid)
+	if err != nil {
+		return nil
+	}
+	return sysInfo
+}
+
 func Execute(config Config, block func(output io.Writer) bool) *Event {
 	hostname := determineHostname(config.Hostname)
 	started := time.Now()
@@ -75,6 +84,15 @@ func Execute(config Config, block func(output io.Writer) bool) *Event {
 	success := true
 	duration := time.Duration(0)
 	outputString := ""
+	pid := os.Getpid()
+
+	var cpuUsage float64
+	var memoryUsage float64
+	if sysInfo := fetchPidUsage(pid); sysInfo != nil {
+		cpuUsage = sysInfo.CPU
+		memoryUsage = sysInfo.Memory
+	}
+
 	if block != nil {
 		if config.CollectOutput {
 			output := new(bytes.Buffer)
@@ -88,16 +106,18 @@ func Execute(config Config, block func(output io.Writer) bool) *Event {
 	}
 
 	event := Event{
-		Id:       GenerateUUIDv4(),
-		Name:     config.Name,
-		Output:   outputString,
-		Started:  started,
-		Duration: duration,
-		Success:  success,
-		Hostname: hostname,
-		Pid:      os.Getpid(),
-		Load:     load.Compute(),
-		Store:    config.StoreReport,
+		Id:          GenerateUUIDv4(),
+		Name:        config.Name,
+		Output:      outputString,
+		Started:     started,
+		Duration:    duration,
+		Success:     success,
+		Hostname:    hostname,
+		Pid:         pid,
+		Load:        load.Compute(),
+		CpuUsage:    cpuUsage,
+		MemoryUsage: memoryUsage,
+		Store:       config.StoreReport,
 	}
 
 	setEventFields(config, &event)
@@ -140,6 +160,8 @@ func ExecuteCmd(config Config, cmdArgs []string) *Event {
 		var exitCode int
 		var signal string
 		var output string
+		var cpuUsage float64
+		var memoryUsage float64
 		pid := 0
 		if config.Chdir != "" {
 			oldDir, err = os.Getwd()
@@ -153,6 +175,11 @@ func ExecuteCmd(config Config, cmdArgs []string) *Event {
 			err = cmd.Start()
 		}
 		if err == nil {
+			pid = cmd.Process.Pid
+			if sysInfo := fetchPidUsage(pid); sysInfo != nil {
+				cpuUsage = sysInfo.CPU
+				memoryUsage = sysInfo.Memory
+			}
 			err = cmd.Wait()
 			processState := cmd.ProcessState
 			exitCode = processState.ExitCode()
@@ -162,7 +189,6 @@ func ExecuteCmd(config Config, cmdArgs []string) *Event {
 			}
 			success = isSuccess(exitCode, &config)
 			output = outputBuffer.String()
-			pid = cmd.ProcessState.Pid()
 		} else {
 			output = fmt.Sprintf(
 				"happening: Starting \"%s\" failed with error \"%v\"", cmdArgs[0], err)
@@ -174,19 +200,21 @@ func ExecuteCmd(config Config, cmdArgs []string) *Event {
 			os.Chdir(oldDir)
 		}
 		event := Event{
-			Id:       GenerateUUIDv4(),
-			Name:     config.Name,
-			Command:  cmdArgs,
-			Output:   output,
-			Started:  started,
-			Duration: time.Now().Sub(started),
-			Success:  success,
-			ExitCode: exitCode,
-			Signal:   signal,
-			Hostname: hostname,
-			Pid:      pid,
-			Load:     load.Compute(),
-			Store:    config.StoreReport,
+			Id:          GenerateUUIDv4(),
+			Name:        config.Name,
+			Command:     cmdArgs,
+			Output:      output,
+			Started:     started,
+			Duration:    time.Now().Sub(started),
+			Success:     success,
+			ExitCode:    exitCode,
+			Signal:      signal,
+			Hostname:    hostname,
+			Pid:         pid,
+			Load:        load.Compute(),
+			CpuUsage:    cpuUsage,
+			MemoryUsage: memoryUsage,
+			Store:       config.StoreReport,
 		}
 		setEventFields(config, &event)
 		return &event
