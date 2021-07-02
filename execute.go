@@ -3,7 +3,6 @@ package happening
 import (
 	"bytes"
 	"fmt"
-	"github.com/struCoder/pidusage"
 	"io"
 	"io/ioutil"
 	"log"
@@ -69,14 +68,6 @@ func setEventFields(config Config, event *Event) {
 	}
 }
 
-func fetchPidUsage(pid int) *pidusage.SysInfo {
-	sysInfo, err := pidusage.GetStat(pid)
-	if err != nil {
-		return nil
-	}
-	return sysInfo
-}
-
 func Execute(config Config, block func(output io.Writer) bool) *Event {
 	hostname := determineHostname(config.Hostname)
 	started := time.Now()
@@ -86,12 +77,7 @@ func Execute(config Config, block func(output io.Writer) bool) *Event {
 	outputString := ""
 	pid := os.Getpid()
 
-	var cpuUsage float64
-	var memoryUsage float64
-	if sysInfo := fetchPidUsage(pid); sysInfo != nil {
-		cpuUsage = sysInfo.CPU
-		memoryUsage = sysInfo.Memory
-	}
+	pi := getProcinfoSelf()
 
 	if block != nil {
 		if config.CollectOutput {
@@ -115,8 +101,8 @@ func Execute(config Config, block func(output io.Writer) bool) *Event {
 		Hostname:    hostname,
 		Pid:         pid,
 		Load:        load.Compute(),
-		CpuUsage:    cpuUsage,
-		MemoryUsage: memoryUsage,
+		CpuUsage:    pi.CpuUsage,
+		MemoryUsage: pi.MemoryUsage,
 		Store:       config.StoreReport,
 	}
 
@@ -160,8 +146,7 @@ func ExecuteCmd(config Config, cmdArgs []string) *Event {
 		var exitCode int
 		var signal string
 		var output string
-		var cpuUsage float64
-		var memoryUsage float64
+		var pi *procinfo
 		pid := 0
 		if config.Chdir != "" {
 			oldDir, err = os.Getwd()
@@ -176,12 +161,9 @@ func ExecuteCmd(config Config, cmdArgs []string) *Event {
 		}
 		if err == nil {
 			pid = cmd.Process.Pid
-			if sysInfo := fetchPidUsage(pid); sysInfo != nil {
-				cpuUsage = sysInfo.CPU
-				memoryUsage = sysInfo.Memory
-			}
 			err = cmd.Wait()
 			processState := cmd.ProcessState
+			pi = getProcinfo(processState)
 			exitCode = processState.ExitCode()
 			status := processState.Sys().(syscall.WaitStatus)
 			if status.Signaled() {
@@ -212,8 +194,8 @@ func ExecuteCmd(config Config, cmdArgs []string) *Event {
 			Hostname:    hostname,
 			Pid:         pid,
 			Load:        load.Compute(),
-			CpuUsage:    cpuUsage,
-			MemoryUsage: memoryUsage,
+			CpuUsage:    pi.CpuUsage,
+			MemoryUsage: pi.MemoryUsage,
 			Store:       config.StoreReport,
 		}
 		setEventFields(config, &event)
