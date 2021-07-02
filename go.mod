@@ -91,10 +91,10 @@ require (
 	github.com/zmb3/gogetdoc v0.0.0-20190228002656-b37376c5da6a // indirect
 	go.starlark.net v0.0.0-20210511153848-cca21e7857d4 // indirect
 	golang.org/x/arch v0.0.0-20210502124803-cbf565b21d1e // indirect
-	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a // indirect
+	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
 	golang.org/x/net v0.0.0-20210614182718-04defd469f4e // indirect
-	golang.org/x/sys v0.0.0-20210616094352-59db8d763f22 // indirect
+	golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c // indirect
 	golang.org/x/text v0.3.6 // indirect
 	golang.org/x/tools v0.1.2 // indirect
 	gopkg.in/airbrake/gobrake.v2 v2.0.9 // indirect
