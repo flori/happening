@@ -8,7 +8,7 @@ import (
 	"github.com/jasonlvhit/gocron"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 const DEBUG = false

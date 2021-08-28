@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 
 	"github.com/gobuffalo/packr"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 type env struct {
