@@ -24,8 +24,10 @@ func basicAuthConfig(config happening.ServerConfig) middleware.BasicAuthConfig {
 		Validator: func(username, password string, c echo.Context) (bool, error) {
 			httpAuth := strings.Split(config.HTTP_AUTH, ":")
 			if username == httpAuth[0] && password == httpAuth[1] {
+				log.Printf("Access for %s was granted.", username)
 				return true, nil
 			}
+			log.Printf("Access for %s was denied!", username)
 			return false, nil
 		},
 	}
@@ -70,45 +72,54 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	api := happening.API{
+		DATABASE_NAME: config.DATABASE_NAME,
+		POSTGRES_URL:  config.POSTGRES_URL,
+		NOTIFIER:      happening.NewNotifier(config),
+	}
+	api.PrepareDatabase()
+	api.SetupCronJobs()
+
 	e := echo.New()
 	e.Validator = &CustomValidator{validator: validator.New()}
 	e.Use(middleware.Logger())
 	e.Use(middleware.Gzip())
 	e.Use(middleware.CORS())
 	e.Use(errorHandler)
-	if config.HTTP_AUTH != "" {
-		fmt.Println("info: Configuring HTTP Auth access control")
-		g := e.Group("/api/v1")
+
+	g := e.Group("/api/v1")
+	if config.HTTP_AUTH == "" {
+		log.Fatal("Need HTTP_AUTH configuration to start server.")
+	} else {
+		fmt.Println("info:dmi Configuring HTTP Auth access control")
 		g.Use(middleware.BasicAuthWithConfig(basicAuthConfig(config)))
-	}
-	api := happening.API{
-		DATABASE_NAME: config.DATABASE_NAME,
-		POSTGRES_URL:  config.POSTGRES_URL,
-		NOTIFIER:      happening.NewNotifier(config),
 	}
 	if config.NOTIFIER_KIND != "" {
 		log.Printf("Using notifier for %s", config.NOTIFIER_KIND)
 	} else {
 		log.Printf("Notifier disabled.")
 	}
-	api.PrepareDatabase()
-	api.SetupCronJobs()
+
+	// Inserting events
+	g.POST("/event", api.PostEventHandler)
+	g.PUT("/event", api.PostEventHandler)
 
 	// Events
-	e.POST("/api/v1/event", api.PostEventHandler)
-	e.PUT("/api/v1/event", api.PostEventHandler)
-	e.GET("/api/v1/events", api.GetEventsHandler)
-	e.GET("/api/v1/event/:id", api.GetEventHandler)
+	g.GET("/events", api.GetEventsHandler)
+	g.GET("/event/:id", api.GetEventHandler)
+
 	// Checks
-	e.POST("/api/v1/check", api.PostCheckHandler)
-	e.PUT("/api/v1/check", api.PostCheckHandler)
-	e.PATCH("/api/v1/check/:id", api.PatchCheckHandler)
-	e.GET("/api/v1/checks", api.GetChecksHandler)
-	e.DELETE("/api/v1/check/:id", api.DeleteCheckHandler)
-	e.GET("/api/v1/check/:id", api.GetCheckHandler)
-	e.GET("/api/v1/check/by-name/:name", api.GetCheckByNameHandler)
-	//
+	g.POST("/check", api.PostCheckHandler)
+	g.PUT("/check", api.PostCheckHandler)
+	g.PATCH("/check/:id", api.PatchCheckHandler)
+	g.GET("/checks", api.GetChecksHandler)
+	g.DELETE("/check/:id", api.DeleteCheckHandler)
+	g.GET("/check/:id", api.GetCheckHandler)
+	g.GET("/check/by-name/:name", api.GetCheckByNameHandler)
+
+	// HTML
 	e.GET("/*", happening.PackrHandler(config))
-	//
+
 	e.Logger.Fatal(e.Start(":" + config.PORT))
 }
