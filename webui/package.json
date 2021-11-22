@@ -5,6 +5,7 @@
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
+    "ansi-html-community": "0.0.8",
     "axios": "^0.21.1",
     "classnames": "^2.2.6",
     "json-align": "^0.1.0",
@@ -18,8 +19,8 @@
     "react-dom": "^16.2.0",
     "react-google-charts": "^3.0",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "^3.0.1",
-    "serve": "^11.3.2",
+    "react-scripts": "^4.0.3",
+    "serve": "^13.0.2",
     "universal-cookie": "^3.0",
     "unstated": "^2.1.1",
     "webfontloader": "^1.6.28"
@@ -31,7 +32,12 @@
     "eject": "react-scripts eject"
   },
   "resolutions": {
-    "immer": "^8.0.1"
+    "immer": "^9.0.6",
+    "glob-parent": "^5.1.2",
+    "ansi-regex": "^5.0.1",
+    "nth-check": "^2.0.1",
+    "browserslist": "^4.16.5",
+    "ansi-html": "https://registry.yarnpkg.com/ansi-html-community/-/ansi-html-community-0.0.8.tgz#69fbc4d6ccbe383f9736934ae34c3f8290f1bf41"
   },
   "browserslist": [
     ">1%",
