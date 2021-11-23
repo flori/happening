@@ -5,7 +5,7 @@ import {
   TextField,
   withStyles,
 } from '@material-ui/core'
-import { getAuth, setAuth } from './Api'
+import { jwtLogin, getAuth, setAuth } from './Api'
 
 const styles = theme => ({
   container: {
@@ -40,12 +40,7 @@ class Login extends React.Component {
   }
 
   handleSubmit = () => {
-    setAuth(this.state.username, this.state.password)
-    if (this.props.to) {
-      window.location.href = '/?=' + this.props.to
-    } else {
-      window.location.href = '/'
-    }
+    jwtLogin(this.state.username, this.state.password, this.props.to)
   }
 
   render() {

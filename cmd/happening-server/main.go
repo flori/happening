@@ -5,31 +5,24 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"time"
 
+	happening "github.com/flori/happening"
 	"github.com/go-playground/validator"
+	"github.com/golang-jwt/jwt"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-
-	happening "github.com/flori/happening"
 )
 
-func basicAuthConfig(config happening.ServerConfig) middleware.BasicAuthConfig {
-	return middleware.BasicAuthConfig{
-		Realm: config.HTTP_REALM,
+func jwtAuth(config happening.ServerConfig) middleware.JWTConfig {
+	return middleware.JWTConfig{
 		Skipper: func(c echo.Context) bool {
-			m := c.Request().Method
-			return c.Path() == "/api/v1/event" && (m == "POST" || m == "PUT")
+			path := c.Path()
+			method := c.Request().Method
+			return path == "/api/v1/event" && (method == "POST" || method == "PUT")
 		},
-		Validator: func(username, password string, c echo.Context) (bool, error) {
-			httpAuth := strings.Split(config.HTTP_AUTH, ":")
-			if username == httpAuth[0] && password == httpAuth[1] {
-				log.Printf("Access for %s was granted.", username)
-				return true, nil
-			}
-			log.Printf("Access for %s was denied!", username)
-			return false, nil
-		},
+		SigningKey: []byte(config.SIGNING_SECRET),
 	}
 }
 
@@ -66,6 +59,55 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 	return cv.validator.Struct(i)
 }
 
+// jwtCustomClaims are custom claims extending default ones.
+// See https://github.com/golang-jwt/jwt for more examples
+type jwtCustomClaims struct {
+	Name string `json:"name"`
+	jwt.StandardClaims
+}
+
+type AuthPair struct {
+	Username string `json:"username" validate:"required"`
+	Password string `json:"password" validate:"required"`
+}
+
+func jwtLoginWithConfig(config happening.ServerConfig) func(echo.Context) error {
+	return func(c echo.Context) error {
+		authPair := new(AuthPair)
+		if err := c.Bind(authPair); err != nil {
+			return err
+		}
+
+		httpAuth := strings.Split(config.HTTP_AUTH, ":")
+
+		// Throws unauthorized error
+		if authPair.Username != httpAuth[0] || authPair.Password != httpAuth[1] {
+			return echo.ErrUnauthorized
+		}
+
+		// Set custom claims
+		claims := &jwtCustomClaims{
+			"Admin",
+			jwt.StandardClaims{
+				ExpiresAt: time.Now().Add(time.Hour * 24 * 7).Unix(), // 1 week
+			},
+		}
+
+		// Create token with claims
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+		// Generate encoded token and send it as response.
+		t, err := token.SignedString([]byte(config.SIGNING_SECRET))
+		if err != nil {
+			return err
+		}
+
+		return c.JSON(http.StatusOK, echo.Map{
+			"token": t,
+		})
+	}
+}
+
 func main() {
 	var config happening.ServerConfig
 	err := envconfig.Process("", &config)
@@ -89,12 +131,13 @@ func main() {
 	e.Use(errorHandler)
 
 	g := e.Group("/api/v1")
-	if config.HTTP_AUTH == "" {
-		log.Fatal("Need HTTP_AUTH configuration to start server.")
+	if config.HTTP_AUTH == "" || config.SIGNING_SECRET == "" {
+		log.Fatal("Need HTTP_AUTH and SIGNING_SECRET configuration to start server.")
 	} else {
-		fmt.Println("info:dmi Configuring HTTP Auth access control")
-		g.Use(middleware.BasicAuthWithConfig(basicAuthConfig(config)))
+		fmt.Println("info:dmi Configuring JWT authentication")
+		g.Use(middleware.JWTWithConfig(jwtAuth(config)))
 	}
+	e.POST("/jwt", jwtLoginWithConfig(config))
 	if config.NOTIFIER_KIND != "" {
 		log.Printf("Using notifier for %s", config.NOTIFIER_KIND)
 	} else {

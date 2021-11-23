@@ -18,6 +18,22 @@ function handleUnauthorized(error) {
   }
 }
 
+export function jwtLogin(username, password, to) {
+  const authPair = { username, password }
+  axios.post(
+    apiURLPrefix() + "/jwt", authPair,
+    { headers: { "Content-Type": "application/json" } })
+    .then((data) => {
+      const token = data.data.token
+      setAuth(token)
+      if (to) {
+        window.location.href = '/?=' + to
+      } else {
+        window.location.href = '/'
+      }
+    })
+}
+
 export const apiInit = () => {
   axios.interceptors.response.use((response) => {
     return response
@@ -38,11 +54,11 @@ export function clearAuth() {
   cookies.remove('auth', { path: '/' })
 }
 
-export function setAuth(username, password) {
+export function setAuth(token) {
   const cookies = new Cookies()
-  cookies.set('auth', `${username}:${password}`, {
+  cookies.set('auth', token, {
     path: '/',
-    expires:  new Date(new Date().getTime() + 14 * 86400 * 1000),
+    expires:  new Date(new Date().getTime() + 7 * 86400 * 1000), // 1 week
   })
 }
 
@@ -51,14 +67,12 @@ export function apiURLPrefix() {
 }
 
 function buildApiURL(path) {
-  let auth = getAuth()
-  if (!auth) {
+  const token = getAuth()
+  if (!token) {
     window.location.href = "/login"
   }
-  const [ username, password ] = auth.split(":", 2)
   return {
-    username,
-    password,
+    token,
     url: new URL(apiURLPrefix() + path)
   }
 }
@@ -107,9 +121,9 @@ function buildEventSearch(params) {
 export function apiGetEvents(params, block, handleError) {
   const path = '/api/v1/events'
   console.log(`Getting ${path} with ${JSON.stringify(params)}…`)
-  let { url, username, password } = buildApiURL(path)
+  const { url, token } = buildApiURL(path)
   url.search = buildEventSearch(params)
-  axios.get(url, { auth: { username, password } })
+  axios.get(url, { headers: { "Authorization": `Bearer ${token}` } })
     .then(block)
     .catch(handleError)
 }
@@ -117,8 +131,8 @@ export function apiGetEvents(params, block, handleError) {
 export function apiGetEvent(id, block, handleError) {
   const path = `/api/v1/event/${id}`
   console.log(`Getting ${path}…`)
-  let { url, username, password } = buildApiURL(path)
-  axios.get(url, { auth: { username, password } })
+  const { url, token } = buildApiURL(path)
+  axios.get(url, { headers: { "Authorization": `Bearer ${token}` } })
     .then(block)
     .catch(handleError)
 }
@@ -126,8 +140,8 @@ export function apiGetEvent(id, block, handleError) {
 export function apiGetChecks(block, handleError) {
   const path = '/api/v1/checks'
   console.log(`Getting ${path}…`)
-  let { url, username, password } = buildApiURL(path)
-  axios.get(url, { auth: { username, password } })
+  const { url, token } = buildApiURL(path)
+  axios.get(url, { headers: { "Authorization": `Bearer ${token}` } })
     .then(block)
     .catch(handleError)
 }
@@ -135,8 +149,8 @@ export function apiGetChecks(block, handleError) {
 export function apiGetCheckByName(name, block, handleError) {
   const path = `/api/v1/check/by-name/${name}`
   console.log(`Getting ${path}…`)
-  let { url, username, password } = buildApiURL(path)
-  axios.get(url, { auth: { username, password } })
+  const { url, token } = buildApiURL(path)
+  axios.get(url, { headers: { "Authorization": `Bearer ${token}` } })
     .then(block)
     .catch(handleError)
 }
@@ -144,8 +158,8 @@ export function apiGetCheckByName(name, block, handleError) {
 export function apiGetCheckById(id, block, handleError) {
   const path = `/api/v1/check/${id}`
   console.log(`Getting ${path}…`)
-  let { url, username, password } = buildApiURL(path)
-  axios.get(url, { auth: { username, password } })
+  const { url, token } = buildApiURL(path)
+  axios.get(url, { headers: { "Authorization": `Bearer ${token}` } })
     .then(block)
     .catch(handleError)
 }
@@ -153,8 +167,8 @@ export function apiGetCheckById(id, block, handleError) {
 export function apiDeleteCheck({ id }, block, handleError) {
   const path = `/api/v1/check/${id}`
   console.log(`Deleting ${path}…`)
-  let { url, username, password } = buildApiURL(path)
-  axios.delete(url, { auth: { username, password } })
+  const { url, token } = buildApiURL(path)
+  axios.delete(url, { headers: { "Authorization": `Bearer ${token}` } })
     .then(block)
     .catch(handleError)
 }
@@ -162,8 +176,8 @@ export function apiDeleteCheck({ id }, block, handleError) {
 export function apiPatchCheck(id, check, block, handleError) {
   const path = `/api/v1/check/${id}`
   console.log(`Patching ${path} with ${JSON.stringify(check)}…`)
-  let { url, username, password } = buildApiURL(path)
-  axios.patch(url, check, { auth: { username, password } })
+  const { url, token } = buildApiURL(path)
+  axios.patch(url, check, { headers: { "Authorization": `Bearer ${token}` } })
     .then(block)
     .catch(handleError)
 }
@@ -171,8 +185,8 @@ export function apiPatchCheck(id, check, block, handleError) {
 export function apiPutCheck(check, block, handleError) {
   const path = `/api/v1/check`
   console.log(`Putting ${path} with ${JSON.stringify(check)}…`)
-  let { url, username, password } = buildApiURL(path)
-  axios.put(url, check, { auth: { username, password } })
+  const { url, token } = buildApiURL(path)
+  axios.put(url, check, { headers: { "Authorization": `Bearer ${token}` } })
     .then(block)
     .catch(handleError)
 }

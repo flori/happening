@@ -5,8 +5,8 @@ type ServerConfig struct {
 	DATABASE_NAME                 string `default:"happening"`
 	POSTGRES_URL                  string `default:"postgresql://flori@localhost:5432/%s?sslmode=disable"`
 	HAPPENING_SERVER_URL          string `default:"http://localhost:8080"`
-	HTTP_REALM                    string `default:"happening"`
 	HTTP_AUTH                     string
+	SIGNING_SECRET                string
 	WEBUI_DIR                     string `default:"/webui"`
 	NOTIFIER_KIND                 string
 	NOTIFIER_ENVIRONMENT_VARIABLE string `default:"RAILS_ENV"`

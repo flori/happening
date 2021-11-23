@@ -13,6 +13,7 @@ GOBIN = $(GOPATH)/bin
 WEBUI_DIR := $(shell pwd)/webui
 HAPPENING_SERVER_URL ?= http://localhost:8080
 HTTP_AUTH ?= admin:test1234
+SIGNING_SECRET ?= secret
 
 .EXPORT_ALL_VARIABLES:
 
