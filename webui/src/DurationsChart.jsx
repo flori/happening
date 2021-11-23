@@ -53,7 +53,6 @@ export default class DurationsChart extends React.Component {
 
   prepareRows(data) {
     return data.map( (e) => {
-      console.log(e)
       const { started, duration, memoryUsage } = e
       const startTime = Date.parse(started)
       return [
