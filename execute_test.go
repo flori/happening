@@ -128,8 +128,11 @@ func TestSetEventFieldsStarted(t *testing.T) {
 
 func TestSetEventFieldsDuration(t *testing.T) {
 	event := Event{}
+	started := time.Date(2009, 11, 17, 20, 34, 58, 0, time.UTC)
 	setEventFields(
-		Config{},
+		Config{
+			Started: started.Format("2006-01-02T15:04:05Z"),
+		},
 		&event,
 	)
 	assert.Equal(t, time.Duration(0), event.Duration, "is zero duration unless Duration was set")
@@ -144,6 +147,7 @@ func TestSetEventFieldsDuration(t *testing.T) {
 		&event,
 	)
 	assert.Equal(t, duration, event.Duration, "is configured duration value")
+	assert.Equal(t, started.Add(-duration), event.Started, "is time - duration in the past")
 }
 
 func TestSetEventFieldsOutput(t *testing.T) {
