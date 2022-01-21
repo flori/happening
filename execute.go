@@ -62,6 +62,9 @@ func setEventFields(config Config, event *Event) {
 	}
 	if config.Duration != time.Duration(0) {
 		event.Duration = config.Duration
+		if config.Started == "" {
+			event.Started = event.Started.Add(-event.Duration)
+		}
 	}
 	if config.Output != "" {
 		event.Output = config.Output
