@@ -14,6 +14,7 @@ WEBUI_DIR := $(shell pwd)/webui
 HAPPENING_SERVER_URL ?= http://localhost:8080
 HTTP_AUTH ?= admin:test1234
 SIGNING_SECRET ?= secret
+DOCKER_BUILDKIT = 0
 
 .EXPORT_ALL_VARIABLES:
 
@@ -68,26 +69,16 @@ tags: clean
 build-info:
 	@echo $(DOCKER_IMAGE)
 
-pull-base:
-	docker pull $(BASE_IMAGE)
-
-build: pull-base
+build:
 	docker build --pull -t $(DOCKER_IMAGE) -t $(DOCKER_IMAGE_LATEST) .
 	$(MAKE) build-info
 
-build-force: pull-base
+build-force:
 	docker build --pull -t $(DOCKER_IMAGE) -t $(DOCKER_IMAGE_LATEST) --no-cache .
 	$(MAKE) build-info
 
-debug:
-	docker run --rm -it $(DOCKER_IMAGE) bash
-
 server:
-	docker run --network=host -e POSTGRES_URL=$(POSTGRES_URL) -e HAPPENING_SERVER_URL=$(HAPPENING_SERVER_URL) -it -p $(DOCKER_PORT):$(DOCKER_PORT) $(DOCKER_IMAGE)
-
-pull:
-	docker pull $(REMOTE_TAG)
-	docker tag $(REMOTE_TAG) $(DOCKER_IMAGE)
+	docker run --network=host -e SIGNING_SECRET -e HTTP_AUTH -e POSTGRES_URL=$(POSTGRES_URL) -e HAPPENING_SERVER_URL=$(HAPPENING_SERVER_URL) -it -p $(DOCKER_PORT):$(DOCKER_PORT) $(DOCKER_IMAGE)
 
 push: build
 	docker tag $(DOCKER_IMAGE) $(REMOTE_TAG)

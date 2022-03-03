@@ -1,10 +1,19 @@
-FROM alpine:3.14.3 AS builder
+FROM golang:1.17-alpine AS builder
 
-# Update/Upgrade/Add packages for building
+RUN apk add --no-cache git go build-base
 
-RUN apk add --no-cache bash git go build-base yarn
+# Create appuser.
+ENV USER=appuser
+ENV UID=10001
 
-# Build happening
+RUN adduser \
+    --disabled-password \
+    --gecos "" \
+    --home "/none" \
+    --shell "/sbin/nologin" \
+    --no-create-home \
+    --uid "${UID}" \
+    "${USER}"
 
 WORKDIR /build
 
@@ -12,30 +21,28 @@ ADD . .
 
 ENV GOPATH=/build/gospace
 
-RUN make clobber
+RUN make clobber setup test clean
 
-RUN make setup test all
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -tags netgo -ldflags='-w -s' -o happening cmd/happening/main.go
 
-FROM alpine:3.14.3 AS runner
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -tags netgo -ldflags='-w -s' -o happening-server cmd/happening-server/main.go
 
-# Update/Upgrade/Add packages
+FROM scratch AS runner
 
-RUN apk add --no-cache bash ca-certificates
+COPY --from=builder /etc/passwd /etc/passwd
 
-ARG APP_DIR=/app
+COPY --from=builder /etc/group /etc/group
 
-RUN adduser -h ${APP_DIR} -s /bin/bash -D appuser
-
-RUN mkdir -p /opt/bin
-
-COPY --from=builder --chown=appuser:appuser /build/happening /build/happening-server /opt/bin/
-
-COPY --from=builder --chown=appuser:appuser /build/webui/build /webui/build
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 
 WORKDIR /
 
-ENV PATH /opt/bin:${PATH}
+COPY --from=builder --chown=appuser:appuser /build/happening /build/happening-server /
+
+COPY --from=builder --chown=appuser:appuser /build/webui/build /webui/build
+
+USER appuser:appuser
 
 EXPOSE 8080
 
-CMD [ "/opt/bin/happening-server" ]
+CMD [ "/happening-server" ]
