@@ -1,0 +1,17 @@
+name: Docker Image CI
+
+on:
+  push:
+    tags:
+      - tag-**
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build the Docker image
+      run: docker login -u flori303 -p ${{ secrets.DOCKER_BUILDER_TOKEN }}; make push-latest
