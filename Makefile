@@ -68,14 +68,11 @@ tags: clean
 build-info:
 	@echo $(DOCKER_IMAGE)
 
-pull-base:
-	docker pull $(BASE_IMAGE)
-
-build: pull-base
+build:
 	docker build --pull -t $(DOCKER_IMAGE) -t $(DOCKER_IMAGE_LATEST) .
 	$(MAKE) build-info
 
-build-force: pull-base
+build-force:
 	docker build --pull -t $(DOCKER_IMAGE) -t $(DOCKER_IMAGE_LATEST) --no-cache .
 	$(MAKE) build-info
 
