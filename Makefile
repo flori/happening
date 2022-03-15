@@ -2,8 +2,7 @@ DOCKER_IMAGE_LATEST = happening
 DOCKER_IMAGE = $(DOCKER_IMAGE_LATEST):$(REVISION_SHORT)
 BASE_IMAGE = $(shell awk '/^FROM .+ AS runner/ { print $$2 }' Dockerfile)
 DOCKER_PORT=8080
-DATABASE_NAME ?= happening
-POSTGRES_URL ?= postgresql://postgres:secret@localhost:6666/%s?sslmode=disable
+POSTGRES_URL ?= postgresql://postgres:secret@localhost:6666/happening?sslmode=disable
 REMOTE_LATEST_TAG := flori303/$(DOCKER_IMAGE_LATEST)
 REMOTE_TAG = flori303/$(DOCKER_IMAGE)
 REVISION := $(shell git rev-parse HEAD)

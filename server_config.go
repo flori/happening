@@ -2,8 +2,7 @@ package happening
 
 type ServerConfig struct {
 	PORT                          string `default:"8080"`
-	DATABASE_NAME                 string `default:"happening"`
-	POSTGRES_URL                  string `default:"postgresql://flori@localhost:5432/%s?sslmode=disable"`
+	POSTGRES_URL                  string `default:"postgresql://flori@localhost:5432/happening?sslmode=disable"`
 	HAPPENING_SERVER_URL          string `default:"http://localhost:8080"`
 	HTTP_AUTH                     string
 	SIGNING_SECRET                string

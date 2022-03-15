@@ -11,11 +11,10 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-const DEBUG = false
+const DROP_DATABASE = false
 
 type API struct {
 	POSTGRES_URL  string
-	DATABASE_NAME string
 	DB            *gorm.DB
 	NOTIFIER      Notifier
 	SERVER_CONFIG ServerConfig
@@ -23,37 +22,38 @@ type API struct {
 
 func (api *API) PrepareDatabase() {
 	log.Println("Opening connection to database server…")
-	postgresURL := fmt.Sprintf(api.POSTGRES_URL, "postgres")
-	db, err := gorm.Open("postgres", postgresURL)
+	db, err := gorm.Open("postgres", switchDatabase(api.POSTGRES_URL, "postgres"))
 	if err != nil {
 		log.Panic(err)
 	}
 	defer db.Close()
 
-	if DEBUG {
-		if err := db.Exec(fmt.Sprintf(`DROP DATABASE %s`, api.DATABASE_NAME)).Error; err != nil {
+	databaseName := deriveDatabaseName(api.POSTGRES_URL)
+
+	if DROP_DATABASE {
+		if err := db.Exec(fmt.Sprintf(`DROP DATABASE %s`, databaseName)).Error; err != nil {
 			log.Println(err)
 		}
 	}
 
 	dbExists := false
 	row := db.Table("pg_database").
-		Where("datname = ?", api.DATABASE_NAME).
+		Where("datname = ?", databaseName).
 		Select("true").
 		Row()
 	row.Scan(&dbExists)
 
 	if dbExists {
-		log.Printf("Connecting to existent database %s.", api.DATABASE_NAME)
+		log.Printf("Connecting to existent database %s.", databaseName)
 	} else {
-		log.Printf("Creating nonexistent database %s.", api.DATABASE_NAME)
-		if err := db.Exec(fmt.Sprintf(`CREATE DATABASE %s`, api.DATABASE_NAME)).Error; err != nil {
+		log.Printf("Creating nonexistent database %s.", databaseName)
+		if err := db.Exec(fmt.Sprintf(`CREATE DATABASE %s`, databaseName)).Error; err != nil {
 			log.Panic(err)
 		}
 	}
 	db.Close()
 
-	if db, err = gorm.Open("postgres", fmt.Sprintf(api.POSTGRES_URL, api.DATABASE_NAME)); err != nil {
+	if db, err = gorm.Open("postgres", api.POSTGRES_URL); err != nil {
 		log.Panic(err)
 	}
 	if err := db.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public`).Error; err != nil {
