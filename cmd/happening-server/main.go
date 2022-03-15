@@ -53,9 +53,8 @@ func main() {
 	}
 
 	api := happening.API{
-		DATABASE_NAME: config.DATABASE_NAME,
-		POSTGRES_URL:  config.POSTGRES_URL,
-		NOTIFIER:      happening.NewNotifier(config),
+		POSTGRES_URL: config.POSTGRES_URL,
+		NOTIFIER:     happening.NewNotifier(config),
 	}
 	api.PrepareDatabase()
 	api.SetupCronJobs()
