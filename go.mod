@@ -11,7 +11,7 @@ require (
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/labstack/echo/v4 v4.6.1
 	github.com/lib/pq v1.10.4
-	github.com/sendgrid/sendgrid-go v3.11.0+incompatible
+	github.com/sendgrid/sendgrid-go v3.11.1+incompatible
 	github.com/stretchr/testify v1.7.0
 )
 
@@ -29,7 +29,7 @@ require (
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rogpeppe/go-internal v1.8.1 // indirect
-	github.com/sendgrid/rest v2.6.8+incompatible // indirect
+	github.com/sendgrid/rest v2.6.9+incompatible // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.1 // indirect
 	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5 // indirect
