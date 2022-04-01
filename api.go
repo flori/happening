@@ -65,6 +65,7 @@ func (api *API) PrepareDatabase() {
 
 func (api *API) SetupCronJobs() {
 	gocron.Every(5).Seconds().Do(taskUpdateHealthStatus, api)
+	gocron.Every(60).Seconds().Do(taskExpireOldEvents, api)
 	gocron.Start()
 }
 
