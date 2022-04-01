@@ -16,4 +16,5 @@ type ServerConfig struct {
 	NOTIFIER_SENDGRID_API_KEY     string
 	NOTIFIER_MAIL_COMMAND         string `default:"mail"`
 	NOTIFIER_SMTP_SERVER_URL      string `default:"smtp://username:password@localhost:25?sslVerify=disable"`
+	RETENTION_DAYS                string `default:"180"`
 }

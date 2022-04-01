@@ -3,7 +3,9 @@ package happening
 import (
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
+	"time"
 )
 
 func addToEvents(api *API, event *Event) error {
@@ -72,4 +74,18 @@ func getEvent(api *API, id string) (string, *Event, error) {
 		return "not_found", nil, err
 	}
 	return "ok", &event, nil
+}
+
+func taskExpireOldEvents(api *API) {
+	seconds, err := strconv.Atoi(api.SERVER_CONFIG.RETENTION_DAYS)
+	if err != nil || seconds <= 0 {
+		return
+	}
+	retentionPeriod := time.Duration(seconds) * 24 * time.Hour
+	expireTimestamp := time.Now().Add(-retentionPeriod)
+	log.Printf("Now expiring events before %s", expireTimestamp.Format(time.RFC3339))
+	err = api.DB.Where("started < ?", expireTimestamp).Delete(&Event{}).Error
+	if err != nil {
+		log.Panic(err)
+	}
 }
