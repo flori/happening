@@ -1,6 +1,6 @@
 module github.com/flori/happening
 
-go 1.17
+go 1.18
 
 require (
 	github.com/go-playground/validator v9.31.0+incompatible
@@ -10,7 +10,7 @@ require (
 	github.com/jinzhu/gorm v1.9.16
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/labstack/echo/v4 v4.6.1
-	github.com/lib/pq v1.10.4
+	github.com/lib/pq v1.10.5
 	github.com/sendgrid/sendgrid-go v3.11.1+incompatible
 	github.com/stretchr/testify v1.7.0
 )
