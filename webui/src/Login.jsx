@@ -39,7 +39,8 @@ class Login extends React.Component {
     })
   }
 
-  handleSubmit = () => {
+  handleSubmit = (e) => {
+    e.preventDefault()
     jwtLogin(this.state.username, this.state.password, this.props.to)
   }
 
