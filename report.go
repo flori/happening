@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"time"
@@ -34,11 +35,17 @@ func SendEvent(event *Event, config *Config) {
 			time.Sleep(config.RetryDelay)
 			continue
 		}
-		resp.Body.Close()
 		if resp.StatusCode < 400 {
 			log.Println("succeeded.")
 			return
+		} else {
+			b, err2 := io.ReadAll(resp.Body)
+			if err2 != nil {
+				log.Fatalln(err2)
+			}
+			log.Printf("Response had HTTP status code %v: %v", resp.StatusCode, string(b))
 		}
+		resp.Body.Close()
 		time.Sleep(config.RetryDelay)
 	}
 	if err == nil {
