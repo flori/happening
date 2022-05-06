@@ -234,7 +234,7 @@ func (api *API) GetCheckByNameHandler(c echo.Context) error {
 	result, check, err := getCheckByName(api, name)
 	switch result {
 	case "ok":
-		log.Printf(`Get check by name "%s", resolved as check id=%s`, name, *check.Id)
+		log.Printf(`Get check by name "%s", resolved as check id=%s`, check.Name, *check.Id)
 		return c.JSON(
 			http.StatusOK,
 			checksResponse{
