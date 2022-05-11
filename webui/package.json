@@ -19,7 +19,7 @@
     "react-dom": "^16.2.0",
     "react-google-charts": "^3.0",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "^4.0.3",
+    "react-scripts": "^5.0.1",
     "serve": "^13.0.2",
     "universal-cookie": "^3.0",
     "unstated": "^2.1.1",
@@ -31,8 +31,7 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
-  "resolutions": {
-  },
+  "resolutions": {},
   "browserslist": [
     ">1%",
     "not dead",
