@@ -94,9 +94,9 @@ func (api *API) PostEventHandler(c echo.Context) error {
 	updateCheckOnEvent(api, event)
 	log.Printf(
 		"Received event \"%s\", started %v, lasted %v\n",
-		event.Name,
-		event.Started,
-		event.Duration,
+		escapeString(event.Name),
+		escapeString(event.Started.String()),
+		escapeString(event.Duration.String()),
 	)
 	return c.JSON(http.StatusOK, eventsResponse{Success: true})
 }
@@ -115,7 +115,7 @@ func (api *API) GetEventHandler(c echo.Context) error {
 	result, event, err := getEvent(api, c.Param("id"))
 	switch result {
 	case "ok":
-		log.Printf(`Get event id=%s`, event.Id)
+		log.Printf(`Get event id=%s`, escapeString(event.Id))
 		return c.JSON(
 			http.StatusOK,
 			eventsResponse{
@@ -159,7 +159,7 @@ func (api *API) DeleteCheckHandler(c echo.Context) error {
 	result, err := deleteCheck(api, id)
 	switch result {
 	case "ok":
-		log.Printf(`Delete check id=%s`, id)
+		log.Printf(`Delete check id=%s`, escapeString(id))
 		return c.JSON(http.StatusOK, checksResponse{Success: true})
 	case "not_found":
 		return c.JSON(http.StatusNotFound, checksResponse{Success: false, Message: err.Error()})
@@ -173,14 +173,14 @@ func (api *API) PostCheckHandler(c echo.Context) error {
 	if err := c.Bind(check); err != nil {
 		return err
 	}
-	log.Printf(`Post %s`, *check)
+	log.Printf(`Post %s`, escapeString(check.String()))
 	if err := c.Validate(check); err != nil {
 		return err
 	}
 	result, err := addToChecks(api, check)
 	switch result {
 	case "ok":
-		log.Printf("Received new check \"%s\"", check.Name)
+		log.Printf("Received new check \"%s\"", escapeString(check.Name))
 		return c.JSON(http.StatusOK, checksResponse{Success: true})
 	case "conflict":
 		return c.JSON(http.StatusConflict, checksResponse{Success: false, Message: err.Error()})
@@ -195,14 +195,14 @@ func (api *API) PatchCheckHandler(c echo.Context) error {
 	if err := c.Bind(check); err != nil {
 		return err
 	}
-	log.Printf(`Patch %s`, *check)
+	log.Printf(`Patch %s`, escapeString(check.String()))
 	if err := c.Validate(check); err != nil {
 		return err
 	}
 	result, err := updateCheck(api, id, check)
 	switch result {
 	case "ok":
-		log.Printf("Received updated check id=\"%s\"", id)
+		log.Printf("Received updated check id=\"%s\"", escapeString(id))
 		return c.JSON(http.StatusOK, checksResponse{Success: true, Id: id})
 	case "not_found":
 		return c.JSON(http.StatusNotFound, checksResponse{Success: false, Message: err.Error()})
@@ -215,7 +215,7 @@ func (api *API) GetCheckHandler(c echo.Context) error {
 	result, check, err := getCheck(api, c.Param("id"))
 	switch result {
 	case "ok":
-		log.Printf(`Get check id=%s`, *check.Id)
+		log.Printf(`Get check id=%s`, escapeString(*check.Id))
 		return c.JSON(
 			http.StatusOK,
 			checksResponse{
@@ -234,7 +234,7 @@ func (api *API) GetCheckByNameHandler(c echo.Context) error {
 	result, check, err := getCheckByName(api, name)
 	switch result {
 	case "ok":
-		log.Printf(`Get check by name "%s", resolved as check id=%s`, check.Name, *check.Id)
+		log.Printf(`Get check by name "%s", resolved as check id=%s`, escapeString(check.Name), escapeString(*check.Id))
 		return c.JSON(
 			http.StatusOK,
 			checksResponse{
