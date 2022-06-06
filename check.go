@@ -29,10 +29,10 @@ func (check Check) String() string {
  - LastPingAt: %s
  - Period: %s
 `,
-		check.Name,
-		derefString(check.Id),
+		escapeString(check.Name),
+		escapeString(derefString(check.Id)),
 		check.State(),
-		derefString(check.LastEventId),
+		escapeString(derefString(check.LastEventId)),
 		check.LastPingAt,
 		check.Period,
 	)
