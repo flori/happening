@@ -7,7 +7,7 @@
     "@material-ui/icons": "^4.9.1",
     "ansi-html-community": "0.0.8",
     "axios": "^0.21.1",
-    "classnames": "^2.2.6",
+    "classnames": "^2.3.1",
     "json-align": "^0.1.0",
     "moment": "^2.29.2",
     "node-fetch": "2.6.7",
