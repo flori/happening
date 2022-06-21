@@ -6,7 +6,7 @@
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
     "ansi-html-community": "0.0.8",
-    "axios": "^0.21.1",
+    "axios": "^0.27.2",
     "classnames": "^2.3.1",
     "json-align": "^0.1.0",
     "moment": "^2.29.3",
