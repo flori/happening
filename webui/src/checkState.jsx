@@ -45,7 +45,7 @@ export class CheckStateAvatar extends Confirm {
   confirmAction = () => {
     const patchedCheck = {
       ...this.props,
-      ...{ healthy: true }
+      ...{ healthy: true, last_ping_at: new Date(0) }
     }
     apiPatchCheck(
       this.props.id,
