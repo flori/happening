@@ -41,6 +41,9 @@ func updateCheck(api *API, id string, check *Check) (string, error) {
 	).Update(
 		"allowed_failures",
 		check.AllowedFailures,
+	).Update(
+		"healthy",
+		check.Healthy,
 	).Error
 	if err != nil {
 		return "not_found", err
