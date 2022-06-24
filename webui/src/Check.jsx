@@ -47,9 +47,9 @@ export default class Check extends React.Component {
     return (
       <>
         <ListItem>
-        <CheckStateAvatar {...this.props}/>
-        <ListItemText primary={primaryText} secondary={secondaryText}/>
-        <ListItemSecondaryAction style={{ display: 'flex', flexFlow: 'row wrap', flexDirection: 'row' }}>
+          <CheckStateAvatar {...this.props}/>
+          <ListItemText primary={primaryText} secondary={secondaryText}/>
+          <ListItemSecondaryAction style={{ display: 'flex', flexFlow: 'row wrap', flexDirection: 'row' }}>
           <ListItemIcon>
             <IconButton title={title} aria-label={title} component={Link} to={`/check/${name}`}>
               <LinkIcon/>

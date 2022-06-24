@@ -11,21 +11,10 @@ import {
 } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Delete'
 import { apiDeleteCheck } from './Api'
+import Confirm from './Confirm'
 
-export default class ConfirmDeleteCheck extends React.Component {
-  state = {
-    open: false,
-  }
-
-  handleClickOpen = () => {
-    this.setState({ open: true })
-  }
-
-  handleClose = () => {
-    this.setState({ open: false })
-  }
-
-  handleCloseYes = () => {
+export default class ConfirmDeleteCheck extends Confirm {
+  confirmAction = () => {
     apiDeleteCheck(
       { id: this.props.id },
       this.props.refresh
