@@ -42,16 +42,24 @@ func updateCheck(api *API, id string, check *Check) (string, error) {
 	).Update(
 		"allowed_failures",
 		check.AllowedFailures,
-	).Update(
-		"healthy",
-		check.Healthy,
 	)
-	if check.LastPingAt.Equal(time.Unix(0, 0)) {
+
+	if check.Healthy && check.Failures == 0 && check.Success {
 		checkInstance = checkInstance.Update(
+			"healthy",
+			check.Healthy,
+		).Update(
+			"failures",
+			0,
+		).Update(
+			"success",
+			true,
+		).Update(
 			"last_ping_at",
 			time.Now(),
 		)
 	}
+
 	if err := checkInstance.Error; err != nil {
 		return "not_found", err
 	}
