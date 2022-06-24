@@ -1,23 +1,23 @@
 # vim: set ft=ruby:
 
 search do
-  prune_dirs /\A(\.svn|\.git|CVS|coverage|gospace)\z/
+  prune_dirs /\A(\.svn|\.git|CVS|coverage|gospace|node_modules|js)\z/
   skip_files /(\A\.|\.sw[pon]\z|\.(log|fnm|jpg|jpeg|png|pdf|svg)\z|tags|brakeman\.(ignore|yml)|errors\.lst|cscope\.out|~\z)/i
 end
 
 discover do
-  prune_dirs /\A(\.svn|\.git|CVS|coverage|gospace)\z/
+  prune_dirs /\A(\.svn|\.git|CVS|coverage|gospace|node_modules|js)\z/
   skip_files /(\A\.|\.sw[pon]\z|\.(log|fnm|jpg|jpeg|png|pdf|svg)\z|tags|brakeman\.(ignore|yml)|errors\.lst|cscope\.out|~\z)/i
   binary false
   index_expire_after 86_400
 end
 
 scope do
-  prune_dirs /\A(\.svn|\.git|CVS|coverage|gospace)\z/
+  prune_dirs /\A(\.svn|\.git|CVS|coverage|gospace|node_modules|js)\z/
   skip_files /(\A\.|\.sw[pon]\z|\.(log|fnm|jpg|jpeg|png|pdf|svg)\z|tags|brakeman\.(ignore|yml)|errors\.lst|cscope\.out|~\z)/i
 end
 
 strip_spaces do
-  prune_dirs /\A(\.svn|\.git|CVS|coverage|gospace)\z/
+  prune_dirs /\A(\.svn|\.git|CVS|coverage|gospace|node_modules)\z/
   skip_files /(\A\.|\.sw[pon]\z|\.(log|fnm|jpg|jpeg|png|pdf|svg)\z|tags|brakeman\.(ignore|yml)|errors\.lst|cscope\.out|~\z)/i
 end
