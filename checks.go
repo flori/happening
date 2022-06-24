@@ -32,7 +32,8 @@ func addToChecks(api *API, check *Check) (string, error) {
 }
 
 func updateCheck(api *API, id string, check *Check) (string, error) {
-	err := api.DB.Model(&Check{Id: &id}).Update(
+	checkInstance := api.DB.Model(&Check{Id: &id})
+	checkInstance = checkInstance.Update(
 		"disabled",
 		check.Disabled,
 	).Update(
@@ -44,8 +45,14 @@ func updateCheck(api *API, id string, check *Check) (string, error) {
 	).Update(
 		"healthy",
 		check.Healthy,
-	).Error
-	if err != nil {
+	)
+	if check.LastPingAt.Equal(time.Unix(0, 0)) {
+		checkInstance = checkInstance.Update(
+			"last_ping_at",
+			time.Now(),
+		)
+	}
+	if err := checkInstance.Error; err != nil {
 		return "not_found", err
 	}
 	return "ok", nil
