@@ -9,7 +9,7 @@
     "axios": "^0.27.2",
     "classnames": "^2.3.1",
     "json-align": "^0.1.0",
-    "moment": "^2.29.3",
+    "moment": "^2.29.4",
     "node-fetch": "2.6.7",
     "pretty-bytes": "^5.6.0",
     "prop-types": "^15.6.2",
