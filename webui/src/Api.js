@@ -182,6 +182,16 @@ export function apiPatchCheck(id, check, block, handleError) {
     .catch(handleError)
 }
 
+export function apiResetCheck(id, block, handleError) {
+  const path = `/api/v1/check/${id}/reset`
+  console.log(`Resetting ${path}…`)
+  const { url, token } = buildApiURL(path)
+  axios.patch(url, {}, { headers: { "Authorization": `Bearer ${token}` } })
+    .then(block)
+    .catch(handleError)
+}
+
+
 export function apiPutCheck(check, block, handleError) {
   const path = `/api/v1/check`
   console.log(`Putting ${path} with ${JSON.stringify(check)}…`)

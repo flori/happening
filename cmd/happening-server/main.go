@@ -93,6 +93,7 @@ func main() {
 	g.POST("/check", api.PostCheckHandler)
 	g.PUT("/check", api.PostCheckHandler)
 	g.PATCH("/check/:id", api.PatchCheckHandler)
+	g.PATCH("/check/:id/reset", api.ResetCheckHandler)
 	g.GET("/checks", api.GetChecksHandler)
 	g.DELETE("/check/:id", api.DeleteCheckHandler)
 	g.GET("/check/:id", api.GetCheckHandler)
