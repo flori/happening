@@ -211,6 +211,21 @@ func (api *API) PatchCheckHandler(c echo.Context) error {
 	}
 }
 
+func (api *API) ResetCheckHandler(c echo.Context) error {
+	id := c.Param("id")
+	log.Printf(`Reset check %s`, escapeString(id))
+	result, err := resetCheck(api, id)
+	switch result {
+	case "ok":
+		log.Printf("Reset check id=\"%s\"", escapeString(id))
+		return c.JSON(http.StatusOK, checksResponse{Success: true, Id: id})
+	case "not_found":
+		return c.JSON(http.StatusNotFound, checksResponse{Success: false, Message: err.Error()})
+	default:
+		return err
+	}
+}
+
 func (api *API) GetCheckHandler(c echo.Context) error {
 	result, check, err := getCheck(api, c.Param("id"))
 	switch result {

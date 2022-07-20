@@ -66,6 +66,28 @@ func updateCheck(api *API, id string, check *Check) (string, error) {
 	return "ok", nil
 }
 
+func resetCheck(api *API, id string) (string, error) {
+	checkInstance := api.DB.Model(&Check{Id: &id})
+	checkInstance = checkInstance.Update(
+		"healthy",
+		true,
+	).Update(
+		"success",
+		true,
+	).Update(
+		"last_ping_at",
+		time.Now(),
+	).Update(
+		"failures",
+		0,
+	)
+
+	if err := checkInstance.Error; err != nil {
+		return "not_found", err
+	}
+	return "ok", nil
+}
+
 func deleteCheck(api *API, id string) (string, error) {
 	var check Check
 	if err := api.DB.Where("id = ?", id).First(&check).Error; err != nil {

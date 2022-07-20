@@ -6,6 +6,8 @@ services:
     ports:
       - "6666:5432"
     volumes:
-      - "./data/postgresql:/var/lib/postgresql:delegated"
+      - "postgresql-data:/var/lib/postgresql"
     environment:
       - "POSTGRES_PASSWORD=secret"
+volumes:
+  postgresql-data:
