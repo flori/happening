@@ -86,7 +86,7 @@ function buildEventSearch(params) {
     query = unescape(query)
   }
 
-  const re    = /(id|name|output|hostname|command|success|ec):(\S+)/
+  const re    = /(id|name|context|output|hostname|command|success|ec):(\S+)/
   let m       = true
   let filters = {}
   while (m) {

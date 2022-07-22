@@ -31,7 +31,8 @@ func fetchRangeFromEvents(api *API, p parameters) ([]Event, int, error) {
 			(? = '' OR hostname LIKE ?) AND
 			(? = '' OR CAST(command AS text) LIKE ?) AND
 			(? = '' OR CAST(exit_code AS text) = ?) AND
-			(? = '' OR success = (? = 'true'))
+			(? = '' OR success = (? = 'true')) AND
+			(? = '' OR context = ?)
 		ORDER BY started DESC
 		OFFSET ?
 		LIMIT ?
@@ -47,6 +48,7 @@ func fetchRangeFromEvents(api *API, p parameters) ([]Event, int, error) {
 		p.Filters["command"], "%"+p.Filters["command"]+"%",
 		p.Filters["ec"], p.Filters["ec"],
 		p.Filters["success"], p.Filters["success"],
+		p.Filters["context"], p.Filters["context"],
 		p.Offset,
 		p.Limit,
 	).Scan(&events)

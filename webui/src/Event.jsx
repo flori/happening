@@ -187,18 +187,22 @@ export default class Event extends React.Component {
 
   render() {
 		const {
-      output, success, id, name, started, load, selected, refresh
+      output, success, id, name, context, started, load, selected, refresh
     } = this.props
 
     return (
       <>
         <TableRow className={success ? 'success' : 'failure' } style={this.displayStyle(selected)} ref="row">
           <TableCell>
-              <SearchButton eventName={name}/>
+              <SearchButton paramName="name" paramValue={name}/>
               <ManageCheckButton eventName={name} refresh={refresh}/>
               <ShareButton id={id}/>
               <Load load={load}/>
               <Chip label={name} color="primary"/>
+          </TableCell>
+          <TableCell>
+            <SearchButton paramName="context" paramValue={context}/>
+            <Chip label={context} color="secondary"/>
           </TableCell>
           <TableCell>{renderDate(started)}</TableCell>
           <TableCell>{this.displayDuration()}</TableCell>

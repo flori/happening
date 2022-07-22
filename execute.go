@@ -97,6 +97,7 @@ func Execute(config Config, block func(output io.Writer) bool) *Event {
 	event := Event{
 		Id:          GenerateUUIDv4(),
 		Name:        config.Name,
+		Context:     config.Context,
 		Output:      outputString,
 		Started:     started,
 		Duration:    duration,
@@ -187,6 +188,7 @@ func ExecuteCmd(config Config, cmdArgs []string) *Event {
 		event := Event{
 			Id:          GenerateUUIDv4(),
 			Name:        config.Name,
+			Context:     config.Context,
 			Command:     cmdArgs,
 			Output:      output,
 			Started:     started,

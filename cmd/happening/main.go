@@ -27,6 +27,7 @@ func init() {
 	flag.StringVar(&config.Started, "started", d.Started, "overwrites time this event started")
 	flag.DurationVar(&config.Duration, "duration", d.Duration, "overwrites duration how long this event lasted")
 	flag.StringVar(&config.Output, "output", d.Output, "overwrites output this event generated")
+	flag.StringVar(&config.Context, "context", d.Context, "context the event happened in")
 	quiet := flag.Bool("quiet", false, "don't output log messages in success case")
 	flag.Parse()
 	if *quiet {
