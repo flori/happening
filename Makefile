@@ -28,6 +28,9 @@ happening-server: cmd/happening-server/main.go *.go
 local: happening-server
 	./happening-server
 
+psql:
+	PGPASSWORD=secret psql -U postgres -h localhost -p 6666 -d happening
+
 webui-build:
 	cd webui && yarn --network-timeout 1000000 --network-concurrency 4 && yarn build
 
