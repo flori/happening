@@ -9,7 +9,7 @@ import { history } from './history'
 
 export default class SearchButton extends React.Component {
   handleClick = () => {
-    history.push(`/search/name:${this.props.eventName}`)
+    history.push(`/search/${this.props.paramName}:${this.props.paramValue}`)
   }
 
   render() {
