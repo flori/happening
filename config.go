@@ -8,7 +8,7 @@ import (
 )
 
 type Config struct {
-	Name           string `default:"some event"`
+	Name           string `default:"SomeEvent"`
 	Context        string `default:"default" envconfig:"CONTEXT"`
 	ReportURL      string `envconfig:"HAPPENING_REPORT_URL"`
 	SuccessCode    string `default:"0"`
