@@ -146,8 +146,8 @@ export function apiGetChecks(block, handleError) {
     .catch(handleError)
 }
 
-export function apiGetCheckByName(name, block, handleError) {
-  const path = `/api/v1/check/by-name/${name}`
+export function apiGetCheckByNameInContext(name, context, block, handleError) {
+  const path = `/api/v1/check/by-name/${name}/in-context/${context}`
   console.log(`Getting ${path}…`)
   const { url, token } = buildApiURL(path)
   axios.get(url, { headers: { "Authorization": `Bearer ${token}` } })
@@ -202,7 +202,7 @@ export function apiPutCheck(check, block, handleError) {
 }
 
 export function apiStoreCheck(check, block, handleError) {
-  apiGetCheckByName(check.name,
+  apiGetCheckByNameInContext(check.name, check.context,
     (response) => { apiPatchCheck(response.data.data[0].id, check, block, handleError) },
     (error) => {
       const { response } = error

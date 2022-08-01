@@ -4,7 +4,7 @@ import {
   IconButton,
   ListItemIcon,
 } from '@material-ui/core'
-import { apiGetCheckByName, apiPatchCheck, apiPutCheck } from './Api'
+import { apiGetCheckByNameInContext, apiPatchCheck, apiPutCheck } from './Api'
 import Alert from './Alert'
 import EditCheckDialog from './EditCheckDialog'
 
@@ -14,9 +14,10 @@ export default class EditCheck extends React.Component {
   }
 
   loadCheck() {
-    if (this.props.name) {
-      apiGetCheckByName(
+    if (this.props.name && this.props.context) {
+      apiGetCheckByNameInContext(
         this.props.name,
+        this.props.context,
         ({ data: { data } }) => {
           this.setState({ check: data[0] })
         },
@@ -34,6 +35,7 @@ export default class EditCheck extends React.Component {
       this.setState({
         check: {
           name: "",
+          context: "default"
         }
       })
     }
@@ -75,6 +77,7 @@ export default class EditCheck extends React.Component {
     const {
       action,
       name,
+      context,
     } = this.props
     const check = this.state.check
     return (
@@ -88,6 +91,7 @@ export default class EditCheck extends React.Component {
         {this.state.check && <EditCheckDialog
           action={action}
           name={name}
+          context={context}
           disabled={check.disabled}
           failures={check.failures}
           allowed_failures={check.allowed_failures}

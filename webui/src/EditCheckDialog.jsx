@@ -15,17 +15,24 @@ import { CheckStateIcon } from './checkState'
 export default class EditCheckDialog extends React.Component {
   constructor(props) {
     super(props)
-    let { id, name, period, disabled, allowed_failures } = this.props
+    let { id, name, context, period, disabled, allowed_failures } = this.props
     if (!period) {
       period = 3900 * nano
     }
-    this.state = { id, name, period, disabled, allowed_failures }
+    this.state = { id, name, context, period, disabled, allowed_failures }
   }
 
   handleNameChange = e => {
     const name = e.target.value
     if (name) {
       this.setState({ name })
+    }
+  }
+
+  handleContextChange = e => {
+    const context = e.target.value
+    if (context) {
+      this.setState({ context })
     }
   }
 
@@ -51,7 +58,7 @@ export default class EditCheckDialog extends React.Component {
 
   render() {
     const { action, last_ping_at, open, failures, success, healthy } = this.props
-    const { id, name, period, disabled, allowed_failures } = this.state
+    const { id, name, context, period, disabled, allowed_failures } = this.state
     const actionName = action.replace(/\b\w/g, l => l.toUpperCase())
 
     return (
@@ -61,7 +68,7 @@ export default class EditCheckDialog extends React.Component {
         aria-labelledby="form-dialog-title"
       >
         <DialogTitle id="form-dialog-title">
-          <span style={{paddingRight: '0.25em'}}>{actionName} Check "{name}"</span>
+          <span style={{paddingRight: '0.25em'}}>{actionName} Check "{name}" in context "{context}"</span>
           <CheckStateIcon action={action} disabled={disabled} healthy={healthy} success={success}/>
         </DialogTitle>
         <DialogContent>
@@ -75,6 +82,17 @@ export default class EditCheckDialog extends React.Component {
               value={name}
               disabled={action === "edit"}
               onChange={this.handleNameChange}
+              fullWidth
+            />
+            <TextField
+              autoFocus={context == null}
+              margin="dense"
+              id="context"
+              label="Context"
+              type="text"
+              value={context}
+              disabled={action === "edit"}
+              onChange={this.handleContextChange}
               fullWidth
             />
             {last_ping_at != null &&
@@ -136,7 +154,7 @@ export default class EditCheckDialog extends React.Component {
           <Button onClick={this.props.onClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={() => this.props.onCloseSave({ id, name, disabled, period, allowed_failures })} color="primary">
+          <Button onClick={() => this.props.onCloseSave({ id, name, context, disabled, period, allowed_failures })} color="primary">
             Save
           </Button>
         </DialogActions>

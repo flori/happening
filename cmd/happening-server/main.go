@@ -97,7 +97,7 @@ func main() {
 	g.GET("/checks", api.GetChecksHandler)
 	g.DELETE("/check/:id", api.DeleteCheckHandler)
 	g.GET("/check/:id", api.GetCheckHandler)
-	g.GET("/check/by-name/:name", api.GetCheckByNameHandler)
+	g.GET("/check/by-name/:name/in-context/:context", api.GetCheckByNameInContextHandler)
 
 	// HTML
 	e.GET("/*", happening.PackrHandler(config))
