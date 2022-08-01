@@ -108,9 +108,10 @@ func getCheck(api *API, id string) (string, *Check, error) {
 	return "ok", &check, nil
 }
 
-func getCheckByName(api *API, name string) (string, *Check, error) {
+func getCheckByNameInContext(api *API, name string, context string) (string, *Check, error) {
 	var check Check
-	if err := api.DB.Where("name = ?", name).First(&check).Error; err != nil {
+	if err := api.DB.Where("name = ?", name).
+		Where("context = ?", context).First(&check).Error; err != nil {
 		return "not_found", nil, err
 	}
 	check.Init()
@@ -173,7 +174,9 @@ func fetchRangeFromChecks(api *API, p parameters) ([]Check, int, error) {
 
 func updateCheckOnEvent(api *API, event *Event) {
 	var check Check
-	if err := api.DB.Where("name = ?", event.Name).First(&check).Error; err != nil {
+	if err := api.DB.Where("name = ?", event.Name).
+		Where("context = ?", event.Context).
+		First(&check).Error; err != nil {
 		if err != gorm.ErrRecordNotFound {
 			log.Printf("error: %v", err)
 		}

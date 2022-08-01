@@ -244,12 +244,16 @@ func (api *API) GetCheckHandler(c echo.Context) error {
 	}
 }
 
-func (api *API) GetCheckByNameHandler(c echo.Context) error {
+func (api *API) GetCheckByNameInContextHandler(c echo.Context) error {
 	name := c.Param("name")
-	result, check, err := getCheckByName(api, name)
+	context := c.Param("context")
+	result, check, err := getCheckByNameInContext(api, name, context)
 	switch result {
 	case "ok":
-		log.Printf(`Get check by name "%s", resolved as check id=%s`, escapeString(check.Name), escapeString(*check.Id))
+		log.Printf(`Get check by name "%s" in context "%s", resolved as check id=%s`,
+			escapeString(check.Name),
+			escapeString(check.Context),
+			escapeString(*check.Id))
 		return c.JSON(
 			http.StatusOK,
 			checksResponse{

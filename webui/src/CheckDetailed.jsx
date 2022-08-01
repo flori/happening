@@ -19,6 +19,7 @@ export default class CheckDetailed extends React.Component {
     const {
       id,
       name,
+      context,
       healthy,
       success,
       failures,
@@ -66,7 +67,7 @@ export default class CheckDetailed extends React.Component {
             <ListItemIcon>
               <SearchButton eventName={name}/>
             </ListItemIcon>
-            <EditCheck action="edit" name={name} refresh={refresh}/>
+            <EditCheck action="edit" name={name} context={context} refresh={refresh}/>
             <ConfirmDeleteCheck name={name} id={id} refresh={refresh}/>
           </CardActions>
         </Card>

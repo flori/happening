@@ -22,7 +22,7 @@ export default class ManageCheckButton extends React.Component {
   }
 
   render() {
-    const { eventName, refresh } = this.props
+    const { eventName, eventContext, refresh } = this.props
     const title = "Manage check for this event"
 
     return (
@@ -30,7 +30,7 @@ export default class ManageCheckButton extends React.Component {
         <IconButton title={title} aria-label={title} onClick={this.handleClick}>
           <Done/>
         </IconButton>
-        <ManageCheck eventName={eventName} open={this.state.open} onClose={this.handleClose} refresh={refresh}/>
+        <ManageCheck eventName={eventName} eventContext={eventContext} open={this.state.open} onClose={this.handleClose} refresh={refresh}/>
       </>
     )
   }

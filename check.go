@@ -7,7 +7,8 @@ import (
 
 type Check struct {
 	Id              *string       `json:"id,omitempty" gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
-	Name            string        `json:"name" validate:"required" gorm:"type:text;unique;not null"`
+	Name            string        `json:"name" validate:"required" gorm:"type:text;index:context_name_key;unique;not null"`
+	Context         string        `json:"context" gorm:"not null;index:context_name_key;unique;default:'default'"`
 	Period          time.Duration `json:"period" gorm:"type:bigint;not null;default:3600000000000"`
 	LastPingAt      time.Time     `json:"last_ping_at" gorm:"type:timestamptz;index;not null;default:now()::timestamptz"`
 	LastEventId     *string       `json:"last_event_id,omitempty" gorm:"type:uuid;default:null"`
@@ -23,6 +24,7 @@ func (check Check) String() string {
 	return fmt.Sprintf(
 		`Check:
  - Name: %s
+ - Context: %s
  - Id: %s
  - State: %s
  - LastEventId: %s
@@ -30,6 +32,7 @@ func (check Check) String() string {
  - Period: %s
 `,
 		escapeString(check.Name),
+		escapeString(check.Context),
 		escapeString(derefString(check.Id)),
 		check.State(),
 		escapeString(derefString(check.LastEventId)),

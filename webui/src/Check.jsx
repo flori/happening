@@ -20,6 +20,7 @@ export default class Check extends React.Component {
     const {
       id,
       name,
+      context,
       healthy,
       success,
       failures,
@@ -51,14 +52,14 @@ export default class Check extends React.Component {
           <ListItemText primary={primaryText} secondary={secondaryText}/>
           <ListItemSecondaryAction style={{ display: 'flex', flexFlow: 'row wrap', flexDirection: 'row' }}>
           <ListItemIcon>
-            <IconButton title={title} aria-label={title} component={Link} to={`/check/${name}`}>
+            <IconButton title={title} aria-label={title} component={Link} eventContext={context} to={`/check/${name}`}>
               <LinkIcon/>
             </IconButton>
           </ListItemIcon>
           <ListItemIcon>
-            <SearchButton eventName={name}/>
+            <SearchButton eventName={name} eventContext={context}/>
           </ListItemIcon>
-          <EditCheck action="edit" name={name} refresh={refresh}/>
+          <EditCheck action="edit" name={name} context={context} refresh={refresh}/>
           <ConfirmDeleteCheck name={name} id={id} refresh={refresh}/>
         </ListItemSecondaryAction>
       </ListItem>

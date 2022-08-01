@@ -22,10 +22,10 @@ func EventToJSON(event *Event) []byte {
 func SendEvent(event *Event, config *Config) {
 	url := config.ReportURL
 	var err error
-	jb := EventToJSON(event)
+	json := EventToJSON(event)
 	for i := uint(0); i < config.Retries; i++ {
 		log.Printf("Sending event \"%s\" to %s…", event.Name, url)
-		req, err := newHttpClientRequest(http.MethodPut, url, bytes.NewBuffer(jb))
+		req, err := newHttpClientRequest(http.MethodPut, url, bytes.NewBuffer(json))
 		if err != nil {
 			break
 		}

@@ -71,7 +71,7 @@ export class CheckStateAvatar extends Confirm {
           <DialogTitle id="alert-dialog-title">{"Really reset check?"}</DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
-              Really reset the check named "{props.name}"?
+              Really reset the check named "{props.name}" in context "{props.context}"?
             </DialogContentText>
           </DialogContent>
           <DialogActions>
