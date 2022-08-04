@@ -59,7 +59,7 @@ export default class DurationsChart extends React.Component {
         new Date(startTime),
         duration / nano / 60,
         formatTooltip(e),
-        e.success ? '#00d700' : '#f71000',
+        e.success ? '#40f540' : '#f54040',
         memoryUsage,
       ]
     })
