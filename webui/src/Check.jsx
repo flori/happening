@@ -44,7 +44,7 @@ export default class Check extends React.Component {
     if (allowed_failures > 0) {
       title += ` ${failures}/${allowed_failures} failed`
     }
-
+console.log(context)
     return (
       <>
         <ListItem>
@@ -52,12 +52,12 @@ export default class Check extends React.Component {
           <ListItemText primary={primaryText} secondary={secondaryText}/>
           <ListItemSecondaryAction style={{ display: 'flex', flexFlow: 'row wrap', flexDirection: 'row' }}>
           <ListItemIcon>
-            <IconButton title={title} aria-label={title} component={Link} eventContext={context} to={`/check/${name}`}>
+            <IconButton title={title} aria-label={title} component={Link} to={`/check/${name}`}>
               <LinkIcon/>
             </IconButton>
           </ListItemIcon>
           <ListItemIcon>
-            <SearchButton eventName={name} eventContext={context}/>
+            <SearchButton name={name} context={context}/>
           </ListItemIcon>
           <EditCheck action="edit" name={name} context={context} refresh={refresh}/>
           <ConfirmDeleteCheck name={name} id={id} refresh={refresh}/>

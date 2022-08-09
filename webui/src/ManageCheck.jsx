@@ -9,14 +9,14 @@ export default class ManageCheck extends React.Component {
   }
 
   loadCheck() {
-    const { eventName, eventContext } = this.props
-    apiGetCheckByNameInContext(eventName, eventContext,
+    const { name, context } = this.props
+    apiGetCheckByNameInContext(name, context,
       ({ data: { data } }) => {
         this.setState({ newCheck: false, check: data[0] })
       },
       ({ response: { status } }) => {
         if (status === 404) {
-          this.setState({ newCheck: true, check: { name: eventName, context: eventContext } })
+          this.setState({ newCheck: true, check: { name: name, context: context } })
         }
       }
     )

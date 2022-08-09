@@ -65,7 +65,7 @@ export default class CheckDetailed extends React.Component {
           </CardContent>
           <CardActions>
             <ListItemIcon>
-              <SearchButton eventName={name}/>
+              <SearchButton name={name} context={context}/>
             </ListItemIcon>
             <EditCheck action="edit" name={name} context={context} refresh={refresh}/>
             <ConfirmDeleteCheck name={name} id={id} refresh={refresh}/>
