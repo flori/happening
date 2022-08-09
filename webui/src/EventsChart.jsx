@@ -55,7 +55,7 @@ export default class EventsChart extends React.Component {
   setupChartEvents(data, setSelectedId) {
     return [
       {
-        eventName: 'select',
+        name: 'select',
         callback({ chartWrapper }) {
           const event = data[chartWrapper.getChart().getSelection()[0].row]
           if (event) {

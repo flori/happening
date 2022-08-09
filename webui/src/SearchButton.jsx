@@ -9,11 +9,13 @@ import { history } from './history'
 
 export default class SearchButton extends React.Component {
   handleClick = () => {
-    history.push(`/search/${this.props.query}`)
+    const { name, context } = this.props
+    history.push(`/search/name:${name} context:${context}`)
   }
 
   render() {
-    const title = "Search for events with this name"
+    const { name, context } = this.props
+    const title = `Search for events with name ${name} in ${context}`
     return (
       <IconButton title={title} aria-label={title} onClick={this.handleClick}>
         <Search/>
