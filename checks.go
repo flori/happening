@@ -5,8 +5,8 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/jinzhu/gorm"
 	"github.com/lib/pq"
+	"gorm.io/gorm"
 )
 
 func wasUniqueViolation(err error) bool {
@@ -160,7 +160,7 @@ func taskUpdateHealthStatus(api *API) {
 func fetchRangeFromChecks(api *API, p parameters) ([]Check, int, error) {
 	var checks []Check
 
-	var total int
+	var total int64
 	if err := api.DB.Model(&Check{}).Count(&total).Error; err != nil {
 		return checks, 0, err
 	}
@@ -169,7 +169,7 @@ func fetchRangeFromChecks(api *API, p parameters) ([]Check, int, error) {
 		log.Println(err)
 		return checks, 0, err
 	}
-	return checks, total, nil
+	return checks, int(total), nil
 }
 
 func updateCheckOnEvent(api *API, event *Event) {
