@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
-	"github.com/jasonlvhit/gocron"
+	"github.com/go-co-op/gocron"
 	"github.com/labstack/echo/v4"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -62,9 +63,11 @@ func (api *API) PrepareDatabase() {
 }
 
 func (api *API) SetupCronJobs() {
-	gocron.Every(5).Seconds().Do(taskUpdateHealthStatus, api)
-	gocron.Every(60).Seconds().Do(taskExpireOldEvents, api)
-	gocron.Start()
+	s := gocron.NewScheduler(time.UTC)
+
+	s.Every(5).Seconds().Do(taskUpdateHealthStatus, api)
+	s.Every(60).Seconds().Do(taskExpireOldEvents, api)
+	s.StartAsync()
 }
 
 type eventsResponse struct {
