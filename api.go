@@ -6,9 +6,9 @@ import (
 	"net/http"
 
 	"github.com/jasonlvhit/gocron"
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/labstack/echo/v4"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 const DROP_DATABASE = false
@@ -22,11 +22,10 @@ type API struct {
 
 func (api *API) PrepareDatabase() {
 	log.Println("Opening connection to database server…")
-	db, err := gorm.Open("postgres", switchDatabase(api.POSTGRES_URL, "postgres"))
+	db, err := gorm.Open(postgres.Open(switchDatabase(api.POSTGRES_URL, "postgres")))
 	if err != nil {
 		log.Panic(err)
 	}
-	defer db.Close()
 
 	databaseName := deriveDatabaseName(api.POSTGRES_URL)
 
@@ -51,9 +50,8 @@ func (api *API) PrepareDatabase() {
 			log.Panic(err)
 		}
 	}
-	db.Close()
 
-	if db, err = gorm.Open("postgres", api.POSTGRES_URL); err != nil {
+	if db, err = gorm.Open(postgres.Open(api.POSTGRES_URL)); err != nil {
 		log.Panic(err)
 	}
 	if err := db.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public`).Error; err != nil {

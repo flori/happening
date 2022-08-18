@@ -15,7 +15,7 @@ func addToEvents(api *API, event *Event) error {
 func fetchRangeFromEvents(api *API, p parameters) ([]Event, int, error) {
 	var events []Event
 
-	var total int
+	var total int64
 	if err := api.DB.Model(&Event{}).Count(&total).Error; err != nil {
 		log.Panic(err)
 		return events, 0, err
@@ -67,7 +67,7 @@ func fetchRangeFromEvents(api *API, p parameters) ([]Event, int, error) {
 		}
 		event.Output = fmt.Sprintf("%d lines", lenOutput)
 	}
-	return events, total, nil
+	return events, int(total), nil
 }
 
 func getEvent(api *API, id string) (string, *Event, error) {
