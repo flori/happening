@@ -9,7 +9,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/gobuffalo/packr"
+	"github.com/gobuffalo/packr/v2"
 	"github.com/labstack/echo/v4"
 )
 
@@ -52,7 +52,7 @@ func redirectURL(path string, oldURL *url.URL) string {
 
 func PackrHandler(config ServerConfig) echo.HandlerFunc {
 	createEnv(config)
-	box := packr.NewBox(filepath.Join(config.WEBUI_DIR, "build"))
+	box := packr.New("myBox", filepath.Join(config.WEBUI_DIR, "build"))
 	fileServer := http.FileServer(box)
 	wrapHandler := func(h http.Handler) echo.HandlerFunc {
 		return func(c echo.Context) error {
