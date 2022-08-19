@@ -63,7 +63,7 @@ func PackrHandler(config ServerConfig) echo.HandlerFunc {
 				h.ServeHTTP(c.Response(), c.Request())
 				return nil
 			} else {
-				if path == "" || path == "/" {
+				if path == "" {
 					path = "/search"
 				}
 				log.Printf("Redirecting URL from %s to %s.", oldURL, path)
