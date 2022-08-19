@@ -59,12 +59,14 @@ func PackrHandler(config ServerConfig) echo.HandlerFunc {
 			oldURL := c.Request().URL
 			path := oldURL.Path
 			if path != "" && box.Has(path) {
+				log.Printf("Serving %s from box.", path)
 				h.ServeHTTP(c.Response(), c.Request())
 				return nil
 			} else {
 				if path == "" {
 					path = "/search"
 				}
+				log.Printf("Redirecting URL from %s to %s.", oldURL, path)
 				return c.Redirect(http.StatusTemporaryRedirect, redirectURL(path, oldURL))
 			}
 		}
