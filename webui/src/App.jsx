@@ -15,7 +15,7 @@ import CheckDetails from './CheckDetails'
 import Login from './Login'
 import { Provider } from 'unstated'
 
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
+import { MuiThemeProvider, createTheme } from '@material-ui/core/styles'
 
 import EventsContainer from './EventsContainer'
 
@@ -77,7 +77,7 @@ class Content extends React.Component {
 }
 
 const App = () => (
-  <MuiThemeProvider theme={createMuiTheme({ typography: { useNextVariants: true }})}>
+  <MuiThemeProvider theme={createTheme({ typography: { useNextVariants: true }})}>
     <Router history={history}>
       <Provider>
         <Content/>
