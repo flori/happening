@@ -69,7 +69,7 @@ tags: clean
 	@gotags -tag-relative=false -silent=true -R=true -f $@ . $(GOPATH)
 
 build-info:
-	@echo $(DOCKER_IMAGE)
+	@echo $(REMOTE_TAG)
 
 build:
 	docker build --pull -t $(DOCKER_IMAGE) -t $(DOCKER_IMAGE_LATEST) .
