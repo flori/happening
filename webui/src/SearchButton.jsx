@@ -9,8 +9,8 @@ import { history } from './history'
 
 export default class SearchButton extends React.Component {
   handleClick = () => {
-    const { name, context } = this.props
-    history.push(`/search/name:${name} context:${context}`)
+    const { context, name } = this.props
+    history.push(`/search/context:${context} name:${name}`)
   }
 
   render() {

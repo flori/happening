@@ -194,14 +194,14 @@ export default class Event extends React.Component {
       <>
         <TableRow className={success ? 'success' : 'failure' } style={this.displayStyle(selected)} ref="row">
           <TableCell>
-              <SearchButton query={`context:${context} name:${name}`}/>
+              <SearchButton context={context} name={name}/>
               <ManageCheckButton name={name} context={context} refresh={refresh}/>
               <ShareButton id={id}/>
               <Load load={load}/>
               <Chip label={name} color="primary"/>
           </TableCell>
           <TableCell>
-            <SearchButton query={`context:${context}`}/>
+            <SearchButton context={context} name={name}/>
             <Chip label={context} color="secondary"/>
           </TableCell>
           <TableCell>{renderDate(started)}</TableCell>
