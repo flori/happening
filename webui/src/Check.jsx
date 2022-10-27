@@ -44,7 +44,6 @@ export default class Check extends React.Component {
     if (allowed_failures > 0) {
       title += ` ${failures}/${allowed_failures} failed`
     }
-console.log(context)
     return (
       <>
         <ListItem>
