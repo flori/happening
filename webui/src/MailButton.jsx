@@ -7,17 +7,24 @@ import {
   Mail,
 } from '@material-ui/icons'
 import { apiPatchMailEvent } from './Api'
+import Confirm from './Confirm'
 
-class MailButton extends React.Component {
-  handleClick = () => {
-    const { id } = this.props
-    apiPatchMailEvent(id)
+class MailButton extends Confirm {
+  confirmAction = () => {
+    apiPatchMailEvent(this.props.id)
   }
 
   render() {
-    return <IconButton title='Send notification mail' aria-label='Send notification mail' onClick={this.handleClick}>
-      <Mail/>
-    </IconButton>
+    const { context, name } = this.props
+    return <>
+      <IconButton title='Send notification mail' aria-label='Send notification mail' onClick={this.handleClickOpen}>
+        <Mail/>
+      </IconButton>
+      {this.displayDialog({
+        title: "Send mail fo event",
+        prompt: `Really send a mail for event "${name}" on "${context}?"`,
+      })}
+      </>
   }
 }
 
