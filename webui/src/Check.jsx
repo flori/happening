@@ -2,6 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import LinkIcon from '@material-ui/icons/Link'
 import {
+  Chip,
   Divider,
   IconButton,
   ListItem,
@@ -31,7 +32,7 @@ export default class Check extends React.Component {
       refresh,
     } = this.props
 
-    const primaryText = name + " | " + context + " (every " + renderDuration(period) + ")"
+    const primaryText = name + " (every " + renderDuration(period) + ")"
     let secondaryText = "last pinged at " + renderDate(last_ping_at)
 
     if (!disabled && !healthy && success) {
@@ -50,18 +51,21 @@ export default class Check extends React.Component {
           <CheckStateAvatar {...this.props} refresh={refresh}/>
           <ListItemText primary={primaryText} secondary={secondaryText}/>
           <ListItemSecondaryAction style={{ display: 'flex', flexFlow: 'row wrap', flexDirection: 'row' }}>
-          <ListItemIcon>
-            <IconButton title={title} aria-label={title} component={Link} to={`/check/${name}`}>
-              <LinkIcon/>
-            </IconButton>
-          </ListItemIcon>
-          <ListItemIcon>
-            <SearchButton name={name} context={context}/>
-          </ListItemIcon>
-          <EditCheck action="edit" name={name} context={context} refresh={refresh}/>
-          <ConfirmDeleteCheck name={name} id={id} refresh={refresh}/>
-        </ListItemSecondaryAction>
-      </ListItem>
+            <ListItemIcon>
+              <Chip label={context} color="secondary"/>
+            </ListItemIcon>
+            <ListItemIcon>
+              <IconButton title={title} aria-label={title} component={Link} to={`/check/${name}`}>
+                <LinkIcon/>
+              </IconButton>
+            </ListItemIcon>
+            <ListItemIcon>
+              <SearchButton name={name} context={context}/>
+            </ListItemIcon>
+            <EditCheck action="edit" name={name} context={context} refresh={refresh}/>
+            <ConfirmDeleteCheck name={name} id={id} refresh={refresh}/>
+          </ListItemSecondaryAction>
+        </ListItem>
       <Divider/>
     </>
     )
