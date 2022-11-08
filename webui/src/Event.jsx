@@ -197,7 +197,7 @@ export default class Event extends React.Component {
               <SearchButton context={context} name={name}/>
               <ManageCheckButton name={name} context={context} refresh={refresh}/>
               <ShareButton id={id}/>
-              <MailButton id={id}/>
+              <MailButton id={id} name={name} context={context}/>
               <Load load={load}/>
               <Chip label={name} color="primary"/>
           </TableCell>
