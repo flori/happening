@@ -1,6 +1,7 @@
 package happening
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/lib/pq"
@@ -23,4 +24,33 @@ type Event struct {
 	CpuUsage    float64        `json:"cpuUsage" gorm:"type:real"`
 	MemoryUsage float64        `json:"memoryUsage" gorm:"type:real"`
 	Store       bool           `json:"store" gorm:"-"`
+}
+
+func (event Event) Result() string {
+	result := "failure"
+	if event.Success {
+		result = "success"
+	}
+	return result
+}
+
+func (event Event) String() string {
+	return fmt.Sprintf(
+		`Event:
+ - Name: %s
+ - Context: %s
+ - Id: %s
+ - Result: %s
+ - Started: %s
+ - Duration: %s
+ - Hostname: %s
+`,
+		escapeString(event.Name),
+		escapeString(event.Context),
+		escapeString(event.Id),
+		event.Result(),
+		event.Started,
+		event.Duration,
+		event.Hostname,
+	)
 }

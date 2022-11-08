@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"reflect"
 
 	happening "github.com/flori/happening"
 	"github.com/go-playground/validator"
@@ -57,6 +58,7 @@ func main() {
 		NOTIFIER:      happening.NewNotifier(config),
 		SERVER_CONFIG: config,
 	}
+	log.Printf("Configured %s notifier.", reflect.TypeOf(api.NOTIFIER).Elem().Name())
 	api.PrepareDatabase()
 	api.SetupCronJobs()
 
@@ -88,12 +90,13 @@ func main() {
 	// Events
 	g.GET("/events", api.GetEventsHandler)
 	g.GET("/event/:id", api.GetEventHandler)
+	g.PATCH("/event/:id/mail", api.PatchMailEventHandler)
 
 	// Checks
 	g.POST("/check", api.PostCheckHandler)
 	g.PUT("/check", api.PostCheckHandler)
 	g.PATCH("/check/:id", api.PatchCheckHandler)
-	g.PATCH("/check/:id/reset", api.ResetCheckHandler)
+	g.PATCH("/check/:id/reset", api.PatchResetCheckHandler)
 	g.GET("/checks", api.GetChecksHandler)
 	g.DELETE("/check/:id", api.DeleteCheckHandler)
 	g.GET("/check/:id", api.GetCheckHandler)

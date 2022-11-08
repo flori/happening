@@ -12,6 +12,7 @@ import {
   Share,
 } from '@material-ui/icons'
 import SearchButton from './SearchButton'
+import MailButton from './MailButton'
 import { renderDuration, renderDate, renderCommandResult } from './DisplayHelpers'
 import { apiGetEvent } from './Api'
 import ManageCheckButton from './ManageCheckButton'
@@ -110,7 +111,6 @@ const ShareButton = ({ id }) => (
   </IconButton>
 )
 
-
 const Bar = "▁▂▃▄▅▆▇█"
 
 const Load = ({ load }) => {
@@ -197,6 +197,7 @@ export default class Event extends React.Component {
               <SearchButton context={context} name={name}/>
               <ManageCheckButton name={name} context={context} refresh={refresh}/>
               <ShareButton id={id}/>
+              <MailButton id={id}/>
               <Load load={load}/>
               <Chip label={name} color="primary"/>
           </TableCell>

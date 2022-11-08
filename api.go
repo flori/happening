@@ -130,6 +130,20 @@ func (api *API) GetEventHandler(c echo.Context) error {
 	}
 }
 
+func (api *API) PatchMailEventHandler(c echo.Context) error {
+	result, event, err := getEvent(api, c.Param("id"))
+	switch result {
+	case "ok":
+		log.Printf(`Mailing about event id=%s`, escapeString(event.Id))
+		api.NOTIFIER.Mail(*event)
+		return c.JSON(http.StatusOK, eventsResponse{Success: true})
+	case "not_found":
+		return c.JSON(http.StatusNotFound, eventsResponse{Success: false, Message: err.Error()})
+	default:
+		return err
+	}
+}
+
 type checksResponse struct {
 	Success bool    `json:"success"`
 	Id      string  `json:"id,omitempty"`
@@ -212,9 +226,9 @@ func (api *API) PatchCheckHandler(c echo.Context) error {
 	}
 }
 
-func (api *API) ResetCheckHandler(c echo.Context) error {
+func (api *API) PatchResetCheckHandler(c echo.Context) error {
 	id := c.Param("id")
-	log.Printf(`Reset check %s`, escapeString(id))
+	log.Printf(`Resetting check %s`, escapeString(id))
 	result, err := resetCheck(api, id)
 	switch result {
 	case "ok":

@@ -123,7 +123,7 @@ func (notifier *SMTPNotifier) sendMail(notifierMail NotifierMail) {
 
 func (notifier *SMTPNotifier) Alert(check Check) {
 	go notifier.sendMail(
-		NotifierMail{
+		CheckNotifierMail{
 			Check:               check,
 			EnvironmentVariable: notifier.EnvironmentVariable,
 			DrilldownURL:        notifier.DrilldownURL,
@@ -133,11 +133,22 @@ func (notifier *SMTPNotifier) Alert(check Check) {
 
 func (notifier *SMTPNotifier) Resolve(check Check) {
 	go notifier.sendMail(
-		NotifierMail{
+		CheckNotifierMail{
 			Check:               check,
 			EnvironmentVariable: notifier.EnvironmentVariable,
 			DrilldownURL:        notifier.DrilldownURL,
 			Resolved:            true,
 		},
 	)
+}
+
+func (notifier *SMTPNotifier) Mail(event Event) {
+	go notifier.sendMail(
+		EventNotifierMail{
+			Event:               event,
+			EnvironmentVariable: notifier.EnvironmentVariable,
+			DrilldownURL:        notifier.DrilldownURL,
+		},
+	)
+	return
 }

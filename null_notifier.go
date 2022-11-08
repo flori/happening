@@ -14,3 +14,7 @@ func (notifier *NullNotifier) Alert(check Check) {
 func (notifier *NullNotifier) Resolve(check Check) {
 	return
 }
+
+func (notifier *NullNotifier) Mail(event Event) {
+	return
+}
