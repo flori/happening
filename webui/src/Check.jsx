@@ -31,7 +31,7 @@ export default class Check extends React.Component {
       refresh,
     } = this.props
 
-    const primaryText = name + " (every " + renderDuration(period) + ")"
+    const primaryText = name + " | " + context + " (every " + renderDuration(period) + ")"
     let secondaryText = "last pinged at " + renderDate(last_ping_at)
 
     if (!disabled && !healthy && success) {
@@ -47,7 +47,7 @@ export default class Check extends React.Component {
     return (
       <>
         <ListItem>
-          <CheckStateAvatar {...this.props}/>
+          <CheckStateAvatar {...this.props} refresh={refresh}/>
           <ListItemText primary={primaryText} secondary={secondaryText}/>
           <ListItemSecondaryAction style={{ display: 'flex', flexFlow: 'row wrap', flexDirection: 'row' }}>
           <ListItemIcon>

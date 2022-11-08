@@ -4,13 +4,8 @@ import {
   Button,
   Icon,
   ListItemAvatar,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
 } from '@material-ui/core'
-import { apiPatchCheck } from './Api'
+import { apiResetCheck } from './Api'
 import Confirm from './Confirm'
 
 export const checkState = ({ disabled, healthy, success }) => {
@@ -43,13 +38,8 @@ export const CheckStateIcon = ({ action, disabled, healthy, success }) => {
 
 export class CheckStateAvatar extends Confirm {
   confirmAction = () => {
-    const patchedCheck = {
-      ...this.props,
-      ...{ failures: 0, success: true, healthy: true  }
-    }
-    apiPatchCheck(
+    apiResetCheck(
       this.props.id,
-      patchedCheck,
       this.props.refresh
     )
   }
@@ -62,27 +52,10 @@ export class CheckStateAvatar extends Confirm {
           <CheckStateIcon {...props}/>
         </Avatar>
       </ListItemAvatar>
-      <Dialog
-        open={this.state.open}
-        onClose={this.handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-          <DialogTitle id="alert-dialog-title">{"Really reset check?"}</DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              Really reset the check named "{props.name}" in context "{props.context}"?
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={this.handleClose} color="primary" autoFocus>
-              No
-            </Button>
-            <Button onClick={this.handleCloseYes} color="primary">
-              Yes
-            </Button>
-          </DialogActions>
-        </Dialog>
+      {this.displayDialog({
+        title: "Really reset check?",
+        prompt: `Really reset the check named "${props.name}" in context "${props.context}"?`
+      })}
       </>
   }
 }

@@ -8,6 +8,7 @@ import (
 type Notifier interface {
 	Alert(check Check)
 	Resolve(check Check)
+	Mail(event Event)
 }
 
 func NewNotifier(config ServerConfig) Notifier {

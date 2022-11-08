@@ -58,7 +58,7 @@ func (notifier *SendGridNotifier) sendMail(notifierMail NotifierMail) {
 
 func (notifier *SendGridNotifier) Alert(check Check) {
 	go notifier.sendMail(
-		NotifierMail{
+		CheckNotifierMail{
 			Check:               check,
 			EnvironmentVariable: notifier.EnvironmentVariable,
 			DrilldownURL:        notifier.DrilldownURL,
@@ -68,11 +68,22 @@ func (notifier *SendGridNotifier) Alert(check Check) {
 
 func (notifier *SendGridNotifier) Resolve(check Check) {
 	go notifier.sendMail(
-		NotifierMail{
+		CheckNotifierMail{
 			Check:               check,
 			EnvironmentVariable: notifier.EnvironmentVariable,
 			DrilldownURL:        notifier.DrilldownURL,
 			Resolved:            true,
 		},
 	)
+}
+
+func (notifier *SendGridNotifier) Mail(event Event) {
+	go notifier.sendMail(
+		EventNotifierMail{
+			Event:               event,
+			EnvironmentVariable: notifier.EnvironmentVariable,
+			DrilldownURL:        notifier.DrilldownURL,
+		},
+	)
+	return
 }

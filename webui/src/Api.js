@@ -137,6 +137,15 @@ export function apiGetEvent(id, block, handleError) {
     .catch(handleError)
 }
 
+export function apiPatchMailEvent(id, block, handleError) {
+  const path = `/api/v1/event/${id}/mail`
+  console.log(`Mailing ${path}…`)
+  const { url, token } = buildApiURL(path)
+  axios.patch(url, {}, { headers: { "Authorization": `Bearer ${token}` } })
+    .then(block)
+    .catch(handleError)
+}
+
 export function apiGetChecks(block, handleError) {
   const path = '/api/v1/checks'
   console.log(`Getting ${path}…`)

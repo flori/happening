@@ -33,30 +33,22 @@ func addToChecks(api *API, check *Check) (string, error) {
 
 func updateCheck(api *API, id string, check *Check) (string, error) {
 	checkInstance := api.DB.Model(&Check{Id: &id})
-	checkInstance = checkInstance.Update(
-		"disabled",
-		check.Disabled,
-	).Update(
-		"period",
-		check.Period,
-	).Update(
-		"allowed_failures",
-		check.AllowedFailures,
+	checkInstance = checkInstance.Updates(
+		map[string]interface{}{
+			"disabled":         check.Disabled,
+			"period":           check.Period,
+			"allowed_failures": check.AllowedFailures,
+		},
 	)
 
 	if check.Healthy && check.Failures == 0 && check.Success {
-		checkInstance = checkInstance.Update(
-			"healthy",
-			check.Healthy,
-		).Update(
-			"failures",
-			0,
-		).Update(
-			"success",
-			true,
-		).Update(
-			"last_ping_at",
-			time.Now(),
+		checkInstance = checkInstance.Updates(
+			map[string]interface{}{
+				"healthy":      check.Healthy,
+				"failures":     0,
+				"success":      true,
+				"last_ping_at": time.Now(),
+			},
 		)
 	}
 
@@ -68,18 +60,13 @@ func updateCheck(api *API, id string, check *Check) (string, error) {
 
 func resetCheck(api *API, id string) (string, error) {
 	checkInstance := api.DB.Model(&Check{Id: &id})
-	checkInstance = checkInstance.Update(
-		"healthy",
-		true,
-	).Update(
-		"success",
-		true,
-	).Update(
-		"last_ping_at",
-		time.Now(),
-	).Update(
-		"failures",
-		0,
+	checkInstance = checkInstance.Updates(
+		map[string]interface{}{
+			"healthy":      true,
+			"success":      true,
+			"last_ping_at": time.Now(),
+			"failures":     0,
+		},
 	)
 
 	if err := checkInstance.Error; err != nil {
