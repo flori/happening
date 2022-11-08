@@ -49,7 +49,7 @@ func (notifier *MailCommandNotifier) sendMail(notifierMail NotifierMail) {
 
 func (notifier *MailCommandNotifier) Alert(check Check) {
 	go notifier.sendMail(
-		NotifierMail{
+		CheckNotifierMail{
 			Check:               check,
 			EnvironmentVariable: notifier.EnvironmentVariable,
 			DrilldownURL:        notifier.DrilldownURL,
@@ -59,11 +59,22 @@ func (notifier *MailCommandNotifier) Alert(check Check) {
 
 func (notifier *MailCommandNotifier) Resolve(check Check) {
 	go notifier.sendMail(
-		NotifierMail{
+		CheckNotifierMail{
 			Check:               check,
 			EnvironmentVariable: notifier.EnvironmentVariable,
 			DrilldownURL:        notifier.DrilldownURL,
 			Resolved:            true,
 		},
 	)
+}
+
+func (notifier *MailCommandNotifier) Mail(event Event) {
+	go notifier.sendMail(
+		EventNotifierMail{
+			Event:               event,
+			EnvironmentVariable: notifier.EnvironmentVariable,
+			DrilldownURL:        notifier.DrilldownURL,
+		},
+	)
+	return
 }
