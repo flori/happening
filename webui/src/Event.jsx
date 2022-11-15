@@ -202,7 +202,7 @@ export default class Event extends React.Component {
               <Chip label={name} color="primary"/>
           </TableCell>
           <TableCell>
-            <SearchButton context={context} name={name}/>
+            <SearchButton context={context}/>
             <Chip label={context} color="secondary"/>
           </TableCell>
           <TableCell>{renderDate(started)}</TableCell>
