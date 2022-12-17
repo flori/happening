@@ -11,7 +11,7 @@
     "json-align": "^0.1.0",
     "moment": "^2.29.4",
     "node-fetch": "3.3.0",
-    "pretty-bytes": "^5.6.0",
+    "pretty-bytes": "^6.0.0",
     "prop-types": "^15.6.2",
     "qs": "^6.10.4",
     "react": "^16.14.0",
