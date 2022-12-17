@@ -5,7 +5,7 @@ import qs from 'qs'
 import {
   Router,
   Route,
-  Redirect,
+  Navigate,
 } from 'react-router-dom'
 
 import HeaderLine from './HeaderLine'
@@ -69,7 +69,7 @@ class Content extends React.Component {
       <Route exact path="/" render={( { location: { search } }) => {
         const params = qs.parse(search, { ignoreQueryPrefix: true })
         const p = params.p || '/search'
-        return getAuth() ? <Redirect to={p}/> : <Login to={p}/>
+        return getAuth() ? <Navigate to={p}/> : <Login to={p}/>
       }}
       />
     </>
