@@ -1,7 +1,7 @@
 import { commandString } from './Event'
 import moment from 'moment/moment'
 
-const prettyBytes = require('pretty-bytes')
+import prettyBytes from 'pretty-bytes'
 
 export const milli = 1000
 export const micro = 1000000
