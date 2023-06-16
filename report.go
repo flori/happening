@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"time"
 )
 
@@ -19,13 +20,24 @@ func EventToJSON(event *Event) []byte {
 	return jsonBuffer
 }
 
+func normalizeReportURL(reportURL string) string {
+	u, err := url.Parse(reportURL)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if u.Path == "" {
+		u.Path = "/api/v1/event"
+	}
+	return u.String()
+}
+
 func SendEvent(event *Event, config *Config) {
-	url := config.ReportURL
+	reportURL := normalizeReportURL(config.ReportURL)
 	var err error
 	json := EventToJSON(event)
 	for i := uint(0); i < config.Retries; i++ {
-		log.Printf("Sending event \"%s\" to %s…", event.Name, url)
-		req, err := newHttpClientRequest(http.MethodPut, url, bytes.NewBuffer(json))
+		log.Printf("Sending event \"%s\" to %s…", event.Name, reportURL)
+		req, err := newHttpClientRequest(http.MethodPut, reportURL, bytes.NewBuffer(json))
 		if err != nil {
 			break
 		}
@@ -52,7 +64,7 @@ func SendEvent(event *Event, config *Config) {
 		err = errors.New(
 			fmt.Sprintf(
 				"giving up connecting %s after %d unsuccessful retries",
-				url,
+				reportURL,
 				config.Retries,
 			),
 		)
