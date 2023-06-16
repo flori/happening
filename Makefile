@@ -13,7 +13,7 @@ WEBUI_DIR := $(shell pwd)/webui
 HAPPENING_SERVER_URL ?= http://localhost:8080
 HTTP_AUTH ?= admin:test1234
 SIGNING_SECRET ?= secret
-DOCKER_BUILDKIT = 0
+DOCKER_BUILDKIT = 1
 
 .EXPORT_ALL_VARIABLES:
 
@@ -72,11 +72,11 @@ build-info:
 	@echo $(REMOTE_TAG)
 
 build:
-	docker build --pull -t $(DOCKER_IMAGE) -t $(DOCKER_IMAGE_LATEST) .
+	docker build --progress=plain --pull -t $(DOCKER_IMAGE) -t $(DOCKER_IMAGE_LATEST) .
 	$(MAKE) build-info
 
 build-force:
-	docker build --pull -t $(DOCKER_IMAGE) -t $(DOCKER_IMAGE_LATEST) --no-cache .
+	docker build --progress=plain --pull -t $(DOCKER_IMAGE) -t $(DOCKER_IMAGE_LATEST) --no-cache .
 	$(MAKE) build-info
 
 server:
