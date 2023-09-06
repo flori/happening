@@ -121,7 +121,7 @@ class HeaderLine extends React.Component {
   }
 
   submitSearch = (event) => {
-    history.push(`/search/${this.searchQuery}`)
+    history.push(`/search/${escape(this.searchQuery)}`)
     event.preventDefault()
   }
 
