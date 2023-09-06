@@ -20,11 +20,14 @@
     "react-dom": "^16.14.0",
     "react-google-charts": "^3.0",
     "react-router-dom": "^5.3.4",
-    "react-scripts": "^5.0.1",
     "serve": "^14.2.0",
     "universal-cookie": "^3.0",
     "unstated": "^2.1.1",
     "webfontloader": "^1.6.28"
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "react-scripts": "^5.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -40,8 +43,5 @@
     "not dead",
     "not ie 11",
     "not op_mini all"
-  ],
-  "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
-  }
+  ]
 }
