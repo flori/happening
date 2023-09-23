@@ -3,7 +3,7 @@ module github.com/flori/happening
 go 1.20
 
 require (
-	github.com/go-co-op/gocron v1.33.1
+	github.com/go-co-op/gocron v1.34.2
 	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/gobuffalo/packr v1.30.1
 	github.com/golang-jwt/jwt v3.2.2+incompatible
