@@ -42,7 +42,7 @@ func SendEvent(event *Event, config *Config) {
 			break
 		}
 		req.Header.Set("Content-Type", "application/json")
-		resp, err := http.DefaultClient.Do(req)
+		resp, err := newHttpClient().Do(req)
 		if err != nil {
 			time.Sleep(config.RetryDelay)
 			continue
