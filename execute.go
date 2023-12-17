@@ -52,6 +52,13 @@ func determineHostname(flagHostname string) string {
 	return flagHostname
 }
 
+func determineUser(configUser string) string {
+	if configUser == "" {
+		configUser = os.Getenv("LOGNAME")
+	}
+	return configUser
+}
+
 func setEventFields(config Config, event *Event) {
 	if config.Started != "" {
 		started, err := time.Parse(time.RFC3339, config.Started)
@@ -73,7 +80,7 @@ func setEventFields(config Config, event *Event) {
 
 func Execute(config Config, block func(output io.Writer) bool) *Event {
 	hostname := determineHostname(config.Hostname)
-	user := config.User
+	user := determineUser(config.User)
 	started := time.Now()
 	load.Start()
 	success := true
@@ -119,7 +126,7 @@ func Execute(config Config, block func(output io.Writer) bool) *Event {
 
 func ExecuteCmd(config Config, cmdArgs []string) *Event {
 	hostname := determineHostname(config.Hostname)
-	user := config.User
+	user := determineUser(config.User)
 	if len(cmdArgs) > 0 {
 		cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
 		var outputBuffer bytes.Buffer
