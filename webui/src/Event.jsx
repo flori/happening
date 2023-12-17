@@ -51,7 +51,7 @@ class EventsLinesOutput extends React.Component {
   }
 
   render() {
-    const { active, hostname, command } = this.props
+    const { active, user, hostname, command } = this.props
 
     if (!active) return null
 
@@ -69,7 +69,7 @@ class EventsLinesOutput extends React.Component {
       <TableRow>
         <TableCell colSpan="7" style={{backgroundColor: 'black'}}>
           <pre style={preStyle}>
-          @{hostname} $ {command && commandString(command) + ` ⮑ ${commandResult}\n`}
+          {user}@{hostname} $ {command && commandString(command) + ` ⮑ ${commandResult}\n`}
           {output}
           </pre>
         </TableCell>
@@ -187,7 +187,7 @@ export default class Event extends React.Component {
 
   render() {
 		const {
-      output, success, id, name, hostname, context, started, load, selected, refresh
+      output, success, id, name, user, hostname, context, started, load, selected, refresh
     } = this.props
 
     return (
@@ -200,6 +200,9 @@ export default class Event extends React.Component {
               <MailButton id={id} name={name} context={context}/>
               <Load load={load}/>
               <Chip label={name} color="primary"/>
+          </TableCell>
+          <TableCell>
+            {user}
           </TableCell>
           <TableCell>
             {hostname}

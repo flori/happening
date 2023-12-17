@@ -65,7 +65,7 @@ export function renderCommandResult({ success, exitCode, signal }) {
 }
 
 export function formatTooltip(event) {
-    const { id, name, started, duration, load, hostname, cpuUsage, memoryUsage } = event
+    const { id, name, started, duration, load, hostname, user, cpuUsage, memoryUsage } = event
     let { command } = event
     if (command) {
       command = commandString(command)
@@ -89,6 +89,7 @@ export function formatTooltip(event) {
         <li>Memory Usage: ${prettyBytes(memoryUsage)}</li>
         <li>Command: <tt>${command}</tt></li>
         <li>Success: ${renderCommandResult(event)}</li>
+        <li>User: ${user}</li>
         <li>Hostname: ${hostname}</li>
       </ul>
     `

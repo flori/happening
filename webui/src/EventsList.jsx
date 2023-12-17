@@ -51,6 +51,7 @@ class EventsListComponent extends React.Component {
           <TableHead>
             <TableRow>
               <TableCell>Name</TableCell>
+              <TableCell>User</TableCell>
               <TableCell>Hostname</TableCell>
               <TableCell>Context</TableCell>
               <TableCell>Started</TableCell>
