@@ -187,7 +187,7 @@ export default class Event extends React.Component {
 
   render() {
 		const {
-      output, success, id, name, context, started, load, selected, refresh
+      output, success, id, name, hostname, context, started, load, selected, refresh
     } = this.props
 
     return (
@@ -200,6 +200,9 @@ export default class Event extends React.Component {
               <MailButton id={id} name={name} context={context}/>
               <Load load={load}/>
               <Chip label={name} color="primary"/>
+          </TableCell>
+          <TableCell>
+            {hostname}
           </TableCell>
           <TableCell>
             <SearchButton context={context}/>
