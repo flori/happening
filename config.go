@@ -14,6 +14,7 @@ type Config struct {
 	SuccessCode    string `default:"0"`
 	PingURL        string
 	Hostname       string
+	User           string        `envconfig:"USER"`
 	Retries        uint          `default:"3"`
 	RetryDelay     time.Duration `default:"1s"`
 	CollectOutput  bool

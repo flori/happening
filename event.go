@@ -19,6 +19,7 @@ type Event struct {
 	ExitCode    int            `json:"exitCode" gorm:"type:smallint;not null"`
 	Signal      string         `json:"signal,omitempty" gorm:"text"`
 	Hostname    string         `json:"hostname" gorm:"type:text"`
+	User        string         `json:"user", gorm:"type:text"`
 	Pid         int            `json:"pid" gorm:"type:int"`
 	Load        float32        `json:"load" gorm:"type:real"`
 	CpuUsage    float64        `json:"cpuUsage" gorm:"type:real"`

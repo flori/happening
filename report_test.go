@@ -17,6 +17,7 @@ func TestEventToJSON(t *testing.T) {
 		Duration:    23,
 		Success:     true,
 		Hostname:    "localhost",
+		User:        "foobar",
 		Pid:         666,
 		Load:        0.5,
 		CpuUsage:    0.8,
@@ -24,5 +25,5 @@ func TestEventToJSON(t *testing.T) {
 		Store:       true,
 	}
 	json := string(EventToJSON(event))
-	assert.Equal(t, json, `{"id":"0d7db99e-45ee-4dd8-a637-a30aa90fc3d3","context":"default","name":"TestEVent","started":"0001-01-01T00:00:00Z","duration":23,"success":true,"exitCode":0,"hostname":"localhost","pid":666,"load":0.5,"cpuUsage":0.8,"memoryUsage":6660000,"store":true}`)
+	assert.Equal(t, json, `{"id":"0d7db99e-45ee-4dd8-a637-a30aa90fc3d3","context":"default","name":"TestEVent","started":"0001-01-01T00:00:00Z","duration":23,"success":true,"exitCode":0,"hostname":"localhost","user":"foobar","pid":666,"load":0.5,"cpuUsage":0.8,"memoryUsage":6660000,"store":true}`)
 }

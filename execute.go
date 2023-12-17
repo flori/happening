@@ -73,6 +73,7 @@ func setEventFields(config Config, event *Event) {
 
 func Execute(config Config, block func(output io.Writer) bool) *Event {
 	hostname := determineHostname(config.Hostname)
+	user := config.User
 	started := time.Now()
 	load.Start()
 	success := true
@@ -103,6 +104,7 @@ func Execute(config Config, block func(output io.Writer) bool) *Event {
 		Duration:    duration,
 		Success:     success,
 		Hostname:    hostname,
+		User:        user,
 		Pid:         pid,
 		Load:        load.Compute(),
 		CpuUsage:    pi.CpuUsage,
@@ -117,6 +119,7 @@ func Execute(config Config, block func(output io.Writer) bool) *Event {
 
 func ExecuteCmd(config Config, cmdArgs []string) *Event {
 	hostname := determineHostname(config.Hostname)
+	user := config.User
 	if len(cmdArgs) > 0 {
 		cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
 		var outputBuffer bytes.Buffer
@@ -197,6 +200,7 @@ func ExecuteCmd(config Config, cmdArgs []string) *Event {
 			ExitCode:    exitCode,
 			Signal:      signal,
 			Hostname:    hostname,
+			User:        user,
 			Pid:         pid,
 			Load:        load.Compute(),
 			CpuUsage:    pi.CpuUsage,

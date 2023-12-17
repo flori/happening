@@ -19,6 +19,7 @@ func init() {
 	flag.StringVar(&config.SuccessCode, "success", d.SuccessCode, "consider these exit codes (separated by ,) as success")
 	flag.StringVar(&config.PingURL, "ping", d.PingURL, "ping URL after successful execution of command")
 	flag.StringVar(&config.Hostname, "hostname", d.Hostname, "overwrite os hostname with this value")
+	flag.StringVar(&config.User, "user", d.User, "overwrite current username with this value")
 	flag.UintVar(&config.Retries, "retries", d.Retries, "retry requests that many times")
 	flag.DurationVar(&config.RetryDelay, "retry-delay", d.RetryDelay, "delay for this duration between retries")
 	flag.BoolVar(&config.CollectOutput, "collect-output", d.CollectOutput, "collect output of executed command")
