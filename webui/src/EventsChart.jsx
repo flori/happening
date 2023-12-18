@@ -42,21 +42,21 @@ export default class EventsChart extends React.Component {
     ],
   }
 
-  prepareRows(data) {
-    return data.map( (e) => {
+  prepareData(data) {
+    return [ this.state.columns ].concat(data.map( (e) => {
       const { name, started, duration } = e
       const startTime = Date.parse(started)
       const endTime = startTime + duration / micro
       const tooltip = formatTooltip(e)
       return [ name, '', tooltip, new Date(startTime), new Date(endTime) ]
-    })
+    }))
   }
 
   setupChartEvents(data, setSelectedId) {
     return [
       {
-        name: 'select',
-        callback({ chartWrapper }) {
+        eventName: 'select',
+        callback: ({ chartWrapper }) => {
           const event = data[chartWrapper.getChart().getSelection()[0].row]
           if (event) {
             setSelectedId(event.id)
@@ -71,13 +71,12 @@ export default class EventsChart extends React.Component {
     if (loaded < 1) return <LinearProgress size={50} />
     if (data.length < 2) return null
 
-    const rows = this.prepareRows(data)
+    const preparedData = this.prepareData(data)
     const chartEvents = this.setupChartEvents(data, setSelectedId)
 
     return <Chart
       chartType="Timeline"
-      rows={rows}
-      columns={this.state.columns}
+      data={preparedData}
       options={this.state.options}
       graph_id="Timeline"
       width="99%"
