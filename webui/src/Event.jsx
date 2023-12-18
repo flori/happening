@@ -56,7 +56,10 @@ class EventsLinesOutput extends React.Component {
     if (!active) return null
 
     const commandResult = renderCommandResult(this.props)
-
+    let prompt = "$"
+    if (user == "root") {
+      prompt = "#"
+    }
     const output = this.formatOutput(this.props.outputLoaded)
     const preStyle = {
       margin: '5px',
@@ -69,7 +72,7 @@ class EventsLinesOutput extends React.Component {
       <TableRow>
         <TableCell colSpan="7" style={{backgroundColor: 'black'}}>
           <pre style={preStyle}>
-          {user}@{hostname} $ {command && commandString(command) + ` ⮑ ${commandResult}\n`}
+          {user}@{hostname} {prompt} {command && commandString(command) + ` ⮑ ${commandResult}\n`}
           {output}
           </pre>
         </TableCell>
