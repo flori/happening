@@ -94,3 +94,6 @@ git-tag:
 	git tag tag-$(REVISION_SHORT) $(REVISION)
 	git push origin
 	git push origin tag-$(REVISION_SHORT)
+
+grype: build
+	@grype --add-cpes-if-none --by-cve "$(DOCKER_IMAGE_LATEST)"
