@@ -40,5 +40,11 @@
     "not dead",
     "not ie 11",
     "not op_mini all"
-  ]
+  ],
+  "pnpm": {
+    "overrides": {
+      "postcss@<8.4.31": ">=8.4.31",
+      "nth-check@<2.0.1": ">=2.0.1"
+    }
+  }
 }

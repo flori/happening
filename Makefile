@@ -2,6 +2,7 @@ DOCKER_IMAGE_LATEST = happening
 DOCKER_IMAGE = $(DOCKER_IMAGE_LATEST):$(REVISION_SHORT)
 BASE_IMAGE = $(shell awk '/^FROM .+ AS runner/ { print $$2 }' Dockerfile)
 DOCKER_PORT=8080
+WEBUI_PORT=3333
 POSTGRES_URL ?= postgresql://postgres:secret@localhost:6666/happening?sslmode=disable
 REMOTE_LATEST_TAG := flori303/$(DOCKER_IMAGE_LATEST)
 REMOTE_TAG = flori303/$(DOCKER_IMAGE)
@@ -31,11 +32,14 @@ local: happening-server
 psql:
 	PGPASSWORD=secret psql -U postgres -h localhost -p 6666 -d happening
 
-webui-build:
-	cd webui && yarn --network-timeout 1000000 --network-concurrency 4 && yarn build
+webui-build: install-pnpm
+	cd webui && pnpm build
 
-webui-start:
-	cd webui && REACT_APP_HAPPENING_SERVER_URL=$(HAPPENING_SERVER_URL) yarn start
+webui-audit: install-pnpm
+	cd webui && pnpm audit
+
+webui-start: install-pnpm
+	cd webui && PORT=$(WEBUI_PORT) REACT_APP_HAPPENING_SERVER_URL=$(HAPPENING_SERVER_URL) pnpm start
 
 webui-browserslist-update:
 	cd webui && npx browserslist@latest --update-db
@@ -43,12 +47,15 @@ webui-browserslist-update:
 fetch:
 	go mod download
 
-setup: fake-package fetch
-
 fake-package:
 	rm -rf $(GOPATH)/src/github.com/flori/happening
 	mkdir -p $(GOPATH)/src/github.com/flori
 	ln -s $(shell pwd) $(GOPATH)/src/github.com/flori/happening
+
+install-pnpm:
+	cd webui && npm install -g pnpm && pnpm install
+
+setup: fake-package fetch install-pnpm
 
 test:
 	@go test
