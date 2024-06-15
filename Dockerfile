@@ -1,6 +1,6 @@
 FROM golang:1.22-alpine AS builder
 
-RUN apk add --no-cache git go build-base yarn ca-certificates
+RUN apk add --no-cache git go build-base npm ca-certificates
 
 # Create appuser.
 ENV USER=appuser
