@@ -5,13 +5,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/golang-jwt/jwt"
+	jwt "github.com/golang-jwt/jwt/v5"
+	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
-func JwtAuth(config ServerConfig) middleware.JWTConfig {
-	return middleware.JWTConfig{
+func JwtAuth(config ServerConfig) echojwt.Config {
+	return echojwt.Config{
 		Skipper: func(c echo.Context) bool {
 			path := c.Path()
 			method := c.Request().Method
@@ -25,7 +25,7 @@ func JwtAuth(config ServerConfig) middleware.JWTConfig {
 // See https://github.com/golang-jwt/jwt for more examples
 type jwtCustomClaims struct {
 	Name string `json:"name"`
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 }
 
 type AuthPair struct {
@@ -50,8 +50,8 @@ func JwtLoginWithConfig(config ServerConfig) func(echo.Context) error {
 		// Set custom claims
 		claims := &jwtCustomClaims{
 			"Admin",
-			jwt.StandardClaims{
-				ExpiresAt: time.Now().Add(time.Hour * 24 * 7).Unix(), // 1 week
+			jwt.RegisteredClaims{
+				ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 7)),
 			},
 		}
 

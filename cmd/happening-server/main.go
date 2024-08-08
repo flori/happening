@@ -9,6 +9,7 @@ import (
 	happening "github.com/flori/happening"
 	"github.com/go-playground/validator"
 	"github.com/kelseyhightower/envconfig"
+	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -74,7 +75,7 @@ func main() {
 		log.Fatal("Need HTTP_AUTH and SIGNING_SECRET configuration to start server.")
 	} else {
 		fmt.Println("info:dmi Configuring JWT authentication")
-		g.Use(middleware.JWTWithConfig(happening.JwtAuth(config)))
+		g.Use(echojwt.WithConfig(happening.JwtAuth(config)))
 	}
 	e.POST("/jwt", happening.JwtLoginWithConfig(config))
 	if config.NOTIFIER_KIND != "" {
