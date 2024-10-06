@@ -22,7 +22,7 @@
     "react-google-charts": "^5.1.0",
     "react-router-dom": "^5.3.4",
     "serve": "^14.2.3",
-    "universal-cookie": "^3.1.0",
+    "universal-cookie": "^7.0.0",
     "unstated": "^2.1.1",
     "webfontloader": "^1.6.28"
   },

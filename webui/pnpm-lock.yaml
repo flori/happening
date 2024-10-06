@@ -66,8 +66,8 @@ importers:
         specifier: ^14.2.3
         version: 14.2.3
       universal-cookie:
-        specifier: ^3.1.0
-        version: 3.1.0
+        specifier: ^7.0.0
+        version: 7.2.0
       unstated:
         specifier: ^2.1.1
         version: 2.1.1(prop-types@15.8.1)(react@16.14.0)
@@ -1288,8 +1288,8 @@ packages:
   '@types/connect@3.4.38':
     resolution: {integrity: sha512-K6uROf1LD88uDQqJCktA4yzL1YYAK6NgfsI0v/mTgyPKWsX1CnJ0XPSDhViejru1GcRkLWb8RlzFYJRqGUbaug==}
 
-  '@types/cookie@0.3.3':
-    resolution: {integrity: sha512-LKVP3cgXBT9RYj+t+9FDKwS5tdI+rPBXaNSkma7hvqy35lc7mAokC2zsqWJH0LaqIt3B962nuYI77hsJoT1gow==}
+  '@types/cookie@0.6.0':
+    resolution: {integrity: sha512-4Kh9a6B2bQciAhf7FSuMRRkUWecJgJu9nPnx3yzpsfXX/c50REIqpHY4C82bXP90qrLtXtkDxTZosYO3UpOwlA==}
 
   '@types/eslint@8.56.12':
     resolution: {integrity: sha512-03ruubjWyOHlmljCVoxSuNDdmfZDzsrrz0P2LeJsOXr+ZwFQ+0yQIwNCwt/GYhV7Z31fgtXJTAEs+FYlEL851g==}
@@ -1344,9 +1344,6 @@ packages:
 
   '@types/node@22.7.4':
     resolution: {integrity: sha512-y+NPi1rFzDs1NdQHHToqeiX2TIS79SWEAw9GYhkkx8bD0ChpfqC+n2j5OXOCpzfojBEBt6DnEnnG9MY0zk1XLg==}
-
-  '@types/object-assign@4.0.33':
-    resolution: {integrity: sha512-HeuamLPmpVPuJU/oY7z/YGAezy4HFy6mhvzwupi9Xc8n0FKY8tR1/U3AKaOn/I5Mb4dvbw2szSYcXi84eW07TQ==}
 
   '@types/parse-json@4.0.2':
     resolution: {integrity: sha512-dISoDXWWQwUquiKsyZ4Ng+HX2KsPL7LyHKHQwgGFEA3IaKac4Obd+h2a/a6waisAoepJlBcx9paWqjA8/HVjCw==}
@@ -2081,10 +2078,6 @@ packages:
 
   cookie-signature@1.0.6:
     resolution: {integrity: sha512-QADzlaHc8icV8I7vbaJXJwod9HWYp8uCqf1xa4OfNu1T7JVxQIrUgOWtHdNDtPiywmFbiS12VjotIXLrKM3orQ==}
-
-  cookie@0.3.1:
-    resolution: {integrity: sha512-+IJOX0OqlHCszo2mBUq+SrEbCj6w7Kpffqx60zYbPTFaO4+yYgRjHwcZNpWvaTylDHaV7PPmBHzSecZiMhtPgw==}
-    engines: {node: '>= 0.6'}
 
   cookie@0.6.0:
     resolution: {integrity: sha512-U71cyTamuh1CRNCfpGY6to28lxvNwPG4Guz/EVjgf3Jmzv0vlDp1atT9eS5dDjMYHucpHbWns6Lwf3BKz6svdw==}
@@ -5467,8 +5460,8 @@ packages:
     resolution: {integrity: sha512-uNaeirEPvpZWSgzwsPGtU2zVSTrn/8L5q/IexZmH0eH6SA73CmAA5U4GwORTxQAZs95TAXLNqeLoPPNO5gZfWg==}
     engines: {node: '>=8'}
 
-  universal-cookie@3.1.0:
-    resolution: {integrity: sha512-sP6WuFgqIUro7ikgI2ndrsw9Ro+YvVBe5O9cQfWnjTicpLaSMUEUUDjQF8m8utzWF2ONl7tRkcZd7v4n6NnzjQ==}
+  universal-cookie@7.2.0:
+    resolution: {integrity: sha512-PvcyflJAYACJKr28HABxkGemML5vafHmiL4ICe3e+BEKXRMt0GaFLZhAwgv637kFFnnfiSJ8e6jknrKkMrU+PQ==}
 
   universalify@0.2.0:
     resolution: {integrity: sha512-CJ1QgKmNg3CwvAv/kOFmtnEN05f0D/cn9QntgNOQlQF9dgvVTHj3t+8JPdjqawCHk7V/KA+fbUqzZ9XWhcqPUg==}
@@ -7356,7 +7349,7 @@ snapshots:
     dependencies:
       '@types/node': 22.7.4
 
-  '@types/cookie@0.3.3': {}
+  '@types/cookie@0.6.0': {}
 
   '@types/eslint@8.56.12':
     dependencies:
@@ -7423,8 +7416,6 @@ snapshots:
   '@types/node@22.7.4':
     dependencies:
       undici-types: 6.19.8
-
-  '@types/object-assign@4.0.33': {}
 
   '@types/parse-json@4.0.2': {}
 
@@ -8291,8 +8282,6 @@ snapshots:
   convert-source-map@2.0.0: {}
 
   cookie-signature@1.0.6: {}
-
-  cookie@0.3.1: {}
 
   cookie@0.6.0: {}
 
@@ -12331,12 +12320,10 @@ snapshots:
     dependencies:
       crypto-random-string: 2.0.0
 
-  universal-cookie@3.1.0:
+  universal-cookie@7.2.0:
     dependencies:
-      '@types/cookie': 0.3.3
-      '@types/object-assign': 4.0.33
-      cookie: 0.3.1
-      object-assign: 4.1.1
+      '@types/cookie': 0.6.0
+      cookie: 0.6.0
 
   universalify@0.2.0: {}
 
