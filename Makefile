@@ -33,7 +33,7 @@ psql:
 	PGPASSWORD=secret psql -U postgres -h localhost -p 6666 -d happening
 
 webui-build: install-pnpm
-	cd webui && pnpm build
+	cd webui && pnpm build --ignore-scripts=false --interactive=false
 
 webui-audit: install-pnpm
 	cd webui && pnpm audit
