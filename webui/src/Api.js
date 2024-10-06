@@ -44,20 +44,20 @@ export const apiInit = () => {
   })
 }
 
+function cookies() {
+  return new Cookies(null, { path: '/' })
+}
+
 export function getAuth() {
-  const cookies = new Cookies()
-  return cookies.get('auth')
+  return cookies().get('auth')
 }
 
 export function clearAuth() {
-  const cookies = new Cookies()
-  cookies.remove('auth', { path: '/' })
+  cookies().remove('auth')
 }
 
 export function setAuth(token) {
-  const cookies = new Cookies()
-  cookies.set('auth', token, {
-    path: '/',
+  cookies().set('auth', token, {
     expires:  new Date(new Date().getTime() + 7 * 86400 * 1000), // 1 week
   })
 }
