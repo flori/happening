@@ -37,10 +37,10 @@
     "eject": "react-scripts eject"
   },
   "browserslist": [
-    ">1%",
+    ">0.25%",
     "not dead",
-    "not ie 11",
-    "not op_mini all"
+    "not op_mini all",
+    "last 2 Chrome major versions"
   ],
   "pnpm": { }
 }
