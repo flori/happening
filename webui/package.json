@@ -11,7 +11,7 @@
     "history": "^5.3.0",
     "json-align": "^0.1.0",
     "moment": "^2.30.1",
-    "node-fetch": "3.3.2",
+    "node-fetch": "^2.0",
     "pretty-bytes": "^6.1.1",
     "prop-types": "^15.8.1",
     "qs": "^6.13.0",
@@ -21,9 +21,9 @@
     "react-google-charts": "^5.1.0",
     "react-router-dom": "^5.3.4",
     "serve": "^14.2.3",
-		"webfontloader": "1.6.28",
     "universal-cookie": "^7.2.0",
-    "unstated": "^2.1.1"
+    "unstated": "^2.1.1",
+    "webfontloader": "1.6.28"
   },
   "devDependencies": {
     "@babel/plugin-transform-private-property-in-object": "^7.25.7",
@@ -53,7 +53,9 @@
       "ws@>=8.0.0 <8.17.1": "^8.17.1",
       "ws@>=7.0.0 <7.5.10": "^7.5.10",
       "path-to-regexp": "^3.3.0",
-      "cookie": "^0.7.0"
+      "cookie": "^0.7.0",
+      "http-proxy-middleware@<2.0.7": ">=2.0.7",
+      "cross-spawn@>=7.0.0 <7.0.5": ">=7.0.5"
     }
   }
 }
