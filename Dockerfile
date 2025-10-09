@@ -5,6 +5,7 @@ RUN apk add --no-cache git go build-base npm ca-certificates
 # Create appuser.
 ENV USER=appuser
 ENV UID=10001
+ENV CI=true
 
 RUN adduser \
     --disabled-password \
