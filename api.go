@@ -23,7 +23,7 @@ type API struct {
 
 func (api *API) PrepareDatabase() {
 	log.Println("Opening connection to database server…")
-	db, err := gorm.Open(postgres.Open(switchDatabase(api.POSTGRES_URL, "postgres")))
+	db, err := gorm.Open(postgres.Open(api.POSTGRES_URL))
 	if err != nil {
 		log.Panic(err)
 	}
